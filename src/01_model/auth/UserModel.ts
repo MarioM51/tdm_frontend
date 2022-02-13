@@ -14,9 +14,6 @@ export default class UserModel {
       return "Email required";
     }
 
-    if (this.password == null || this.password == "") {
-      return "Password required";
-    }
 
     let regexEmail = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
     if (!this.email.match(regexEmail)) {
@@ -24,6 +21,13 @@ export default class UserModel {
     }
 
     return "";
+  }
+
+  public validatePassword():string {
+    if (this.password == null || this.password == "") {
+      return "Password required";
+    }
+    return ""
   }
 
   public isMatchPasswords():string {
@@ -38,7 +42,8 @@ export default class UserModel {
   }
 
   public static fromJson(rawUser: any): UserModel {
-    const rols = rawUser.Roles?.map((rawRol: any) => RolModel.fromJson(rawRol) )
+
+    const rols = rawUser.rols?.map((rawRol: any) => RolModel.fromJson(rawRol) )
 
     const user = new UserModel();
     user.id = rawUser.ID
@@ -52,6 +57,19 @@ export default class UserModel {
   public static fromArrayJson(rawUsers: any): UserModel[] {
     const users = rawUsers.map((rawUser: any) => UserModel.fromJson(rawUser) )
     return users
+  }
+
+  public hasRols(rolsToSearch:string[]):boolean {
+    for (const i in this.rols) {
+      const userRol = this.rols[i];
+      for (const k in rolsToSearch) {
+        const rolToSearch= rolsToSearch[k];
+        if(userRol.name == rolToSearch) {
+          return true
+        }
+      }
+    }
+    return false
   }
 
 

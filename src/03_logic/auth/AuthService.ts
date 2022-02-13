@@ -1,8 +1,8 @@
-import UserApiDAO from "../../02_data/user/UserApiDAO";
-import type UserModel from "../../01_model/user/UserModel";
+import type UserModel from "../../01_model/auth/UserModel";
 import AuthStoreDAO from "../../02_data/auth/AuthStoreDAO";
 import AuthApiDAO from "../../02_data/auth/AuthApiDAO";
 import type IAuthService from "./IAuthService";
+import RolModel from "../../01_model/auth/RolModel";
 
 export default class AuthService implements IAuthService {
 
@@ -14,9 +14,11 @@ export default class AuthService implements IAuthService {
   }
 
   public async doLogin(user: UserModel): Promise<UserModel> {
-    const token = await this.authApi.getToken(user);
-    this.setSession(user, token)
-    return user
+    const userLogged = await this.authApi.login(user);
+    // se usa el campo password aqui para retornar el token, para evitar mas trabajo
+    this.setSession(userLogged, userLogged.password);
+    userLogged.password = "";
+    return userLogged
   }
 
   public register(user: UserModel): Promise<UserModel> {
@@ -36,6 +38,46 @@ export default class AuthService implements IAuthService {
   public async doRegister(user: UserModel): Promise<UserModel> {
     const userAdded = await this.authApi.register(user);
     return userAdded
+  }
+
+  public getAll(): Promise<UserModel[]> {
+    const users = this.authApi.getAll();
+    return users;
+  }
+
+  public async doDelete(toDel: UserModel): Promise<UserModel> {
+    const userDeleted:UserModel = await this.authApi.deleteUser(toDel);
+    return userDeleted
+  }
+
+  public findAllRols(): Promise<RolModel[]> {
+    let req = new Promise<RolModel[]>((resolve, reject) => {
+      setTimeout(()=>{
+        const allRols:RolModel[] = [
+          new RolModel(79, "admin"),
+          new RolModel(80, "blogs"),
+          new RolModel(81, "products"),
+        ]
+
+        resolve(allRols);
+      },100);
+
+      setTimeout(()=>{ reject("Cataplum");}, 1200);
+   });
+
+   return req;
+  }
+
+  public edit(userToEdit: UserModel) : Promise<UserModel>{
+    userToEdit.validate();
+
+    //here should not edit the password, only the user can change his own password
+    userToEdit.password = "";
+    userToEdit.confirmPass = "";
+
+     const requestEdit:Promise<UserModel> = this.authApi.edit(userToEdit);
+
+    return requestEdit
   }
 
 }

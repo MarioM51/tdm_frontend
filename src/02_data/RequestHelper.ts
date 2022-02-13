@@ -2,12 +2,13 @@ import ErrorModel from "../01_model/error/ErrorModel";
 
 export enum HttpMethod {
   POST="POST",
-  GET= "GET",
-  DELETE= "DELETE",
+  GET="GET",
+  PUT="PUT",
+  DELETE="DELETE",
 }
 
 interface ICast<E> {
-  (resp: any): Promise<E>;
+  (resp: Response): Promise<E>;
 }
 
 export default class RequestHelper<E> {

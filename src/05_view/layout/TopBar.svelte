@@ -11,10 +11,20 @@
     <span class="text-lg font-bold">USER ADMIN</span>
   </div>
   <div class="flex-none hidden px-2 mx-2 sm:flex">
-    <!-- svelte-ignore a11y-missing-attribute -->
     <div class="flex items-stretch">
       {#if $session != null}
-        <a class="btn btn-ghost btn-sm" href="#/users">Users</a>
+        {#if $session.hasRols(["admin"])}
+          <a class="btn btn-ghost btn-sm" href="#/users">Users</a>
+        {/if}
+
+        {#if $session.hasRols(["admin", "products"])}
+          <a class="btn btn-ghost btn-sm" href="#/products">Products</a>
+        {/if}
+
+        {#if $session.hasRols(["admin", "blogs"])}
+          <a class="btn btn-ghost btn-sm" href="#/blogs">Blogs</a>
+        {/if}
+
         <a
           class="btn btn-ghost btn-sm"
           on:click={() => {

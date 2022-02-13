@@ -1,4 +1,4 @@
-import UserModel from "../../01_model/user/UserModel";
+import UserModel from "../../01_model/auth/UserModel";
 
 export default class AuthStoreDAO {
   

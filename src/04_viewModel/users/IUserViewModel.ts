@@ -1,13 +1,14 @@
-import type UserModel from "../../01_model/user/UserModel";
+import type UserModel from "../../01_model/auth/UserModel";
 import type { Readable } from "svelte/store";
-import type RolModel from "../../01_model/user/RolModel";
+import type RolModel from "../../01_model/auth/RolModel";
 
 
 export default interface IUserViewModel {
 
   onInit():void
 
-  remove(idUser:number):void
+  onClickRemove(idUser:number):void
+  onConfirmRemove():void
 
   onClickEdit(idUser:number):void
   onSubmitEdit(): void
@@ -18,5 +19,9 @@ export default interface IUserViewModel {
   get requestUsers():Readable<Promise<UserModel[]>>
   get allRols():Readable<RolModel[]>
   getUserToEdit():Readable<UserModel>
+  getUserRequestEdit(): Readable<Promise<UserModel>>
+
+  getUserToDelete():Readable<UserModel>
+  getUserRequestDelete():Readable<Promise<UserModel>>
 
 }

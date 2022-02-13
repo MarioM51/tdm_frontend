@@ -1,26 +1,31 @@
 
 import type IUserViewModel from './IUserViewModel';
-import type IUserService from '../../03_logic/users/IUserService';
 import type IAuthViewModel from '../auth/IAuthViewModel';
-import UserService from '../../03_logic/users/UserService';
 import AuthViewModel from '../auth/AuthViewModel';
-import type UserModel from '../../01_model/user/UserModel';
+import type UserModel from '../../01_model/auth/UserModel';
 import ErrorModel from '../../01_model/error/ErrorModel';
-import { get, Writable, writable } from 'svelte/store';
+import { get, writable } from 'svelte/store';
+import type { Writable } from "svelte/store";
 import type { Readable } from "svelte/store";
-import type RolModel from '../../01_model/user/RolModel';
+import type RolModel from '../../01_model/auth/RolModel';
+import type IAuthService from '../../03_logic/auth/IAuthService';
+import AuthService from '../../03_logic/auth/AuthService';
 
 export default class UserViewModel implements IUserViewModel {
 
   //view utils
-  private _userServ: IUserService = new UserService()
   private _authMV: IAuthViewModel = AuthViewModel.getInstance();
+  private _authServ: IAuthService = new AuthService();
 
   //view components private
   private _usersTable:Writable<UserModel[]> = writable([]);
   private _requestUsers:Writable<Promise<UserModel[]>> = writable(null);
 
   private _userToEdit:Writable<UserModel> = writable(null);
+  private _userRequestEdit:Writable<Promise<UserModel>> = writable(null);
+
+  private _userToDelete:Writable<UserModel> = writable(null);
+  private _userRequestDelete:Writable<Promise<UserModel>> = writable(null);
 
   private _errorMessage:Writable<String> = writable(null);
 
@@ -37,18 +42,13 @@ export default class UserViewModel implements IUserViewModel {
   }
 
   public onInit():void {
-      const allUsers = this._userServ.getAll();
+      const allUsers = this._authServ.getAll();
       this._requestUsers.set(allUsers);
       this._errorMessage.set(null)
       allUsers
         .then((users)=> {
           this._usersTable.set(users);
-          (async  () => {
-            const allRolsFinded = await this._userServ.findAllRols()
-            this.allRols.set(allRolsFinded);
-          })();
-
-          
+          this. loadingsAfterMainLoad()
         })
         .catch(err => {
           ErrorModel.handleRequestErrors(err, this._errorMessage, this._authMV)
@@ -56,32 +56,19 @@ export default class UserViewModel implements IUserViewModel {
       ;
   }
 
-  public onClickEdit(idUser:number): void {
-    if(idUser == -1) {
+  private async loadingsAfterMainLoad() {
+    const allRolsFinded = await this._authServ.findAllRols()
+    this.allRols.set(allRolsFinded);
+  }
+
+  public onClickEdit(userRow:number): void {
+    if(userRow == -1) {
       this._userToEdit.set(null);
       return
     }
 
-    const userSelected = get(this._usersTable)[idUser];
+    const userSelected = get(this._usersTable)[userRow];
     this._userToEdit.set(userSelected);
-  }
-
-  public onSubmitEdit(): void {
-    this._usersTable.update(table => {
-      
-      table.forEach(user => {
-        const finded = user.id == get(this._userToEdit).id;
-        if(finded) {
-          user = get(this._userToEdit)
-        }
-      })
-
-      return table;
-    })
-  }
-
-  public remove(idUser:number): void {
-    
   }
 
   public switchRole(rol: RolModel): void {
@@ -96,14 +83,70 @@ export default class UserViewModel implements IUserViewModel {
       }
 
       return u;
-    })
+    });
+  }
 
-    
+  public onSubmitEdit(): void {
+    //Send edit request
+    const editRequest = this._authServ.edit(get(this._userToEdit));
+    this._userRequestEdit.set(editRequest);
+
+    //react to request response
+    editRequest
+      .then(_ => {
+        //add user's changes to users table
+        this._usersTable.update(table => {
+          table.forEach(user => {
+            const finded = user.id == get(this._userToEdit).id;
+            if(finded) {
+              user = get(this._userToEdit)
+            }
+          })
+          return table;
+        });
+
+        this._userToEdit.set(null)//to close modal
+        this._userRequestEdit.set(null);//clear memory
+      })
+      .catch((error) => {
+        ErrorModel.handleRequestErrors(error, this._errorMessage, this._authMV)
+      })
+    ;
+  }
+
+  public onClickRemove(userRow:number): void {
+    if (userRow < 0) {
+      this._userToDelete.set(null)
+      return
+    }
+
+    const userSelected = get(this._usersTable)[userRow];
+    this._userToDelete.set(userSelected)
+  }
+
+  public onConfirmRemove(): void {
+    //send delete request to logic
+    const delReq = this._authServ.doDelete(get(this._userToDelete));
+    this._userRequestDelete.set(delReq);
+    delReq.then(_ => {
+      this._usersTable.update(table => {
+        //delete user in the table users UI
+        return table.filter(u => u.id != get(this._userToDelete).id);
+      });
+
+      this._userToDelete.set(null);
+      this._userRequestDelete.set(null);
+    }).catch(err => {
+      ErrorModel.handleRequestErrors(err, this._errorMessage, this._authMV)
+    })
   }
 
   public get usersTable():Readable<UserModel[]> { return this._usersTable }
   public get requestUsers():Readable<Promise<UserModel[]>> { return this._requestUsers }
   public get errorMsg():Readable<String> { return this._errorMessage; }
   public getUserToEdit(): Readable<UserModel> { return this._userToEdit; }
+  public getUserRequestEdit(): Readable<Promise<UserModel>> { return this._userRequestEdit; }
+  public getUserToDelete(): Readable<UserModel> { return this._userToDelete }
+  public getUserRequestDelete(): Readable<Promise<UserModel>> { return this._userRequestDelete }
   
 }

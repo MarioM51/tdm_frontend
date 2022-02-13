@@ -5,10 +5,7 @@ import { replace, push } from 'svelte-spa-router'
 import type IAuthViewModel from './IAuthViewModel';
 import { AuthPanel } from './AuthPanel';
 
-import UserService from '../../03_logic/users/UserService';
-import type IUserService from '../../03_logic/users/IUserService';
-
-import UserModel from '../../01_model/user/UserModel';
+import UserModel from '../../01_model/auth/UserModel';
 import ErrorModel from '../../01_model/error/ErrorModel';
 import type IAuthService from '../../03_logic/auth/IAuthService';
 import AuthService from '../../03_logic/auth/AuthService';
@@ -62,18 +59,27 @@ export default class AuthViewModel implements IAuthViewModel {
   }
 
   private onLogin():void {
-    const errorValidation = get(this.userToLogin).validate();
+    // validate user data
+    let errorValidation = get(this.userToLogin).validate();
     this.errorMessage.set(errorValidation);
     if(errorValidation != "") {
       return ;
     }
 
+    // validate password
+    errorValidation = get(this.userToLogin).validatePassword();
+    this.errorMessage.set(errorValidation);
+    if(errorValidation != "") {
+      return ;
+    }
+
+    //login request
     const loginRequest = this.authService.doLogin(get(this.userToLogin));
     this.requestUser.set(loginRequest);
     loginRequest
       .then(usr => {
         this.session.set(usr)
-        replace('/users')
+        replace('/')
       })
       .catch(err => {
         if(err instanceof ErrorModel) {
@@ -85,20 +91,28 @@ export default class AuthViewModel implements IAuthViewModel {
   }
 
   private onRegister():void {
-    //validar datos de usuario
+    //validate user data
     let errorValidation = get(this.userToRegister).validate();
     if(errorValidation != "") {
       this.errorMessage.set(errorValidation);
       return
     }
+
+    // validate password
+    errorValidation = get(this.userToRegister).validatePassword();
+    this.errorMessage.set(errorValidation);
+    if(errorValidation != "") {
+      return ;
+    }
     
-    //validar confirmacion de pass
+    //validate password confirm
     errorValidation = get(this.userToRegister).isMatchPasswords();
     if(errorValidation != "") {
       this.errorMessage.set(errorValidation);
       return
     }
     
+    //request
     const registerReqest = this.authService.register(get(this.userToRegister))
     this.requestUser.set(registerReqest)
     registerReqest

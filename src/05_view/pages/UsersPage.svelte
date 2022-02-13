@@ -11,8 +11,12 @@
   const usersTable = userVM.usersTable;
   const errorMsg = userVM.errorMsg;
   const userToEdit = userVM.getUserToEdit();
+  const editRequest = userVM.getUserRequestEdit();
+
+  const userToDelete = userVM.getUserToDelete();
+  const deleteRequest = userVM.getUserRequestDelete();
+
   const allRols = userVM.allRols;
-  let yes = true;
 
   onMount(() => {
     userVM.onInit();
@@ -62,7 +66,10 @@
                   <div class="icon" on:click={() => userVM.onClickEdit(i)}>
                     <FaEdit />
                   </div>
-                  <div class="icon" on:click={() => userVM.remove(i)}>
+                  <div
+                    class="icon icon-del"
+                    on:click={() => userVM.onClickRemove(i)}
+                  >
                     <FaRegTrashAlt />
                   </div>
                 </td>
@@ -80,7 +87,18 @@
   {#if $userToEdit != null}
     <div class="modal modal-open">
       <div class="modal-box">
-        <p>A editar: {$userToEdit.email}</p>
+        <div class="form-control bg-base-200 p-4 pt-1">
+          <label class="label" for="email">
+            <span class="label-text">Email</span>
+          </label>
+          <input
+            bind:value={$userToEdit.email}
+            type="text"
+            placeholder="example@mail.com"
+            class="input"
+            id="email"
+          />
+        </div>
 
         <div class="form-control max-w-xs">
           {#each $allRols as rol}
@@ -101,10 +119,40 @@
         </div>
 
         <div class="modal-action">
-          <button on:click={() => userVM.onSubmitEdit()} class="btn btn-primary"
-            >Accept</button
-          >
+          {#await $editRequest}
+            Loading...
+          {:then editStatus}
+            {#if editStatus == null}
+              <button
+                on:click={() => userVM.onSubmitEdit()}
+                class="btn btn-primary">Accept</button
+              >
+            {/if}
+          {/await}
           <button on:click={() => userVM.onClickEdit(-1)} class="btn"
+            >Close</button
+          >
+        </div>
+      </div>
+    </div>
+  {/if}
+
+  {#if $userToDelete != null}
+    <div class="modal modal-open">
+      <div class="modal-box">
+        Are you sure you want to delete de user {$userToDelete.email}?
+        <div class="modal-action">
+          {#await $deleteRequest}
+            Loading...
+          {:then deleteStatus}
+            {#if deleteStatus == null}
+              <button
+                on:click={() => userVM.onConfirmRemove()}
+                class="btn btn-error">Delete</button
+              >
+            {/if}
+          {/await}
+          <button on:click={() => userVM.onClickRemove(-1)} class="btn"
             >Close</button
           >
         </div>
@@ -122,5 +170,9 @@
   }
   .icon:hover {
     color: rgb(85, 85, 248);
+  }
+
+  .icon-del:hover {
+    color: rgb(248, 85, 85);
   }
 </style>
