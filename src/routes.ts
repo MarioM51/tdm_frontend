@@ -41,7 +41,7 @@ const routes = {
 
   "/products": wrap({
     // Use a dynamically-loaded component for this
-    asyncComponent: () => import("./product/05_view/ProductsAdmin.svelte"),
+    asyncComponent: () => import("./product/05_view/ProductsAdminPage.svelte"),
     // Adding one pre-condition that's an async function
     conditions: [
       async (_) => {

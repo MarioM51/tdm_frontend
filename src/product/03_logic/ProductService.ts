@@ -14,4 +14,12 @@ export default class ProductService implements IProductService {
     return this._productsApi.add(toAdd);
   }
 
+  public edit(p: ProductModel): Promise<ProductModel> {
+    return this._productsApi.edit(p);
+  }
+
+  public remove(p: ProductModel): Promise<ProductModel> {
+    return this._productsApi.remove(p);
+  }
+
 }

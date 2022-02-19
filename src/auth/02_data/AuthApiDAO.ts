@@ -1,13 +1,12 @@
 import RequestHelper, { HttpMethod } from "../../helpers/RequestHelper";
 import UserModel from "../01_model/UserModel";
-import UserStoreDAO from "./AuthStoreDAO";
+import AuthStoreDAO from "./AuthStoreDAO";
 
 export default class AuthApiDAO {
 
-  private readonly userStore = new UserStoreDAO()
+  private readonly _authStore = new AuthStoreDAO()
 
-  public static readonly API_BASE = "http://localhost:8081"
-  public static API = this.API_BASE + "/users"
+  private static API = "/users"
 
   async login(user: UserModel): Promise<UserModel> {
     const request = new RequestHelper<UserModel>();
@@ -46,7 +45,7 @@ export default class AuthApiDAO {
     const request = new RequestHelper<UserModel[]>();
     request.url = AuthApiDAO.API;
     request.method = HttpMethod.GET;
-    request.token = this.userStore.getToken();
+    request.token = this._authStore.getToken();
     request.cast = async (resp)=>{
       const resData = await resp.json()
       const users = UserModel.fromArrayJson(resData);
@@ -62,7 +61,7 @@ export default class AuthApiDAO {
     const request = new RequestHelper<UserModel>();
     request.method = HttpMethod.DELETE;
     request.url = AuthApiDAO.API + "/" + toDel.id;
-    request.token = this.userStore.getToken();
+    request.token = this._authStore.getToken();
     request.cast = this.castUser
 
     const userDeleted = request.doRequest()
@@ -76,7 +75,7 @@ export default class AuthApiDAO {
     request.url = AuthApiDAO.API;
     request.data = userToEdit;
     request.cast = this.castUser
-    request.token = this.userStore.getToken();
+    request.token = this._authStore.getToken();
 
     const userEdited = request.doRequest();
 

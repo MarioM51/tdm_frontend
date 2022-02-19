@@ -18,6 +18,7 @@ export default class RequestHelper<E> {
   public data:any = null;
   public cast:ICast<E>;
 
+  private static readonly _HOST = "http://localhost:8081"
   public static readonly LOGIN_REQUIRED = new ErrorModel(401, "Login required");
   public static readonly USR_UNAUTH = new ErrorModel(403, "User Unauthorized");
 
@@ -32,6 +33,8 @@ export default class RequestHelper<E> {
       headers: myHeaders,
       body: (this.data != null) ? JSON.stringify(this.data) : null
     };
+
+    this.url = RequestHelper._HOST + this.url;
 
     let resp:Response = null
     try {

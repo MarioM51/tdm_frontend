@@ -1,36 +1,71 @@
-import ErrorModel from "../../error/ErrorModel";
+import RequestHelper, { HttpMethod } from "../../helpers/RequestHelper";
 import ProductModel from "../01_model/ProductModel";
+import AuthStoreDAO from "../../auth/02_data/AuthStoreDAO";
 
 export default class ProductApiDAO {
+
+  private static readonly _API = "/products";
+
+  private readonly _userStore = new AuthStoreDAO()
+
   public add(toAdd:ProductModel): Promise<ProductModel> {
-    return new Promise<ProductModel>((rs, rj) => {
-      setTimeout(()=>{
-        rs(toAdd);
-      },1000);
-      setTimeout(()=>{
-        rj(new ErrorModel(400, "Error test"));
-      },1200);
-    });
+    const r = new RequestHelper<ProductModel>();
+    r.url = ProductApiDAO._API;
+    r.method = HttpMethod.POST;
+    r.token = this._userStore.getToken();
+    r.data = toAdd;
+    r.cast = this.castProduct;
+    
+    const productAdded = r.doRequest();
+
+    return productAdded;
   }
 
   public findAll() : Promise<ProductModel[]> {
+    const r = new RequestHelper<ProductModel[]>();
+    r.url = ProductApiDAO._API;
+    r.method = HttpMethod.GET;
+    r.cast = async (resp) => {
+      const rawProducts = await resp.json();
+      const products = ProductModel.fromArrayJson(rawProducts);
+      return products
+    }
 
-    return new Promise<ProductModel[]>((rs, rj) => {
-      setTimeout(()=>{
-        rs([
-          new ProductModel("Producto 1", 50.5, "imagen1.png", "descripcion 1"),
-          new ProductModel("Producto 2", 150.5, "imagen2.png", "descripcion 2"),
-          new ProductModel("Producto 3", 250.5, "imagen3.png", "descripcion 3"),
-          new ProductModel("Producto 4", 350.5, "imagen4.png", "descripcion 4"),
-          new ProductModel("Producto 5", 450.5, "imagen5.png", "descripcion 5"),
-          new ProductModel("Producto 6", 550.5, "imagen6.png", "descripcion 6"),
-        ]);
-      },1100);
-      setTimeout(()=>{
-        rj(new ErrorModel(400, "Error test"));
-      },1000);
-    });
+    const products = r.doRequest();
 
+    return products;
+  }
+
+  public remove(p: ProductModel): Promise<ProductModel> {
+    const r = new RequestHelper<ProductModel>();
+    r.url = ProductApiDAO._API + "/" + p.id;
+    r.method = HttpMethod.DELETE;
+    r.token = this._userStore.getToken();
+    r.cast = this.castProduct;
+
+    const productDeleted = r.doRequest();
+
+    return productDeleted;
+    
+  }
+
+  public edit(newInfo: ProductModel): Promise<ProductModel> {
+    const r = new RequestHelper<ProductModel>();
+    r.url = ProductApiDAO._API;
+    r.method = HttpMethod.PUT;
+    r.token = this._userStore.getToken();
+    r.data = newInfo;
+    r.cast = this.castProduct;
+    
+    const productAdded = r.doRequest();
+
+    return productAdded;
+  }
+
+  private async castProduct(resp:Response): Promise<ProductModel> {
+    const rawProducts = await resp.json();
+    const product = ProductModel.fromJson(rawProducts);
+    return product
   }
 
 

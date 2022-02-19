@@ -4,19 +4,24 @@
   import FaImage from "svelte-icons/fa/FaImage.svelte";
   import ProductViewModel from "../04_viewModel/ProductViewModel";
   import type IProductViewModel from "../04_viewModel/IProductViewModel";
+  import FaRegTrashAlt from "svelte-icons/fa/FaRegTrashAlt.svelte";
+  import FaEdit from "svelte-icons/fa/FaEdit.svelte";
 
-  const productMV: IProductViewModel = ProductViewModel.getInstance();
+  const productVM: IProductViewModel = ProductViewModel.getInstance();
 
-  const productsRequest = productMV.getProductsRequest();
-  const products = productMV.getProducts();
+  const productsRequest = productVM.getProductsRequest();
+  const products = productVM.getProducts();
 
-  const productToAdd = productMV.getProductToAdd();
-  const productToAddRequest = productMV.getProductToAddRequest();
+  const productOnForm = productVM.getProductOnForm();
+  const productOnFormRequest = productVM.getProductOnFormRequest();
 
-  const errorMsg = productMV.getErrorMsg();
+  const productToDelete = productVM.getProductToDelete();
+  const productToDeleteRequest = productVM.getProductToDeleteRequest();
+
+  const errorMsg = productVM.getErrorMsg();
 
   onMount(() => {
-    productMV.onInit();
+    productVM.onInit();
   });
 </script>
 
@@ -35,13 +40,13 @@
       <button
         class="btn btn btn-success"
         on:click={() => {
-          productMV.onClickAdd(true);
+          productVM.onClickAdd();
         }}
       >
         <div class="icon"><FaPlus /></div>
         Add Product
       </button>
-      <table class="table m-auto">
+      <table class="table m-auto table-compact table-zebra">
         <thead>
           <th>Name</th>
           <th>Price</th>
@@ -57,11 +62,22 @@
                   <td colspan="3">No Products</td>
                 </tr>
               {/if}
-              {#each $products as product}
+              {#each $products as product, k}
                 <tr>
                   <td>{product.name}</td>
                   <td>{product.price}</td>
-                  <td>More</td>
+                  <td class="flex justify-center">
+                    <div class="icon" on:click={() => productVM.onClickEdit(k)}>
+                      <FaEdit />
+                    </div>
+
+                    <div
+                      class="icon icon-del"
+                      on:click={() => productVM.onClickRemove(k)}
+                    >
+                      <FaRegTrashAlt />
+                    </div>
+                  </td>
                 </tr>
               {/each}
             {/if}
@@ -70,7 +86,7 @@
       </table>
     </div>
 
-    {#if $productToAdd != null}
+    {#if $productOnForm != null}
       <div class="modal modal-open">
         <div class="modal-box">
           <h3>Add Product</h3>
@@ -81,7 +97,7 @@
               </label>
               <input
                 type="text"
-                bind:value={$productToAdd.name}
+                bind:value={$productOnForm.name}
                 id="name"
                 class="input input-bordered"
               />
@@ -93,7 +109,7 @@
               </label>
               <input
                 type="number"
-                bind:value={$productToAdd.price}
+                bind:value={$productOnForm.price}
                 id="price"
                 class="input input-bordered"
               />
@@ -108,11 +124,11 @@
                   <div class="icon"><FaImage /></div>
                 </button>
                 <input
-                  bind:value={$productToAdd.image}
+                  bind:value={$productOnForm.image}
                   id="image"
                   type="text"
                   disabled
-                  class="w-full pr-16 input  input-bordered"
+                  class="w-full pr-16 input input-bordered pl-[75px]"
                 />
               </div>
             </div>
@@ -122,7 +138,7 @@
                 <span class="label-text">Description</span>
               </label>
               <textarea
-                bind:value={$productToAdd.description}
+                bind:value={$productOnForm.description}
                 id="description"
                 class="textarea h-24 textarea-bordered"
               />
@@ -130,17 +146,49 @@
           </div>
 
           <div class="modal-action">
-            {#await $productToAddRequest}
+            {#await $productOnFormRequest}
               Loading...
             {:then addStatus}
               {#if addStatus == null}
+                {#if $productOnForm.id == null}
+                  <button
+                    on:click={() => productVM.onSubmitAdd()}
+                    class="btn btn-success">Add</button
+                  >
+                {:else}
+                  <button
+                    on:click={() => productVM.onConfirmEdit()}
+                    class="btn btn-info">Edit</button
+                  >
+                {/if}
+              {/if}
+            {/await}
+            <button on:click={() => productVM.closeProductForm()} class="btn"
+              >Close</button
+            >
+          </div>
+        </div>
+      </div>
+    {/if}
+
+    {#if $productToDelete != null}
+      <div class="modal modal-open">
+        <div class="modal-box">
+          Are you sure you want to delete the product <b
+            >{$productToDelete.name}</b
+          >?
+          <div class="modal-action">
+            {#await $productToDeleteRequest}
+              Loading...
+            {:then deleteStatus}
+              {#if deleteStatus == null}
                 <button
-                  on:click={() => productMV.onSubmitAdd()}
-                  class="btn btn-success">Add</button
+                  on:click={() => productVM.onConfirmRemove()}
+                  class="btn btn-error">Delete</button
                 >
               {/if}
             {/await}
-            <button on:click={() => productMV.onClickAdd(false)} class="btn"
+            <button on:click={() => productVM.onClickRemove(-1)} class="btn"
               >Close</button
             >
           </div>
@@ -149,3 +197,19 @@
     {/if}
   </main>
 </section>
+
+<style>
+  .icon {
+    cursor: pointer;
+    width: 22px;
+    height: 22px;
+    margin: 10px;
+  }
+  .icon:hover {
+    color: rgb(85, 85, 248);
+  }
+
+  .icon-del:hover {
+    color: rgb(248, 85, 85);
+  }
+</style>

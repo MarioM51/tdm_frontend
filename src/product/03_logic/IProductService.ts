@@ -6,4 +6,8 @@ export default interface IProductService {
 
   add(toAdd:ProductModel):Promise<ProductModel>
 
+  edit(arg0: ProductModel): Promise<ProductModel>
+  
+  remove(arg0: ProductModel): Promise<ProductModel>
+
 }
