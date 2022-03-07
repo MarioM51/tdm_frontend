@@ -1,3 +1,4 @@
+import type ProductImage from "../01_model/ProductImage";
 import type ProductModel from "../01_model/ProductModel";
 import ProductApiDAO from "../02_data/ProductApiDAO";
 import type IProductService from "./IProductService";
@@ -11,6 +12,7 @@ export default class ProductService implements IProductService {
   }
 
   public add(toAdd:ProductModel): Promise<ProductModel> {
+    toAdd.files = null;
     return this._productsApi.add(toAdd);
   }
 
@@ -20,6 +22,14 @@ export default class ProductService implements IProductService {
 
   public remove(p: ProductModel): Promise<ProductModel> {
     return this._productsApi.remove(p);
+  }
+
+  public addFile(idProduct:number, images:FileList): Promise<ProductImage> {
+    return this._productsApi.addFile(idProduct, images);
+  }
+
+  public updateImage(idProduct: number, images: FileList): Promise<ProductImage> {
+    return this._productsApi.updateFile(idProduct, images);
   }
 
 }

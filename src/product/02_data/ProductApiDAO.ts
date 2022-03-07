@@ -1,6 +1,7 @@
 import RequestHelper, { HttpMethod } from "../../helpers/RequestHelper";
 import ProductModel from "../01_model/ProductModel";
 import AuthStoreDAO from "../../auth/02_data/AuthStoreDAO";
+import type ProductImage from "../01_model/ProductImage";
 
 export default class ProductApiDAO {
 
@@ -9,6 +10,9 @@ export default class ProductApiDAO {
   private readonly _userStore = new AuthStoreDAO()
 
   public add(toAdd:ProductModel): Promise<ProductModel> {
+    // use addFile to upload files
+    toAdd.files = null;
+
     const r = new RequestHelper<ProductModel>();
     r.url = ProductApiDAO._API;
     r.method = HttpMethod.POST;
@@ -66,6 +70,40 @@ export default class ProductApiDAO {
     const rawProducts = await resp.json();
     const product = ProductModel.fromJson(rawProducts);
     return product
+  }
+
+  public addFile(idProduct:number, images:FileList):Promise<ProductImage> {
+    const r = new RequestHelper<ProductImage>();
+    r.url = ProductApiDAO._API + "/" + idProduct + "/images";
+    r.method = HttpMethod.POST;
+    r.data = images;
+    r.token = this._userStore.getToken();
+
+    r.cast = async (resp) => {
+      let product = await this.castProduct(resp)
+      return product.image
+    }
+
+    const imageAdded = r.doRequest();
+
+    return imageAdded
+  }
+
+  public updateFile(idProduct:number, images:FileList):Promise<ProductImage> {
+    const r = new RequestHelper<ProductImage>();
+    r.url = ProductApiDAO._API + "/" + idProduct + "/images";
+    r.method = HttpMethod.PUT;
+    r.data = images;
+    r.token = this._userStore.getToken();
+
+    r.cast = async (resp) => {
+      let product = await this.castProduct(resp)
+      return product.image
+    }
+
+    const imageAdded = r.doRequest();
+
+    return imageAdded
   }
 
 

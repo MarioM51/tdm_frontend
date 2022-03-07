@@ -20,6 +20,7 @@ export default class ErrorModel {
         errorMsg.set(genericMsgError + ": " + err.cause)
       }
     } else {
+      console.error("Error no controlado", err);
       errorMsg.set(genericMsgError)
     }
   }

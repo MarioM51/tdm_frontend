@@ -28,12 +28,14 @@ const routes = {
     conditions: [
       async (detail) => {
         const session = get(auth.getSession());
+        
         const isAuth = session != null;
-        if (!isAuth) {
+        if (isAuth) {
+          console.log("Open /users");
+        } else {
           console.log("Denied /users");
           replace("/auth");
         }
-        console.log("Open /users");
         return isAuth;
       },
     ],

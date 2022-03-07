@@ -6,6 +6,9 @@
   import type IProductViewModel from "../04_viewModel/IProductViewModel";
   import FaRegTrashAlt from "svelte-icons/fa/FaRegTrashAlt.svelte";
   import FaEdit from "svelte-icons/fa/FaEdit.svelte";
+  import { Consts } from "../../Constants";
+
+  const prodImg = Consts.HOST + "/products/image/";
 
   const productVM: IProductViewModel = ProductViewModel.getInstance();
 
@@ -14,15 +17,49 @@
 
   const productOnForm = productVM.getProductOnForm();
   const productOnFormRequest = productVM.getProductOnFormRequest();
+  const uploadImageReq = productVM.getUploadImageReq();
 
   const productToDelete = productVM.getProductToDelete();
   const productToDeleteRequest = productVM.getProductToDeleteRequest();
 
   const errorMsg = productVM.getErrorMsg();
+  const errorFormMsg = productVM.getErrorFormMsg();
+  const errorUploadImage = productVM.getErrorUploadImage();
+
+  let files: FileList;
+  let showForm = false;
+  let showDelForm = false;
 
   onMount(() => {
     productVM.onInit();
   });
+
+  productOnForm.subscribe((prod) => {
+    setTimeout(() => {
+      showForm = prod != null;
+    }, 10);
+  });
+
+  productToDelete.subscribe((toDel) => {
+    setTimeout(() => {
+      showDelForm = toDel != null;
+    }, 10);
+  });
+
+  let imgPreview;
+  let imgPreviewImage = null;
+  function previewImage() {
+    const fileReader = new FileReader();
+    if (files[0] != undefined) {
+      fileReader.readAsDataURL(files[0]);
+      fileReader.addEventListener("load", function () {
+        imgPreview.src = this.result;
+        imgPreviewImage = this.result;
+      });
+    } else {
+      imgPreview.src = "favicon.ico";
+    }
+  }
 </script>
 
 <section>
@@ -30,7 +67,7 @@
   <main>
     <div id="table-products-content" class="p-8">
       {#if $errorMsg != null}
-        <div class="flex justify-center">
+        <div>
           <div class="alert alert-warning max-w-xs">
             {$errorMsg}
           </div>
@@ -38,23 +75,24 @@
       {/if}
 
       <button
-        class="btn btn btn-success"
+        class="btn btn-sm btn-success mb-4"
         on:click={() => {
           productVM.onClickAdd();
         }}
       >
-        <div class="icon"><FaPlus /></div>
-        Add Product
+        <div class="icon-btn"><FaPlus /></div>
+        Add
       </button>
       <table class="table m-auto table-compact table-zebra">
         <thead>
+          <th>Image</th>
           <th>Name</th>
           <th>Price</th>
           <th>Actions</th>
         </thead>
         <tbody>
           {#await $productsRequest}
-            Loading
+            <button class="btn btn-circle loading btn-disabled" />
           {:then _}
             {#if $products != null}
               {#if $products.length <= 0}
@@ -64,6 +102,29 @@
               {/if}
               {#each $products as product, k}
                 <tr>
+                  <td>
+                    <a
+                      href={prodImg +
+                        product.image?.idProduct +
+                        "?updateAt=" +
+                        product.image?.updateAt}
+                      rel="noopener noreferrer"
+                      target="_blank"
+                    >
+                      <img
+                        src={product.image != null
+                          ? prodImg +
+                            product.image?.idProduct +
+                            "?updateAt=" +
+                            product.image?.updateAt
+                          : "favicon.ico"}
+                        height="50"
+                        width="50"
+                        alt="icon"
+                        loading="lazy"
+                      />
+                    </a>
+                  </td>
                   <td>{product.name}</td>
                   <td>{product.price}</td>
                   <td class="flex justify-center">
@@ -87,9 +148,39 @@
     </div>
 
     {#if $productOnForm != null}
-      <div class="modal modal-open">
+      <div class="modal" class:modal-open={showForm}>
         <div class="modal-box">
-          <h3>Add Product</h3>
+          <h3>{$productOnForm.id == null ? "Add" : "Update"} Product</h3>
+
+          <div class="modal-action">
+            {#await $productOnFormRequest}
+              <button class="btn loading btn-disabled">Loading</button>
+            {:then _}
+              {#if $productOnForm?.id == null}
+                <button
+                  on:click={() => {
+                    productVM.onSubmitAdd(files);
+                    imgPreviewImage = undefined;
+                    files = null;
+                  }}
+                  class="btn btn-success">Add</button
+                >
+              {:else}
+                <button
+                  on:click={() => {
+                    productVM.onConfirmEdit(files);
+                    imgPreviewImage = undefined;
+                    files = null;
+                  }}
+                  class="btn btn-info">Edit</button
+                >
+              {/if}
+            {/await}
+            <button on:click={() => productVM.closeProductForm()} class="btn"
+              >Close</button
+            >
+          </div>
+
           <div id="product-form">
             <div class="form-control">
               <label class="label" for="name">
@@ -120,17 +211,50 @@
                 <span class="label-text">Image</span>
               </label>
               <div class="relative">
-                <button class="absolute top-0 left-0 rounded-r-none btn">
-                  <div class="icon"><FaImage /></div>
+                <button
+                  class="absolute top-0 left-0 rounded-r-none btn disabled"
+                  class:loading={$uploadImageReq != null}
+                >
+                  {#if $uploadImageReq == null}
+                    <div class="icon"><FaImage /></div>
+                  {/if}
                 </button>
+
                 <input
-                  bind:value={$productOnForm.image}
                   id="image"
-                  type="text"
-                  disabled
+                  type="file"
+                  accept="image/png, image/jpeg"
+                  bind:files
+                  on:change={previewImage}
                   class="w-full pr-16 input input-bordered pl-[75px]"
                 />
               </div>
+
+              <div class="flex justify-center pt-3">
+                <img
+                  src={$productOnForm.image != null && imgPreviewImage == null
+                    ? prodImg +
+                      $productOnForm.image.idProduct +
+                      "?updateAt=" +
+                      $productOnForm.image.updateAt
+                    : imgPreviewImage != null
+                    ? imgPreviewImage
+                    : "favicon.ico"}
+                  height="200px"
+                  width="200px"
+                  bind:this={imgPreview}
+                  alt="icon"
+                  loading="lazy"
+                />
+              </div>
+
+              {#if $errorUploadImage != null}
+                <label class="label" for="image">
+                  <span class="label-text-alt text-error"
+                    >{$errorUploadImage}</span
+                  >
+                </label>
+              {/if}
             </div>
 
             <div class="form-control">
@@ -145,41 +269,26 @@
             </div>
           </div>
 
-          <div class="modal-action">
-            {#await $productOnFormRequest}
-              Loading...
-            {:then addStatus}
-              {#if addStatus == null}
-                {#if $productOnForm.id == null}
-                  <button
-                    on:click={() => productVM.onSubmitAdd()}
-                    class="btn btn-success">Add</button
-                  >
-                {:else}
-                  <button
-                    on:click={() => productVM.onConfirmEdit()}
-                    class="btn btn-info">Edit</button
-                  >
-                {/if}
-              {/if}
-            {/await}
-            <button on:click={() => productVM.closeProductForm()} class="btn"
-              >Close</button
-            >
-          </div>
+          {#if $errorFormMsg != null}
+            <div>
+              <div class="alert alert-warning max-w-xs">
+                {$errorFormMsg}
+              </div>
+            </div>
+          {/if}
         </div>
       </div>
     {/if}
 
     {#if $productToDelete != null}
-      <div class="modal modal-open">
+      <div class="modal" class:modal-open={showDelForm}>
         <div class="modal-box">
           Are you sure you want to delete the product <b
             >{$productToDelete.name}</b
           >?
           <div class="modal-action">
             {#await $productToDeleteRequest}
-              Loading...
+              <button class="btn loading btn-disabled">Loading</button>
             {:then deleteStatus}
               {#if deleteStatus == null}
                 <button
@@ -205,6 +314,14 @@
     height: 22px;
     margin: 10px;
   }
+
+  .icon-btn {
+    cursor: pointer;
+    width: 15px;
+    height: 15px;
+    margin: 5px;
+  }
+
   .icon:hover {
     color: rgb(85, 85, 248);
   }

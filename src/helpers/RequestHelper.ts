@@ -1,4 +1,5 @@
 import ErrorModel from "../error/ErrorModel";
+import { Consts } from "../Constants";
 
 export enum HttpMethod {
   POST="POST",
@@ -11,33 +12,49 @@ interface ICast<E> {
   (resp: Response): Promise<E>;
 }
 
+/*
+const sleep = (milliseconds) => {
+  return new Promise(resolve => setTimeout(resolve, milliseconds))
+}
+*/
+
 export default class RequestHelper<E> {
   public method:HttpMethod;
   public url:string;
   public token:string = null;
+  public headers:Map<string, string> = null;
   public data:any = null;
   public cast:ICast<E>;
 
-  private static readonly _HOST = "http://localhost:8081"
   public static readonly LOGIN_REQUIRED = new ErrorModel(401, "Login required");
   public static readonly USR_UNAUTH = new ErrorModel(403, "User Unauthorized");
 
   public async doRequest():Promise<E> {
+    this.url = Consts.HOST + this.url;
+
     const myHeaders = new Headers();
     if (this.token != null) {
       myHeaders.append('Token', this.token);
     }
 
+    if(this.data instanceof FileList) {
+      const payload = new FormData();
+      payload.append('file', this.data[0]);
+      
+      this.data = payload;
+    } else {
+      this.data = (this.data != null) ? JSON.stringify(this.data) : null;
+    }
+
     const options:RequestInit = {
       method: this.method,
       headers: myHeaders,
-      body: (this.data != null) ? JSON.stringify(this.data) : null
+      body: this.data
     };
-
-    this.url = RequestHelper._HOST + this.url;
 
     let resp:Response = null
     try {
+      //await sleep(1000)
       resp = await fetch(this.url, options)
     } catch(err) {
       console.warn(err);
