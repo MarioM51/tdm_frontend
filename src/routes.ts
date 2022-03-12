@@ -10,6 +10,8 @@ import AuthViewModel from "./auth/04_viewModel/auth/AuthViewModel";
 import Home from "./home/05_view/Home.svelte";
 import AuthPage from "./auth/05_view/AuthPage.svelte"
 import NotFound from "./error/05_view/NotFound.svelte"
+import AddBlogPage from "./blog/BlogFormPage.svelte"
+import BlogAdminPage from "./blog/BlogAdminPage.svelte"
 
 const auth: IAuthViewModel = AuthViewModel.getInstance();
 
@@ -58,6 +60,9 @@ const routes = {
       },
     ],
   }),
+
+  "/blogs": BlogAdminPage,
+  "/blog-form/:id": AddBlogPage,
 
   // Catch-all
   // This is optional, but if present it must be the last

@@ -14,7 +14,7 @@ export default class ErrorModel {
     if(err instanceof ErrorModel) {
       if(err.status == 401) {
         authMV.logout();
-      } else if(err.status == 403) {
+      } else if(err.status >= 400 && err.status <= 499) {
         errorMsg.set(err.cause)
       } else {
         errorMsg.set(genericMsgError + ": " + err.cause)
