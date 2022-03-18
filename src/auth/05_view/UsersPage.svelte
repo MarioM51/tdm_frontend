@@ -42,7 +42,7 @@
       Cargando...
     {:then _}
       {#if $usersTable != null}
-        <table class="table w-full table-zebra max-w-lg ">
+        <table class="table w-full table-zebra max-w-lg ml-[120px] sm:ml-0">
           <thead>
             <tr>
               <th>ID</th>
@@ -54,7 +54,7 @@
           <tbody>
             {#each $usersTable as u, i (u.id)}
               <tr>
-                <th>{i}</th>
+                <th>{u.id}</th>
                 <td>{u.email}</td>
                 <td>
                   {#each u.rols as r}

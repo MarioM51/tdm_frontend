@@ -10,8 +10,6 @@ import AuthViewModel from "./auth/04_viewModel/auth/AuthViewModel";
 import Home from "./home/05_view/Home.svelte";
 import AuthPage from "./auth/05_view/AuthPage.svelte"
 import NotFound from "./error/05_view/NotFound.svelte"
-import AddBlogPage from "./blog/BlogFormPage.svelte"
-import BlogAdminPage from "./blog/BlogAdminPage.svelte"
 
 const auth: IAuthViewModel = AuthViewModel.getInstance();
 
@@ -32,10 +30,8 @@ const routes = {
         const session = get(auth.getSession());
         
         const isAuth = session != null;
-        if (isAuth) {
-          console.log("Open /users");
-        } else {
-          console.log("Denied /users");
+        if (!isAuth) {
+          console.log("Permise denied /users");
           replace("/auth");
         }
         return isAuth;
@@ -55,14 +51,44 @@ const routes = {
           console.log("Denied /products");
           replace("/");
         }
-        console.log("Open /products");
         return isAuth;
       },
     ],
   }),
 
-  "/blogs": BlogAdminPage,
-  "/blog-form/:id": AddBlogPage,
+  "/blogs": wrap({
+    // Use a dynamically-loaded component for this
+    asyncComponent: () => import("./blog/BlogAdminPage.svelte"),
+    // Adding one pre-condition that's an async function
+    conditions: [
+      async (_) => {
+        const session = get(auth.getSession());
+        const isAuth = session != null && session.hasRols(["admin", "blogs"]);
+        if (!isAuth) {
+          console.log("Permision denied /blogs");
+          replace("/");
+        }
+        return isAuth;
+      },
+    ],
+  }),
+  
+  "/blog-form/:id": wrap({
+    // Use a dynamically-loaded component for this
+    asyncComponent: () => import("./blog/BlogFormPage.svelte"),
+    // Adding one pre-condition that's an async function
+    conditions: [
+      async (_) => {
+        const session = get(auth.getSession());
+        const isAuth = session != null && session.hasRols(["admin", "blogs"]);
+        if (!isAuth) {
+          console.log("Permision denied /blog-form");
+          replace("/");
+        }
+        return isAuth;
+      },
+    ],
+  }),
 
   // Catch-all
   // This is optional, but if present it must be the last

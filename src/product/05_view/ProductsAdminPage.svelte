@@ -65,7 +65,7 @@
 <section>
   <h2>Productos</h2>
   <main>
-    <div id="table-products-content" class="p-8">
+    <div id="table-products-content">
       {#if $errorMsg != null}
         <div>
           <div class="alert alert-warning max-w-xs">
@@ -83,68 +83,73 @@
         <div class="icon-btn"><FaPlus /></div>
         Add
       </button>
-      <table class="table m-auto table-compact table-zebra">
-        <thead>
-          <th>Image</th>
-          <th>Name</th>
-          <th>Price</th>
-          <th>Actions</th>
-        </thead>
-        <tbody>
-          {#await $productsRequest}
-            <button class="btn btn-circle loading btn-disabled" />
-          {:then _}
-            {#if $products != null}
-              {#if $products.length <= 0}
-                <tr>
-                  <td colspan="3">No Products</td>
-                </tr>
-              {/if}
-              {#each $products as product, k}
-                <tr>
-                  <td>
-                    <a
-                      href={prodImg +
-                        product.image?.idProduct +
-                        "?updateAt=" +
-                        product.image?.updateAt}
-                      rel="noopener noreferrer"
-                      target="_blank"
-                    >
-                      <img
-                        src={product.image != null
-                          ? prodImg +
-                            product.image?.idProduct +
-                            "?updateAt=" +
-                            product.image?.updateAt
-                          : "favicon.ico"}
-                        height="50"
-                        width="50"
-                        alt="icon"
-                        loading="lazy"
-                      />
-                    </a>
-                  </td>
-                  <td>{product.name}</td>
-                  <td>{product.price}</td>
-                  <td class="flex justify-center">
-                    <div class="icon" on:click={() => productVM.onClickEdit(k)}>
-                      <FaEdit />
-                    </div>
+      <div class="overflow-x-auto flex justify-center">
+        <table class="table m-auto table-compact table-zebra">
+          <thead>
+            <th>Image</th>
+            <th>Name</th>
+            <th>Price</th>
+            <th>Actions</th>
+          </thead>
+          <tbody>
+            {#await $productsRequest}
+              <button class="btn btn-circle loading btn-disabled" />
+            {:then _}
+              {#if $products != null}
+                {#if $products.length <= 0}
+                  <tr>
+                    <td colspan="3">No Products</td>
+                  </tr>
+                {/if}
+                {#each $products as product, k}
+                  <tr>
+                    <td>
+                      <a
+                        href={prodImg +
+                          product.image?.idProduct +
+                          "?updateAt=" +
+                          product.image?.updateAt}
+                        rel="noopener noreferrer"
+                        target="_blank"
+                      >
+                        <img
+                          src={product.image != null
+                            ? prodImg +
+                              product.image?.idProduct +
+                              "?updateAt=" +
+                              product.image?.updateAt
+                            : "favicon.ico"}
+                          height="50"
+                          width="50"
+                          alt="icon"
+                          loading="lazy"
+                        />
+                      </a>
+                    </td>
+                    <td>{product.name}</td>
+                    <td>{product.price}</td>
+                    <td class="flex justify-center">
+                      <div
+                        class="icon"
+                        on:click={() => productVM.onClickEdit(k)}
+                      >
+                        <FaEdit />
+                      </div>
 
-                    <div
-                      class="icon icon-del"
-                      on:click={() => productVM.onClickRemove(k)}
-                    >
-                      <FaRegTrashAlt />
-                    </div>
-                  </td>
-                </tr>
-              {/each}
-            {/if}
-          {/await}
-        </tbody>
-      </table>
+                      <div
+                        class="icon icon-del"
+                        on:click={() => productVM.onClickRemove(k)}
+                      >
+                        <FaRegTrashAlt />
+                      </div>
+                    </td>
+                  </tr>
+                {/each}
+              {/if}
+            {/await}
+          </tbody>
+        </table>
+      </div>
     </div>
 
     {#if $productOnForm != null}

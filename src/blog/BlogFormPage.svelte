@@ -155,6 +155,7 @@
         src={$blogOnForm.thumbnail != null
           ? $blogOnForm.thumbnail
           : "favicon.ico"}
+        onerror="if (this.src != 'favicon.ico') this.src = 'favicon.ico';"
         width="270px"
         alt="icon"
         loading="lazy"

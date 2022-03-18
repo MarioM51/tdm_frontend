@@ -65,6 +65,7 @@
                       src={b.thumbnail == null ? "favicon.ico" : b.thumbnail}
                       width="50px"
                       height="25px"
+                      onerror="if (this.src != 'favicon.ico') this.src = 'favicon.ico';"
                       alt="something"
                     /></td
                   >

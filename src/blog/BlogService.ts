@@ -1,5 +1,8 @@
-import ErrorModel from "../error/ErrorModel";
+import type { IBlogRepository } from "./BlogRepository";
 import type { BlogModel } from "./blog_models";
+
+import ErrorModel from "../error/ErrorModel";
+import { BlogRepository } from "./BlogRepository";
 
 export default interface IBlogService {
 
@@ -19,9 +22,7 @@ export class BlogService implements IBlogService {
 
   private static instance:IBlogService = null;
 
-  private readonly allBlogs:BlogModel[] = [
-  
-  ]
+  private readonly _blogRepo:IBlogRepository = BlogRepository.getInstance();
 
   private constructor() { }
 
@@ -34,97 +35,33 @@ export class BlogService implements IBlogService {
 
 
   public async findAll():Promise<BlogModel[]> {
-    
-    const blogsReq = await new Promise<BlogModel[]>((resolve, reject) => {
-      
-      setTimeout(()=>{
-        resolve(this.allBlogs);
-      }, 1000);
-      
-      setTimeout(()=>{
-        reject(new ErrorModel(400, "Erro test"));
-      },1100);
+    const blogs = await this._blogRepo.findAll();
 
-    });
-
-    return blogsReq;
+    return blogs;
   }
 
   public async findById(id: number): Promise<BlogModel> {
-    const blogsReq = await new Promise<BlogModel>((resolve, reject) => {
-      
-      setTimeout(()=>{
-        const blogFinded = this.allBlogs.find(b => b.id == id);
-        let clonedObject = Object.assign({}, blogFinded);
-        resolve(clonedObject);
-      }, 1000);
-      
-      setTimeout(()=>{
-        reject(new ErrorModel(400, "Erro test"));
-      },1100);
+    const finded = await this._blogRepo.findById(id);
 
-    });
-
-    return blogsReq;
+    return finded;
   }
 
   public async save(newBlog: BlogModel): Promise<BlogModel> {
+    const saved = await this._blogRepo.save(newBlog);
 
-    const addReq = await new Promise<BlogModel>((resolve, reject) => {
-      
-      setTimeout(()=>{
-        this.allBlogs.push(newBlog)
-        newBlog.id = this.allBlogs.length + 1;
-        resolve(newBlog);
-      }, 1000);
-      
-      setTimeout(()=>{
-        reject(new ErrorModel(400, "Erro test"));
-      },1100);
-
-    });
-
-    return addReq;
+    return saved;
   }
 
   public async edit(newInfo: BlogModel): Promise<BlogModel> {
-    const editReq = await new Promise<BlogModel>((resolve, reject) => {
-      
-      setTimeout(()=>{
-        
-        const i = this.allBlogs.findIndex(b => b.id == newInfo.id)
-        this.allBlogs[i] = newInfo;
+    const edited = await this._blogRepo.edit(newInfo);
 
-        resolve(this.allBlogs[i]);
-      }, 1000);
-      
-      setTimeout(()=>{
-        reject(new ErrorModel(400, "Erro test"));
-      },1100);
-
-    });
-
-    return editReq;
+    return edited;
   }
 
   public async deletePost(toDel: BlogModel): Promise<BlogModel> {
-    const editReq = await new Promise<BlogModel>((resolve, reject) => {
-      
-      setTimeout(()=>{
-        
-        const i = this.allBlogs.findIndex(b => b.id == toDel.id)
-        this.allBlogs.splice(i, 1);
+    const deleted = await this._blogRepo.deletePost(toDel);
 
-        resolve(toDel);
-      }, 1000);
-      
-      setTimeout(()=>{
-        reject(new ErrorModel(400, "Erro test"));
-      },1100);
-
-    });
-
-    return editReq;
+    return deleted;
   }
 
 }

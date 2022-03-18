@@ -58,7 +58,6 @@ export class BlogFormViewModel implements IBlogFormViewModel {
   }
 
   public onDestroy():void {
-    console.log("onDestroy: BlogFormViewModel");
     this._blogOnFormReq.set(null);
     this._blogOnForm.set(new BlogModel(0,"","",null,"",null,null));
     this._errorBlogMsg.set(null);
