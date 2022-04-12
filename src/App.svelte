@@ -8,6 +8,10 @@
   let session = authMV.getSession();
 </script>
 
+<svelte:head>
+  <base href="/admin">
+</svelte:head>
+
 <main>
   <!-- Hide-Left-Drawer-Menu -->
   <div class="h-screen drawer w-full rounded">
