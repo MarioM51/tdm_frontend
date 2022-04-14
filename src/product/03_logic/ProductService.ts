@@ -28,8 +28,4 @@ export default class ProductService implements IProductService {
     return this._productsApi.addFile(idProduct, images);
   }
 
-  public updateImage(idProduct: number, images: FileList): Promise<ProductImage> {
-    return this._productsApi.updateFile(idProduct, images);
-  }
-
 }

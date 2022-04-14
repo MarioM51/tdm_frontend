@@ -15,8 +15,8 @@ export default class ProductImage {
     const pi = new ProductImage();
     pi.idProduct = rawProduct.id_product;
     pi.name = rawProduct.name;
-    pi.type = rawProduct.type;
-    pi.updateAt = rawProduct.updateAt;
+    pi.type = rawProduct.mime_type;
+    pi.updateAt = rawProduct.updated_at;
 
     return pi
   }

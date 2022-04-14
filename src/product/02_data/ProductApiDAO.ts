@@ -1,7 +1,7 @@
 import RequestHelper, { HttpMethod } from "../../helpers/RequestHelper";
 import ProductModel from "../01_model/ProductModel";
 import AuthStoreDAO from "../../auth/02_data/AuthStoreDAO";
-import type ProductImage from "../01_model/ProductImage";
+import ProductImage from "../01_model/ProductImage";
 
 export default class ProductApiDAO {
 
@@ -80,26 +80,9 @@ export default class ProductApiDAO {
     r.token = this._userStore.getToken();
 
     r.cast = async (resp) => {
-      let product = await this.castProduct(resp)
-      return product.image
-    }
-
-    const imageAdded = r.doRequest();
-
-    return imageAdded
-  }
-
-  public updateFile(idProduct:number, images:FileList):Promise<ProductImage> {
-    const r = new RequestHelper<ProductImage>();
-    r.url = ProductApiDAO._API + "/" + idProduct + "/images";
-    r.method = HttpMethod.PUT;
-    r.data = images;
-    r.token = this._userStore.getToken();
-
-    r.cast = async (resp) => {
-      let product = await this.castProduct(resp)
-      return product.image
-    }
+      const img = await resp.json()
+      return ProductImage.fromJson(img);
+    };
 
     const imageAdded = r.doRequest();
 

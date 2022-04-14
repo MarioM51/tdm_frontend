@@ -148,7 +148,7 @@ export default class ProductViewModel implements IProductViewModel {
     editReq
       .then(pEdited => {
         if (image != null || image?.length >= 1) {
-          const uploadImageReq = this._productServ.updateImage(pEdited.id, image);
+          const uploadImageReq = this._productServ.addFile(pEdited.id, image);
           this._uploadImageReq.set(uploadImageReq);
 
           uploadImageReq

@@ -8,7 +8,8 @@
   import FaEdit from "svelte-icons/fa/FaEdit.svelte";
   import { Consts } from "../../Constants";
 
-  const prodImg = Consts.HOST + "/products/image/";
+  const prodImg = Consts.HOST + "/api/products/image/";
+  const IMAGE_404 = "/favicon.ico";
 
   const productVM: IProductViewModel = ProductViewModel.getInstance();
 
@@ -57,7 +58,7 @@
         imgPreviewImage = this.result;
       });
     } else {
-      imgPreview.src = "favicon.ico";
+      imgPreview.src = IMAGE_404;
     }
   }
 </script>
@@ -106,7 +107,7 @@
                     <td>
                       <a
                         href={prodImg +
-                          product.image?.idProduct +
+                          product.id +
                           "?updateAt=" +
                           product.image?.updateAt}
                         rel="noopener noreferrer"
@@ -115,10 +116,11 @@
                         <img
                           src={product.image != null
                             ? prodImg +
-                              product.image?.idProduct +
+                              product.id +
                               "?updateAt=" +
                               product.image?.updateAt
-                            : "favicon.ico"}
+                            : IMAGE_404}
+                          onerror="if (this.src != '{IMAGE_404}') this.src = '{IMAGE_404}';"
                           height="50"
                           width="50"
                           alt="icon"
@@ -239,14 +241,15 @@
                 <img
                   src={$productOnForm.image != null && imgPreviewImage == null
                     ? prodImg +
-                      $productOnForm.image.idProduct +
+                      $productOnForm.id +
                       "?updateAt=" +
                       $productOnForm.image.updateAt
                     : imgPreviewImage != null
                     ? imgPreviewImage
-                    : "favicon.ico"}
+                    : IMAGE_404}
                   height="200px"
                   width="200px"
+                  onerror="if (this.src != '{IMAGE_404}') this.src = '{IMAGE_404}';"
                   bind:this={imgPreview}
                   alt="icon"
                   loading="lazy"
