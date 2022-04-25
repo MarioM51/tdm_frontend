@@ -163,6 +163,9 @@ export default class ProductViewModel implements IProductViewModel {
             })
           ;
         } else {
+          //letting the image like it was
+          pEdited.image = get(this._productOnForm).image
+          pEdited.files = get(this._productOnForm).files
           this.productUpdateSuccess(pEdited);
         }
       //react to error edit response

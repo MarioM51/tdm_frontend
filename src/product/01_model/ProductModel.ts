@@ -27,5 +27,24 @@ export default class ProductModel {
     const users = rawProducts.map((rawP: any) => ProductModel.fromJson(rawP) )
     return users
   }
+
+  public static fromArrayJsonLDInDocument(): ProductModel[] {
+    const elm = JSON.parse((document.querySelector("#products_jsonld") as any).innerText)
+    const arrayJsonld = elm.itemListElement;
+    const products = arrayJsonld.map((rawProduct: any) => {
+      const product = new ProductModel();
+      product.id = rawProduct.identifier;
+      product.name = rawProduct.name;
+      product.price = rawProduct.offers.price;
+      product.description = rawProduct.description;
+
+      const img = new ProductImage();
+      img.updateAt = rawProduct.image_updated_at;
+      product.image = img;
+
+      return product;
+    });
+    return products
+  }
   
 }

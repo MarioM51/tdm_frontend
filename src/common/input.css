@@ -1,0 +1,13 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/*
+.drawer {
+  overflow: unset;
+}
+
+.drawer-toggle~.drawer-content {
+  overflow-y: unset;
+}
+*/

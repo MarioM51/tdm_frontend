@@ -34,7 +34,7 @@ function serve() {
 }
 */
 const input_path = 'src/web_components';
-const output_path = 'dist/web_components';
+const output_path = './../api/src/public/static/web_components';
 let entryPoints = readFiles()
 
 function readFiles() {
@@ -80,8 +80,8 @@ export default entryPoints.map((name, i) => {
         dedupe: ['svelte']
       }),
       commonjs(),
-      (!production && isLastFile), // && serve(),
-      (!production && isLastFile) && livereload('public'),
+      //(!production && isLastFile) && serve(),
+      //(!production && isLastFile) && livereload('public'),
       production  && terser(),
     ],
     watch: {

@@ -3,9 +3,12 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite",
     "build": "vite build",
     "wc_build": "rollup -c",
+    "wc_build_styles": "npx tailwindcss -c ./tailwind.config.cjs -i ./src/common/input.css -o ./../api/src/public/static/tailwin.css",
+    "dev": "vite",
+    "wc_dev": "rollup -c -w",
+    "wc_dev_styles": "npx tailwindcss -c ./tailwind.config.cjs -w -i ./src/common/input.css -o ./../api/src/public/static/tailwin.css",
     "preview": "vite preview",
     "check": "svelte-check --tsconfig ./tsconfig.json"
   },
@@ -13,7 +16,7 @@
     "@sveltejs/vite-plugin-svelte": "^1.0.0-next.30",
     "@tsconfig/svelte": "^2.0.1",
     "autoprefixer": "^10.4.2",
-    "daisyui": "^1.25.4",
+    "daisyui": "2.14.1",
     "postcss": "^8.4.5",
     "svelte": "^3.44.0",
     "svelte-check": "^2.2.7",

@@ -195,6 +195,8 @@
 </main>
 
 <style>
+  @import "../00_assets/quill.css";
+
   .editor {
     height: 300px;
   }
