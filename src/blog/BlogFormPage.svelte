@@ -7,8 +7,6 @@
 
   export let params: any = {};
 
-  const blogImg = Consts.HOST + "/products/image/";
-
   const toolbarOptions = [
     [
       { header: [1, 2, 3, 4, false] },
@@ -99,6 +97,12 @@
   }
 
   let isOpenDeleteModal: boolean = false;
+
+  function blockKeys(e: KeyboardEvent) {
+    if (e.keyCode == 13 && !e.shiftKey) {
+      e.preventDefault();
+    }
+  }
 </script>
 
 <main>
@@ -136,9 +140,31 @@
         <input
           type="text"
           bind:value={$blogOnForm.title}
-          class="input input-bordered input-md w-full"
+          class="input input-bordered input-md w-full text-primary-content"
           style="font-size: 1.6em;"
         />
+      </label>
+    </div>
+
+    <div class="form-control w-full mb-5">
+      <label class="input-group input-group-md " for="abstract">
+        <span>Abstract</span>
+        <textarea
+          id="abstract"
+          class="input input-bordered w-full h-min"
+          on:keydown={blockKeys}
+          maxlength="160"
+          bind:value={$blogOnForm.abstract}
+        />
+      </label>
+
+      <label class="label" for="abstract">
+        <span class="label-text-alt" />
+        <span class="label-text-alt"
+          >{$blogOnForm?.abstract != null
+            ? $blogOnForm.abstract.length
+            : 0}/160</span
+        >
       </label>
     </div>
 
@@ -154,12 +180,11 @@
       <img
         src={$blogOnForm.thumbnail != null
           ? $blogOnForm.thumbnail
-          : "favicon.ico"}
+          : $blogOnForm.buildImgURL()}
         onerror="if (this.src != 'favicon.ico') this.src = 'favicon.ico';"
-        width="270px"
         alt="icon"
         loading="lazy"
-        class="max-w-[150px]"
+        class="w-[270px] h-[150px]"
       />
     </div>
 
@@ -198,7 +223,7 @@
   @import "../00_assets/quill.css";
 
   .editor {
-    height: 300px;
+    height: 600px;
   }
 
   .mayon {

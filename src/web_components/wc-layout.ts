@@ -1,4 +1,4 @@
-import Layout from '../common/Layout.svelte'
+import Layout from '../common/Layout/Layout.svelte'
 import type { SvelteComponent } from 'svelte'
 
 customElements.define(
@@ -20,11 +20,7 @@ customElements.define(
 
       
       const oldContent = this._element.$$.root.querySelector('#layout-content-page');
-      console.log("oldContent", oldContent);
-
       const newContent = document.getElementById("content-page");
-      console.log("newContent", newContent);
-
       oldContent.replaceWith(newContent)
     }
     disconnectedCallback(): void {

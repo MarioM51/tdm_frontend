@@ -1,0 +1,35 @@
+<script lang="ts">
+  import ShoppingCar from "../../shopping_car/ShoppingCarIcon.svelte";
+  import UserLoggedMenu from "./UserLoggedMenu.svelte";
+
+  export let navUrls: Array<any>;
+</script>
+
+<div class="navbar bg-neutral text-neutral-content">
+  <label tabindex="0" for="my-drawer" class="btn btn-ghost btn-circle">
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      class="h-5 w-5"
+      fill="none"
+      viewBox="0 0 24 24"
+      stroke="currentColor"
+      ><path
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        stroke-width="2"
+        d="M4 6h16M4 12h16M4 18h7"
+      /></svg
+    >
+  </label>
+
+  <div class="flex-1">
+    <span class="btn btn-ghost normal-case text-xl">My Store</span>
+  </div>
+  <div class="flex-none">
+    {#each navUrls as nu}
+      <a class="btn btn-ghost" href={nu.url}>{nu.label}</a>
+    {/each}
+    <ShoppingCar />
+    <UserLoggedMenu />
+  </div>
+</div>

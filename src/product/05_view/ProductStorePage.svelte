@@ -14,14 +14,14 @@
 </script>
 
 <section class="page-container">
-  <h1 class="text-2xl font-bold underline">Products 3</h1>
+  <h1 class="text-2xl font-bold underline">Products</h1>
   {#if products.length <= 0}
     There is no products
   {/if}
 
   <div class="products">
     {#each products as p}
-      <div class="product card card-compact bg-base-200 shadow-xl">
+      <article class="product card card-compact bg-base-200 shadow-xl">
         <figure>
           <img
             loading="lazy"
@@ -40,7 +40,7 @@
             >
           </div>
         </div>
-      </div>
+      </article>
     {/each}
   </div>
 </section>
@@ -51,7 +51,7 @@
   .products {
     display: flex;
     flex-wrap: wrap; /* acomodamos los cursos auno al lado del otro y que caigan*/
-    justify-content: space-between;
+    justify-content: space-around;
     margin-top: 2rem;
   }
 
@@ -62,19 +62,19 @@
 
   @media only screen and (min-width: 530px) {
     .product {
-      flex: 0 1 calc(50% - 1rem);
+      flex: 0 1 calc(50% - 2rem);
     }
   }
 
   @media only screen and (min-width: 750px) {
     .product {
-      flex: 0 1 calc(33% - 1rem);
+      flex: 0 1 calc(33% - 2rem);
     }
   }
 
   @media only screen and (min-width: 1024px) {
     .product {
-      flex: 0 1 calc(25% - 1rem);
+      flex: 0 1 calc(25% - 2rem);
     }
   }
 </style>
