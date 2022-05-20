@@ -18,7 +18,7 @@ export interface IBlogRepository {
 
 export class BlogRepository implements IBlogRepository {
 
-  private static readonly _API = "/blogs";
+  public static readonly _API = "/blogs";
   
   private static _instance:IBlogRepository = null;
   private readonly _userStore = new AuthStoreDAO()

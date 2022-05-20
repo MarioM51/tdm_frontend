@@ -1,4 +1,6 @@
 <script lang="ts">
+  import Like from "../common/Like.svelte";
+
   import { BlogModel } from "./blog_models";
 
   const blogs = BlogModel.fromArrayJsonLDInDocument();
@@ -27,15 +29,16 @@
   <h1 class="text-2xl font-bold underline">Blogs</h1>
   <div class="blogs">
     {#each blogs as b}
-      <a href="/blogs/{string_to_slug(b.title) + '-' + b.id}">
-        <article class="card sm:card-side bg-base-300 shadow-lg mb-16">
-          <figure>
-            <img
-              class="w-[355.5px] h-[200px]"
-              src="/api/blogs/{b.id}/image?updateAt={b.updateAt}"
-              alt="Album"
-            />
-          </figure>
+      <article class="card sm:card-side bg-base-300 shadow-lg mb-16">
+        <figure>
+          <Like type="blogs" id={b.id} amount={b.likes} />
+          <img
+            class="w-[355.5px] h-[200px]"
+            src="/api/blogs/{b.id}/image?updateAt={b.updateAt}"
+            alt="Album"
+          />
+        </figure>
+        <a href="/blogs/{string_to_slug(b.title) + '-' + b.id}">
           <div class="card-body">
             <h2 class="card-title">{b.title}</h2>
 
@@ -45,8 +48,8 @@
               <span>Updated: <kbd class="kbd kbd-sm">{b.updateAt}</kbd></span>
             </div>
           </div>
-        </article>
-      </a>
+        </a>
+      </article>
     {/each}
   </div>
 </section>

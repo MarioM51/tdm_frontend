@@ -5,7 +5,7 @@ import ProductImage from "../01_model/ProductImage";
 
 export default class ProductApiDAO {
 
-  private static readonly _API = "/products";
+  public static readonly _API = "/products";
 
   private readonly _userStore = new AuthStoreDAO()
 

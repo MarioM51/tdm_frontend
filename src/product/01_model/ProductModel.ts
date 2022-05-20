@@ -8,6 +8,7 @@ export default class ProductModel {
     public price:number=null,
     public image:ProductImage=null,
     public description:string=null,
+    public likes:number=null,
     public files: FileList=null
   ){}
 
@@ -18,6 +19,7 @@ export default class ProductModel {
     p.name = rawProduct.name;
     p.price = rawProduct.price;
     p.description = rawProduct.description;
+    p.likes = rawProduct.likes;
     p.image = ProductImage.fromJson(rawProduct.image);
 
     return p
@@ -37,6 +39,7 @@ export default class ProductModel {
       product.name = rawProduct.name;
       product.price = rawProduct.offers.price;
       product.description = rawProduct.description;
+      product.likes = rawProduct.likes;
 
       const img = new ProductImage();
       img.updateAt = rawProduct.image_updated_at;

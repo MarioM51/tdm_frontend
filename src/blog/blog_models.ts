@@ -5,12 +5,13 @@ export class BlogModel {
   private static readonly URL_IMG = Consts.HOST + "/api/blogs";
 
   constructor(
-    public id:number=null,
+    public id:number=0,
     public title:string=null,
     public body:string=null,
     public abstract:string=null,
     public thumbnail:string=null,
     public author:string=null,
+    public likes:number=0,
     public createdAt:Date=null,
     public updateAt:Date=null,
   ){}
@@ -58,6 +59,10 @@ export class BlogModel {
     blog.abstract = rawBlog.abstract;
     blog.body = rawBlog.articleBody;
     blog.thumbnail = rawBlog.image;
+    blog.likes = rawBlog.likes;
+    if(blog.likes == null) {
+      blog.likes = 0;
+    }
     blog.author = rawBlog.author?.name;
     blog.updateAt = rawBlog.dateModified;
     blog.createdAt = rawBlog.datePublished;

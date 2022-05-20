@@ -2,12 +2,12 @@
 import svelte from 'rollup-plugin-svelte';
 import commonjs from '@rollup/plugin-commonjs';
 import resolve from '@rollup/plugin-node-resolve';
-import livereload from 'rollup-plugin-livereload';
 import { terser } from 'rollup-plugin-terser';
 import sveltePreprocess from 'svelte-preprocess';
 import typescript from '@rollup/plugin-typescript';
-import css from 'rollup-plugin-css-only';
 import { readdirSync } from 'fs';
+//import livereload from 'rollup-plugin-livereload';
+//import css from 'rollup-plugin-css-only';
 
 const production = !process.env.ROLLUP_WATCH;
 
@@ -34,7 +34,8 @@ function serve() {
 }
 */
 const input_path = 'src/web_components';
-const output_path = './../api/src/public/static/web_components';
+const output_path_dev = './../api/public/static/web_components';
+const output_path_deploy = './../dist/public/static/web_components';
 let entryPoints = readFiles()
 
 function readFiles() {
@@ -47,7 +48,13 @@ function readFiles() {
 export default entryPoints.map((name, i) => {
 
   entryPoints = readFiles();
-  let isLastFile = entryPoints.length-1 <= i;
+  //let isLastFile = entryPoints.length-1 <= i;
+  let outputDir;
+  if(process.env.BUILD == 'deploy') {
+    outputDir = output_path_deploy;
+  } else {
+    outputDir = output_path_dev;
+  }
   
   return {
     input: input_path + `/${name}.ts`,
@@ -55,7 +62,7 @@ export default entryPoints.map((name, i) => {
       sourcemap: !production,
       format: 'iife',
       name: 'app',
-      file: output_path + `/${name}.js`
+      file: outputDir + `/${name}.js`
     },
     plugins: [
       typescript({

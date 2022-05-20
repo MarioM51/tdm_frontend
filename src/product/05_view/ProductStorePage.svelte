@@ -1,5 +1,6 @@
 <script lang="ts">
-  import Constants from "src/common/Constants";
+  import Constants from "../../common/Constants";
+  import Like from "../../common/Like.svelte";
 
   import ProductModel from "../01_model/ProductModel";
 
@@ -23,6 +24,7 @@
     {#each products as p}
       <article class="product card card-compact bg-base-200 shadow-xl">
         <figure>
+          <Like type="products" id={p.id} amount={p.likes} />
           <img
             loading="lazy"
             class="w-full"
