@@ -1,17 +1,22 @@
 <script lang="ts">
+  import Router from "svelte-spa-router";
   import TopNavbar from "./TopNavbar.svelte";
   import Footer from "./Footer.svelte";
   import { onMount } from "svelte";
   import SideNavbar from "./SideNavbar.svelte";
+  import routes from "./routes";
+  import Constants from "../Constants";
 
   const navUrls = [
     { label: "Products", url: "/products" },
     { label: "Blogs", url: "/blogs" },
+    { label: "Orders", url: "#/orders" },
   ];
 
   let drawerContent: HTMLElement;
   let navbar: HTMLElement;
   let isDrawerSideOpen: boolean = false;
+
   /*
   let prevScrollpos: number;
 
@@ -33,7 +38,12 @@
   };
 */
 
-  function switchDS() {}
+  let hideSSR: boolean = false;
+
+  window.addEventListener(Constants.CSR_MODE, (e: any) => {
+    console.log("detected:", e.detail);
+    hideSSR = e.detail === true;
+  });
 </script>
 
 <div class="drawer">
@@ -49,7 +59,13 @@
       <TopNavbar {navUrls} />
     </div>
     <div class="page-container">
-      <div id="layout-content-page">Default content</div>
+      <Router {routes} />
+
+      {#if !hideSSR}
+        <div>
+          <div id="layout-content-page">Default content</div>
+        </div>
+      {/if}
     </div>
     <Footer />
   </div>

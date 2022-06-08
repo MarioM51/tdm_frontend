@@ -1,9 +1,11 @@
+import OrdersViewModel from "../orders/OrdersViewModel";
 import type BillLine from "./BillLine";
 import ShoppingCarRepo from "./ShoppingCarRepo";
 
 export default class ShoppingCarService {
 
   private storage:ShoppingCarRepo = new ShoppingCarRepo();
+  private ordersVM:OrdersViewModel = OrdersViewModel.getInstance();
 
   constructor(
     public lines:BillLine[]= [],
@@ -56,6 +58,12 @@ export default class ShoppingCarService {
     })
 
     return total;
+  }
+
+  public addBillToOrder():void {
+    this.ordersVM.addOrder(this.lines);
+    this.lines = [];
+    this.storage.clean();
   }
 
 }

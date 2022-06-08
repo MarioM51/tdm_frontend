@@ -104,7 +104,12 @@
               <p class="font-bold text-2xl">${$bill.total}.00</p>
             </div>
             <div class="card-actions justify-end mt-4">
-              <button class="btn btn-primary">Start payment</button>
+              <button
+                class="btn btn-primary"
+                on:click={() => {
+                  shoppingCar.addToOrders();
+                }}>Confirm</button
+              >
             </div>
           </div>
         {:else}

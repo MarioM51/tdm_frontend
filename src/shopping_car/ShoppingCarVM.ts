@@ -3,12 +3,13 @@ import { writable } from "svelte/store";
 import Constants from "../common/Constants";
 import BillLine from "./BillLine";
 import ShoppingCarService from "./ShoppingCarService";
+import { push } from 'svelte-spa-router'
 
 export default class ShoppingCarVM {
 
   private readonly shCServ: Writable<ShoppingCarService> = writable(new ShoppingCarService());
 
-  private constructor() {
+  constructor() {
 
   }
 
@@ -46,4 +47,20 @@ export default class ShoppingCarVM {
   public getBill(): Readable<ShoppingCarService> {
     return this.shCServ;
   }
+
+  public addToOrders(): void {
+    this.shCServ.update((b) => {
+      b.addBillToOrder();
+      push("/orders")
+      return b;
+    });
+  }
+
+  public setBill(lines:BillLine[]):void {
+    this.shCServ.update((b) => {
+      b.lines = lines;
+      return b;
+    });
+  }
+
 }
