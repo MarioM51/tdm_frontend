@@ -1,6 +1,13 @@
 <script type="ts">
-  export let isDrawerSideOpen: boolean;
+  import type { Writable } from "svelte/store";
+
+  export let isOpen: Writable<boolean>;
   export let navUrls: Array<any>;
+
+  function switchMenu() {
+    console.log("aa");
+    isOpen.set(!$isOpen);
+  }
 </script>
 
 <div class="drawer-side">
@@ -10,10 +17,7 @@
   >
     <!-- Sidebar content here -->
     <li>
-      <div
-        class="flex justify-end"
-        on:click={() => (isDrawerSideOpen = !isDrawerSideOpen)}
-      >
+      <div class="flex justify-end" on:click={() => switchMenu()}>
         <svg
           class="fill-current"
           xmlns="http://www.w3.org/2000/svg"
@@ -27,7 +31,9 @@
       </div>
     </li>
     {#each navUrls as nu}
-      <li><a href={nu.url}>{nu.label}</a></li>
+      <li>
+        <a href={nu.url} on:click={() => switchMenu()}>{nu.label}</a>
+      </li>
     {/each}
   </ul>
 </div>

@@ -18,7 +18,7 @@ const routes = {
   "/": Home,
 
   // Using named parameters, with last being optional
-  "/auth": AuthPage,
+  "/login": AuthPage,
 
   // Wildcard parameter
   "/users": wrap({
@@ -83,6 +83,23 @@ const routes = {
         const isAuth = session != null && session.hasRols(["admin", "blogs"]);
         if (!isAuth) {
           console.log("Permision denied /blog-form");
+          replace("/");
+        }
+        return isAuth;
+      },
+    ],
+  }),
+
+  "/orders": wrap({
+    // Use a dynamically-loaded component for this
+    asyncComponent: () => import("./orders/OrdersAdmin.svelte"),
+    // Adding one pre-condition that's an async function
+    conditions: [
+      async (_) => {
+        const session = get(auth.getSession());
+        const isAuth = session != null && session.hasRols(["admin"]);
+        if (!isAuth) {
+          console.warn("Permision denied /orders");
           replace("/");
         }
         return isAuth;

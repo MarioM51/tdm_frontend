@@ -1,4 +1,4 @@
-import OrdersViewModel from "../orders/OrdersViewModel";
+import OrdersViewModel from "../orders/OrdersClientViewModel";
 import type BillLine from "./BillLine";
 import ShoppingCarRepo from "./ShoppingCarRepo";
 

@@ -80,4 +80,9 @@ export default class AuthService implements IAuthService {
     return requestEdit
   }
 
+  public async fetchUserDetails(idUser: number): Promise<UserModel> {
+    const userDetails:UserModel = await this.authApi.fetchUserDetails(idUser);
+    return userDetails
+  }
+
 }

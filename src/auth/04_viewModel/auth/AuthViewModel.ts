@@ -9,6 +9,7 @@ import AuthService from '../../03_logic/AuthService';
 import UserModel from '../../01_model/UserModel';
 import type IAuthService from '../../03_logic/IAuthService';
 import ErrorModel from '../../../error/ErrorModel';
+import OrderService from 'src/orders/OrdersService';
 
 
 export default class AuthViewModel implements IAuthViewModel {
@@ -91,29 +92,31 @@ export default class AuthViewModel implements IAuthViewModel {
   }
 
   private onRegister():void {
+    const userToR = get(this.userToRegister)
+    
     //validate user data
-    let errorValidation = get(this.userToRegister).validate();
+    let errorValidation = userToR.validate();
     if(errorValidation != "") {
       this.errorMessage.set(errorValidation);
       return
     }
 
     // validate password
-    errorValidation = get(this.userToRegister).validatePassword();
+    errorValidation = userToR.validatePassword();
     this.errorMessage.set(errorValidation);
     if(errorValidation != "") {
       return ;
     }
     
     //validate password confirm
-    errorValidation = get(this.userToRegister).isMatchPasswords();
+    errorValidation = userToR.isMatchPasswords();
     if(errorValidation != "") {
       this.errorMessage.set(errorValidation);
       return
     }
     
     //request
-    const registerReqest = this.authService.register(get(this.userToRegister))
+    const registerReqest = this.authService.register(userToR)
     this.requestUser.set(registerReqest)
     registerReqest
       .then(_ => {
@@ -128,7 +131,9 @@ export default class AuthViewModel implements IAuthViewModel {
   public logout(): void {
     this.authService.cleanSession();
     this.session.set(null)
-    push('/auth')
+    const ordersSrv = new OrderService()
+    ordersSrv.deleteAllOrdersInBrowser();
+    push('/login')
   }
 
   public getSession():Readable<UserModel> {

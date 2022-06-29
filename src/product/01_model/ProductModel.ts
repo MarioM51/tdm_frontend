@@ -13,15 +13,9 @@ export default class ProductModel {
   ){}
 
   public static fromJson(rawProduct: any): ProductModel {
-    
     const p = new ProductModel();
-    p.id = rawProduct.id;
-    p.name = rawProduct.name;
-    p.price = rawProduct.price;
-    p.description = rawProduct.description;
-    p.likes = rawProduct.likes;
+    Object.assign(p, rawProduct);
     p.image = ProductImage.fromJson(rawProduct.image);
-
     return p
   }
 

@@ -1,14 +1,15 @@
 <script lang="ts">
-  import OrdersViewModel from "./OrdersViewModel";
+  import ButtonAsyncAction from "../common/ButtonAsyncAction.svelte";
+
+  import OrdersViewModel from "./OrdersClientViewModel";
 
   const orderVM = OrdersViewModel.getInstance();
-  orderVM.fetchOrders();
+  orderVM.onInit();
 
   //observers
   const orders = orderVM.getOrders();
   const reqAdd = orderVM.getReqAdd();
   const reqAll = orderVM.getReqAll();
-  const reqDel = orderVM.getReqDel();
 </script>
 
 <div>
@@ -18,15 +19,6 @@
   {/await}
   {#await $reqAdd}
     <center>Adding...</center>
-  {/await}
-  {#await $reqDel}
-    <center>Deleting...</center>
-  {:then}
-    {#if $reqDel != null}
-      <center>Order Deleted</center>
-    {/if}
-  {:catch _}
-    <center>Error deleting order</center>
   {/await}
 
   {#if $orders.length <= 0}
@@ -40,7 +32,7 @@
           <h2 class="card-title text-white">
             Order ID: {order.id}
           </h2>
-          <table class="table w-full mb-2">
+          <table class="table w-full table-compact mb-2">
             <thead>
               <th>Name</th>
               <th>Add Up</th>
@@ -58,16 +50,35 @@
             <div class="text-2xl text-white">
               Total: ${order.totalSum()}
             </div>
-            <div>
-              <button class="btn btn-success">Confirm</button>
-              <button
-                class="btn btn-error"
-                on:click={() => {
-                  orderVM.delete(order.id);
-                }}>Cancel</button
-              >
+            <div class="flex justify-end w-52">
+              {#if order.confirmed_at == null}
+                <ButtonAsyncAction
+                  obs={order.confirmPromise}
+                  label="Confirm"
+                  onAct={() => orderVM.confirm(order.id)}
+                  clases="btn btn-success mr-3"
+                />
+              {/if}
+
+              {#if order.accepted_at == null}
+                <ButtonAsyncAction
+                  obs={order.deletePromise}
+                  label="Cancel"
+                  onAct={() => orderVM.delete(order.id)}
+                  clases="btn btn-error"
+                />
+              {/if}
             </div>
           </div>
+          {#if order.confirmed_at != null && order.accepted_at == null}
+            <p class="text-primary-content text-center">
+              Waiting to be accepted
+            </p>
+          {/if}
+
+          {#if order.accepted_at != null}
+            <p class="text-primary-content text-center">Order Accepted</p>
+          {/if}
         </div>
       </div>
       <hr />

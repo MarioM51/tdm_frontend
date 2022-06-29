@@ -19,4 +19,6 @@ export default interface IAuthService {
 
   edit(userToEdit: UserModel) : Promise<UserModel>
 
+  fetchUserDetails(idUser: number): Promise<UserModel>;
+
 }

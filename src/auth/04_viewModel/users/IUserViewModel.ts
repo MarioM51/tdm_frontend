@@ -13,6 +13,9 @@ export default interface IUserViewModel {
   onClickEdit(idUser:number):void
   onSubmitEdit(): void
   switchRole(rol:RolModel):void
+  
+  fetchUserDetails(idUser:number):void
+  editUserDetails():void;
 
   get usersTable():Readable<UserModel[]>
   get errorMsg():Readable<String>
@@ -23,5 +26,8 @@ export default interface IUserViewModel {
 
   getUserToDelete():Readable<UserModel>
   getUserRequestDelete():Readable<Promise<UserModel>>
+  
+  getUserDetails():Readable<UserModel>
+  getUserDetailsRequest():Readable<Promise<UserModel>>
 
 }

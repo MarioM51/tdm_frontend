@@ -21,6 +21,9 @@ export default class UserViewModel implements IUserViewModel {
   private _usersTable:Writable<UserModel[]> = writable([]);
   private _requestUsers:Writable<Promise<UserModel[]>> = writable(null);
 
+  private _userDetails:Writable<UserModel> = writable(null);
+  private _userDetailsRequest:Writable<Promise<UserModel>> = writable(null);
+
   private _userToEdit:Writable<UserModel> = writable(null);
   private _userRequestEdit:Writable<Promise<UserModel>> = writable(null);
 
@@ -93,7 +96,8 @@ export default class UserViewModel implements IUserViewModel {
 
     //react to request response
     editRequest
-      .then(_ => {
+      .then(edited => {
+        this._userDetails.set(edited)
         //add user's changes to users table
         this._usersTable.update(table => {
           table.forEach(user => {
@@ -141,6 +145,25 @@ export default class UserViewModel implements IUserViewModel {
     })
   }
 
+  public fetchUserDetails(idUser: number): void {
+    const userDetailsReq:Promise<UserModel> = this._authServ.fetchUserDetails(idUser)
+    this._userDetailsRequest.set(userDetailsReq);
+
+    userDetailsReq
+      .then((userDetails) => {
+        this._userDetails.set(userDetails)
+      })
+      .catch(err => {
+        ErrorModel.handleRequestErrors(err, this._errorMessage, this._authMV)
+      })
+    ;
+  }
+
+  public editUserDetails(): void {
+    this._userToEdit.set(get(this._userDetails));
+    this.onSubmitEdit();
+  }
+
   public get usersTable():Readable<UserModel[]> { return this._usersTable }
   public get requestUsers():Readable<Promise<UserModel[]>> { return this._requestUsers }
   public get errorMsg():Readable<String> { return this._errorMessage; }
@@ -148,5 +171,12 @@ export default class UserViewModel implements IUserViewModel {
   public getUserRequestEdit(): Readable<Promise<UserModel>> { return this._userRequestEdit; }
   public getUserToDelete(): Readable<UserModel> { return this._userToDelete }
   public getUserRequestDelete(): Readable<Promise<UserModel>> { return this._userRequestDelete }
+  
+  public getUserDetails(): Readable<UserModel> {
+    return this._userDetails;
+  }
+  public getUserDetailsRequest(): Readable<Promise<UserModel>> {
+    return this._userDetailsRequest;
+  }
   
 }

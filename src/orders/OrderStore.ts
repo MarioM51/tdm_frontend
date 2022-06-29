@@ -39,4 +39,8 @@ export default class OrdersStore {
     window.localStorage.setItem(OrdersStore.NAME, JSON.stringify(ordersFiltered));
   }
 
+  public deleteAll(): void {
+    window.localStorage.removeItem(OrdersStore.NAME)
+  }
+
 }

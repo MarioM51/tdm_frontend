@@ -7,6 +7,8 @@ export default class OrderModel {
     public idUser:number = 0,
     public products:BillLine[] = [],
     public created_at:Date = null,
+    public confirmed_at:Date = null,
+    public accepted_at:Date = null,
   ){}
 
 
@@ -22,9 +24,19 @@ export default class OrderModel {
     const o = new OrderModel();
 
     o.id = rawOrder.id;
-    o.idUser = rawOrder.idUser
-    o.products = BillLine.fromArrayJson(rawOrder.products)
-    o.created_at = rawOrder.created_at
+    o.idUser = rawOrder.idUser;
+    o.products = BillLine.fromArrayJson(rawOrder.products);
+    o.created_at = new Date(rawOrder.created_at);
+    
+    o.confirmed_at = new Date(rawOrder.confirmed_at);
+    if (o.confirmed_at.getFullYear() == 0) {
+      o.confirmed_at = null
+    }
+
+    o.accepted_at = new Date(rawOrder.accepted_at);
+    if (o.accepted_at.getFullYear() == 0) {
+      o.accepted_at = null
+    }
     
     return o
   }

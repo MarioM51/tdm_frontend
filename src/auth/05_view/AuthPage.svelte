@@ -1,15 +1,20 @@
 <script lang="ts">
+  import { querystring } from "svelte-spa-router";
   import MdWarning from "svelte-icons/md/MdWarning.svelte";
   import FaCheck from "svelte-icons/fa/FaCheck.svelte";
   import { AuthPanel } from "../04_viewModel/auth/AuthPanel";
   import type UserModel from "../01_model/UserModel";
   import type IAuthViewModel from "../04_viewModel/auth/IAuthViewModel";
   import AuthViewModel from "../04_viewModel/auth/AuthViewModel";
+  import FormUserAdditionalInfo from "./FormUserAdditionalInfo.svelte";
+  import RouteUtiles from "../../common/utils/RouteUtiles";
 
   let showingPanel: AuthPanel = AuthPanel.LOGIN;
   let userForm: UserModel = null;
   let errorMessage: string = "";
   let txtBtnForm: string;
+  let isOptionalsOpen: boolean = true;
+  const params = RouteUtiles.getParams($querystring);
 
   if (showingPanel == AuthPanel.LOGIN) {
     txtBtnForm = "Login";
@@ -45,6 +50,12 @@
 
 <section>
   <div class="auth-container">
+    {#if params.get("msg") == "session_expired"}
+      <p class="text-center mb-4">Session Expired</p>
+    {/if}
+    {#if params.get("msg") == "session_required"}
+      <p class="text-center mb-4">You need to have an account or be logged</p>
+    {/if}
     <div class="flex">
       <div class="card card-bordered mx-auto w-full sm:w-2/3 max-w-2xl">
         <div class="card-body bg-base-200 p-8">
@@ -98,6 +109,26 @@
                   class="input"
                   id="password-confirm"
                 />
+              </div>
+
+              <div
+                class="collapse bg-base-300 mt-4 {isOptionalsOpen
+                  ? 'collapse-open'
+                  : 'collapse-close'}"
+              >
+                <div
+                  on:click={() => {
+                    isOptionalsOpen = !isOptionalsOpen;
+                  }}
+                  class="collapse-title font-medium z-10 cursor-pointer"
+                >
+                  + Optionals
+                </div>
+                <input type="checkbox" />
+
+                <div class="collapse-content">
+                  <FormUserAdditionalInfo user={userForm} />
+                </div>
               </div>
             {/if}
           </div>

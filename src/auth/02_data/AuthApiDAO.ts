@@ -28,6 +28,7 @@ export default class AuthApiDAO {
   public async register(userToAdd: UserModel) : Promise<UserModel>{
     const request = new RequestHelper<UserModel>();
     request.method = HttpMethod.POST;
+    userToAdd.ensureData()
     request.data = userToAdd;
     request.url = AuthApiDAO.API;
     request.cast = async (resp)=>{
@@ -73,6 +74,7 @@ export default class AuthApiDAO {
     const request = new RequestHelper<UserModel>();
     request.method = HttpMethod.PUT;
     request.url = AuthApiDAO.API;
+    userToEdit.ensureData()
     request.data = userToEdit;
     request.cast = this.castUser
     request.token = this._authStore.getToken();
@@ -80,6 +82,18 @@ export default class AuthApiDAO {
     const userEdited = request.doRequest();
 
     return userEdited;
+  }
+
+  public async fetchUserDetails(idUser: number): Promise<UserModel> {
+    const request = new RequestHelper<UserModel>();
+    request.method = HttpMethod.GET;
+    request.url = AuthApiDAO.API + "/" + idUser;
+    request.cast = this.castUser
+    request.token = this._authStore.getToken();
+
+    const userDetails = await request.doRequest();
+
+    return userDetails;
   }
 
   private async castUser(resp:any):Promise<UserModel> {

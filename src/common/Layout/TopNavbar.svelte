@@ -26,10 +26,14 @@
     <span class="btn btn-ghost normal-case text-xl">My Store</span>
   </div>
   <div class="flex-none">
-    {#each navUrls as nu}
-      <a class="btn btn-ghost" href={nu.url}>{nu.label}</a>
-    {/each}
-    <ShoppingCar />
-    <UserLoggedMenu />
+    <span class="hidden sm:inline">
+      {#each navUrls as nu}
+        <a class="btn btn-ghost" href={nu.url}>{nu.label}</a>
+      {/each}
+    </span>
+    <span>
+      <UserLoggedMenu />
+      <ShoppingCar />
+    </span>
   </div>
 </div>

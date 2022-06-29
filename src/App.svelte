@@ -2,7 +2,12 @@
   import Router from "svelte-spa-router";
   import AuthViewModel from "./auth/04_viewModel/auth/AuthViewModel";
   import type IAuthViewModel from "./auth/04_viewModel/auth/IAuthViewModel";
+  import AppViewModel from "./AppViewModel";
+  import { ConfirmationState } from "./AppViewModel";
   import routes from "./routes";
+
+  const appVM = AppViewModel.getInstance();
+  const deleteConfirmation = appVM.getDeleteConfirmation();
 
   const authMV: IAuthViewModel = AuthViewModel.getInstance();
   let session = authMV.getSession();
@@ -47,6 +52,7 @@
             {#if $session != null}
               {#if $session.hasRols(["admin"])}
                 <a class="btn btn-ghost btn-sm" href="#/users">Users</a>
+                <a class="btn btn-ghost btn-sm" href="#/orders">Orders</a>
               {/if}
 
               {#if $session.hasRols(["admin", "products"])}
@@ -65,7 +71,7 @@
                 href="#/">Logout</a
               >
             {:else}
-              <a class="btn btn-ghost btn-sm" href="#/auth">Auth</a>
+              <a class="btn btn-ghost btn-sm" href="#/login">Auth</a>
             {/if}
           </div>
         </div>
@@ -109,6 +115,38 @@
           <li><a href="#/auth">Auth</a></li>
         {/if}
       </ul>
+    </div>
+  </div>
+
+  <div
+    class="modal modal-bottom sm:modal-middle"
+    class:modal-open={$deleteConfirmation.state == ConfirmationState.WAITING}
+  >
+    <div class="modal-box">
+      <button
+        class="btn btn-sm btn-circle absolute right-2 top-2"
+        on:click={() => {
+          appVM.confirmModalDelete(false);
+        }}>✕</button
+      >
+      <h3 class="font-bold text-lg">Eliminar</h3>
+      <p class="py-4">
+        {$deleteConfirmation.message}
+      </p>
+      <div class="modal-action">
+        <button
+          class="btn btn-error"
+          on:click={() => {
+            appVM.confirmModalDelete(true);
+          }}>Delete</button
+        >
+        <button
+          class="btn"
+          on:click={() => {
+            appVM.confirmModalDelete(false);
+          }}>Cancel</button
+        >
+      </div>
     </div>
   </div>
 </main>

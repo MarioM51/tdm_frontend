@@ -14,6 +14,10 @@ export default class BillLine {
   }
 
   public static fromJson(raw:any):BillLine {
+    if(raw == null) {
+      return null
+    }
+
     const bl = new BillLine();
     
     bl.idOrder = raw.idOrder;
@@ -26,6 +30,10 @@ export default class BillLine {
   }
 
   public static fromArrayJson(raw:any):BillLine[] {
+    if(raw == null) {
+      return null
+    }
+
     const users = raw.map((rawP: any) => BillLine.fromJson(rawP) )
     return users
   }
