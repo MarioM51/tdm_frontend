@@ -4,16 +4,23 @@ import type BillLine from "../shopping_car/BillLine";
 import OrderModelMV, { ActionType } from "./OrderModelMV";
 import OrdersAbstractViewModel from "./OrdersAbstractViewModel";
 import { push } from "svelte-spa-router";
+import type ShoppingCarService from "../shopping_car/ShoppingCarService";
+import ShoppingCarVM from "src/shopping_car/ShoppingCarVM";
 
 export default class OrdersViewModel extends OrdersAbstractViewModel {
   private static instance:OrdersViewModel = null;
 
-  private readonly errorMessage: Writable<string> = writable(null);
-  private readonly reqAdd: Writable<Promise<any>> = writable(null);
+  private readonly shoppingCarVM = null;
+
+  //ui elements
+  private readonly errorMessage: Writable<string> = null; 
+  private readonly reqAdd: Writable<Promise<any>> = null;
 
   private constructor() {
     super();
-
+    this.shoppingCarVM = ShoppingCarVM.getInstance()
+    this.errorMessage = writable(null);
+    this.reqAdd = writable(null);
   }
 
   public static getInstance():OrdersViewModel {
@@ -31,11 +38,12 @@ export default class OrdersViewModel extends OrdersAbstractViewModel {
 
   public onInit():void {
     this.resetState();
-    this.findOrdersInBrowser()
+    this.findOrdersInBrowser();
     this.findOrderOfuserLogged();
   }
 
   public addOrder(bill:BillLine[]):void {
+    this.errorMessage.set(null);
     const reqOrders = this.orderServ.fetchOrdersInBrowser();
     this.allReq.set(reqOrders);
     reqOrders
@@ -47,6 +55,7 @@ export default class OrdersViewModel extends OrdersAbstractViewModel {
         this.reqAdd.set(req);
         req
           .then(orderSaved => {
+            this.shoppingCarVM.clean();
             this.all.update(orders => {
               const orderCasted = OrderModelMV.cast(orderSaved);
               orders.unshift(orderCasted)
@@ -119,6 +128,7 @@ export default class OrdersViewModel extends OrdersAbstractViewModel {
 
         })
         .catch((err) => {
+          debugger
           ErrorModel.handleRequestErrors(err, this.errorMessage, this._authMV);
         })
       ;
@@ -127,6 +137,7 @@ export default class OrdersViewModel extends OrdersAbstractViewModel {
   }
 
   public confirm(id: number): void {
+    this.errorMessage.set(null);
     const reqConfirmOrder = this.orderServ.confirm(id);
     const actionType = ActionType.CONFIRM;
     this.setPromiseToOrderInAllOrders(id, actionType, reqConfirmOrder);

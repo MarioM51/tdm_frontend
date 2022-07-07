@@ -9,6 +9,7 @@
   export let label: string;
   export let clases: string;
   export let onAct: OnActFunc;
+  export let letShowError: boolean = true;
 
   let errorMsg: string = null;
 
@@ -24,7 +25,7 @@
     >
   {:then _}
     <button class={clases} on:click={() => onAct()}>{label}</button>
-    {#if errorMsg != null}
+    {#if errorMsg != null && letShowError}
       <span id="msg-error" class="text-primary-content">{@html errorMsg}</span>
     {/if}
   {:catch err}

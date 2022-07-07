@@ -13,7 +13,7 @@ export default class ErrorModel {
     const genericMsgError = "Error. Try later";
     if(err instanceof ErrorModel) {
       if(err.status == 401) {
-        authMV.logout();
+        authMV.logout('session_expired');
       } else if(err.status >= 400 && err.status <= 499) {
         errorMsg.set(err.cause)
       } else {

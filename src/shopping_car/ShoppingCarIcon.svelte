@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { writable } from "svelte/store";
   import ShoppingCarVM from "./ShoppingCarVM";
 
   const shoppingCar = ShoppingCarVM.getInstance();
@@ -6,10 +7,16 @@
 
   //const products = shoppingCar.getProducts();
   const bill = shoppingCar.getBill();
+  const isOpen = writable(false);
 </script>
 
-<div class="dropdown dropdown-end">
-  <label tabindex="0" class="btn btn-ghost btn-circle">
+<div class="dropdown dropdown-end" class:dropdown-open={$isOpen}>
+  <div
+    class="btn btn-ghost btn-circle"
+    on:click={() => {
+      isOpen.set(!$isOpen);
+    }}
+  >
     <div class="indicator">
       <svg
         xmlns="http://www.w3.org/2000/svg"
@@ -30,10 +37,9 @@
         >
       {/if}
     </div>
-  </label>
+  </div>
 
   <div
-    tabindex="0"
     class="!fixed sm:!absolute w-full sm:w-[420px] z-10 mt-1 card card-compact dropdown-content shadow bg-base-300 text-base-content shadow-xl"
   >
     <div class="card-body">
@@ -107,6 +113,8 @@
               <button
                 class="btn btn-primary"
                 on:click={() => {
+                  isOpen.set(false);
+                  window.document.activeElement.blur();
                   shoppingCar.addToOrders();
                 }}>Confirm</button
               >

@@ -7,8 +7,9 @@ export default class ProductService implements IProductService {
 
   private readonly _productsApi = new ProductApiDAO();
 
-  public findAll(): Promise<ProductModel[]> {
-    return this._productsApi.findAll();
+  public async findAll(): Promise<ProductModel[]> {
+    const all = await this._productsApi.findAll()
+    return all;
   }
 
   public add(toAdd:ProductModel): Promise<ProductModel> {

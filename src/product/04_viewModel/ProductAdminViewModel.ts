@@ -1,6 +1,6 @@
 import { get, writable } from "svelte/store";
 import type { Writable, Readable } from "svelte/store";
-import type IProductViewModel from "./IProductViewModel";
+import type IProductViewModel from "./IProductAdminViewModel";
 import type IProductService from "../03_logic/IProductService";
 import ProductService from "../03_logic/ProductService";
 import ProductModel from "../01_model/ProductModel";
@@ -9,7 +9,7 @@ import AuthViewModel from "../../auth/04_viewModel/auth/AuthViewModel";
 import type IAuthViewModel from "../../auth/04_viewModel/auth/IAuthViewModel";
 import type ProductImage from "../01_model/ProductImage";
 
-export default class ProductViewModel implements IProductViewModel {
+export default class ProductAdminViewModel implements IProductViewModel {
 
   //utils
   private static _instance:IProductViewModel = null;
@@ -35,10 +35,10 @@ export default class ProductViewModel implements IProductViewModel {
   private constructor(){}
 
   public static getInstance():IProductViewModel {
-    if(ProductViewModel._instance == null) {
-      ProductViewModel._instance = new ProductViewModel();
+    if(ProductAdminViewModel._instance == null) {
+      ProductAdminViewModel._instance = new ProductAdminViewModel();
     }
-    return ProductViewModel._instance;
+    return ProductAdminViewModel._instance;
   }
   
   public onInit(): void {

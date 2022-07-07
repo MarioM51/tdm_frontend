@@ -9,7 +9,8 @@ export default class ProductModel {
     public image:ProductImage=null,
     public description:string=null,
     public likes:number=null,
-    public files: FileList=null
+    public files: FileList=null,
+    public images:string[]=[],
   ){}
 
   public static fromJson(rawProduct: any): ProductModel {
@@ -41,6 +42,15 @@ export default class ProductModel {
 
       return product;
     });
+
+    let imageType = ["animals", "arch", "nature", "people"]
+    for (let i = 0; i < products.length; i++) {
+      for (let j = 0; j < 3; j++) {
+        products[i].images.push("https://placeimg.com/1280/720/"+imageType[j] + "?is=" + products[i].id)
+      } 
+    }
+    console.log("all products", products);
+
     return products
   }
   

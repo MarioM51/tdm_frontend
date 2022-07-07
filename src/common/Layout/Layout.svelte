@@ -5,7 +5,7 @@
   import { location } from "svelte-spa-router";
   import SideNavbar from "./SideNavbar.svelte";
   import routes from "./routes";
-  import Constants from "../Constants";
+  import { Consts } from "../../Constants";
   import AppViewModel from "../../AppViewModel";
   import { ConfirmationState } from "../../AppViewModel";
   import type { Writable } from "svelte/store";
@@ -53,8 +53,7 @@
 
   let hideSSR: boolean = false;
 
-  window.addEventListener(Constants.CSR_MODE, (e: any) => {
-    console.log("detected:", e.detail);
+  window.addEventListener(Consts.CSR_MODE, (e: any) => {
     hideSSR = e.detail === true;
   });
 </script>
@@ -73,7 +72,7 @@
     <div id="navbar" class="z-20" bind:this={navbar}>
       <TopNavbar {navUrls} />
     </div>
-    <div class="page-container">
+    <div class="page-container p-1 sm:p-8">
       <Router {routes} />
       <div style={hideSSR ? "display: none;" : ""}>
         <div id="layout-content-page">Default content</div>
@@ -120,7 +119,6 @@
   @import "/static/tailwin.css";
 
   .page-container {
-    padding: 2rem;
     /* padding-top: 5rem; */
     max-width: 1250px;
     min-height: calc(100% - 226px);

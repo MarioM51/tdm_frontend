@@ -5,7 +5,7 @@ import OrderModel from "./OrderModel";
 
 export default class OrdersApiRepository {
   private static readonly _API = "/orders";
-  private readonly _authStore = new AuthStoreDAO()
+  private static readonly _authStore = new AuthStoreDAO();
 
   public async addOrder(order:OrderModel):Promise<OrderModel> {
     const r = new RequestHelper<OrderModel>();
@@ -21,7 +21,7 @@ export default class OrdersApiRepository {
     r.data = order;
     r.cast = this.castOrder;
 
-    r.token = this._authStore.getToken();
+    r.token = OrdersApiRepository._authStore.getToken();
     
     const added = await r.doRequest();
     return added;
@@ -52,7 +52,7 @@ export default class OrdersApiRepository {
     const r = new RequestHelper<OrderModel>();
     r.url = OrdersApiRepository._API + "/"+id+"/confirm";
     r.method = HttpMethod.PUT;
-    r.token = this._authStore.getToken();
+    r.token = OrdersApiRepository._authStore.getToken();
     r.cast = this.castOrder;
 
     const myPromise = new Promise(function(resolve, _){ setTimeout(function(){ resolve("Success!"); }, 2000); });
@@ -65,7 +65,7 @@ export default class OrdersApiRepository {
     const r = new RequestHelper<OrderModel[]>();
     r.url = OrdersApiRepository._API;
     r.method = HttpMethod.GET;
-    r.token = this._authStore.getToken();
+    r.token = OrdersApiRepository._authStore.getToken();
     r.cast = this.castOrders;
     
     const all = await r.doRequest();
@@ -76,7 +76,7 @@ export default class OrdersApiRepository {
     const r = new RequestHelper<OrderModel>();
     r.url = OrdersApiRepository._API + "/" + id + "/accept";
     r.method = HttpMethod.PUT;
-    r.token = this._authStore.getToken();
+    r.token = OrdersApiRepository._authStore.getToken();
     r.cast = this.castOrder;
     
     const all = await r.doRequest();
@@ -87,9 +87,9 @@ export default class OrdersApiRepository {
     const r = new RequestHelper<OrderModel[]>();
     r.url = OrdersApiRepository._API + "/findByUserLogged";
     r.method = HttpMethod.GET;
-    r.token = this._authStore.getToken();
+    r.token = OrdersApiRepository._authStore.getToken();
     r.cast = this.castOrders;
-    
+
     const all = await r.doRequest();
     return all;
   }

@@ -9,7 +9,7 @@ import AuthService from '../../03_logic/AuthService';
 import UserModel from '../../01_model/UserModel';
 import type IAuthService from '../../03_logic/IAuthService';
 import ErrorModel from '../../../error/ErrorModel';
-import OrderService from 'src/orders/OrdersService';
+import OrderService from '../../../orders/OrdersService';
 
 
 export default class AuthViewModel implements IAuthViewModel {
@@ -89,6 +89,9 @@ export default class AuthViewModel implements IAuthViewModel {
           this.errorMessage.set("Error: intente mas tarde o informe error")
         }
       })
+      .finally(()=>{
+        this.requestUser.set(null);
+      })
   }
 
   private onRegister():void {
@@ -128,12 +131,15 @@ export default class AuthViewModel implements IAuthViewModel {
     ;
   }
 
-  public logout(): void {
+  public logout(msg:string=''): void {
     this.authService.cleanSession();
     this.session.set(null)
     const ordersSrv = new OrderService()
     ordersSrv.deleteAllOrdersInBrowser();
-    push('/login')
+    if(msg != ''){
+      msg = '?msg='+msg;
+    }
+    push('/login'+ msg)
   }
 
   public getSession():Readable<UserModel> {

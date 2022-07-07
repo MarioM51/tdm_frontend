@@ -7,7 +7,7 @@ export default interface IAuthViewModel {
 
   setPanel(authPanel:AuthPanel):void
   onSubmit():void
-  logout():void
+  logout(msg:string):void
 
   getSession():Readable<UserModel>
   getUserToLogin():Readable<UserModel>

@@ -1,19 +1,18 @@
 import type { Readable, Writable } from "svelte/store";
 import { writable } from "svelte/store";
-import Constants from "../common/Constants";
+import { Consts } from "../Constants";
 import BillLine from "./BillLine";
 import ShoppingCarService from "./ShoppingCarService";
 import { push } from 'svelte-spa-router'
 
 export default class ShoppingCarVM {
 
-  private readonly shCServ: Writable<ShoppingCarService> = writable(new ShoppingCarService());
+  private readonly shCServ: Writable<ShoppingCarService>;
+  private static instance: ShoppingCarVM = null;
 
   constructor() {
-
+    this.shCServ = writable(new ShoppingCarService())
   }
-
-  private static instance: ShoppingCarVM = null;
 
   public static getInstance(): ShoppingCarVM {
     if (this.instance == null) {
@@ -24,7 +23,7 @@ export default class ShoppingCarVM {
   }
 
   public onInit():void {
-    window.addEventListener(Constants.EVENT_ADD_TO_CARD, (e: any) => {
+    window.addEventListener(Consts.EVENT_ADD_TO_CARD, (e: any) => {
       const toAdd = BillLine.fromProduct(e.detail);
       this.addProduct(toAdd)
     });
@@ -59,6 +58,13 @@ export default class ShoppingCarVM {
   public setBill(lines:BillLine[]):void {
     this.shCServ.update((b) => {
       b.lines = lines;
+      return b;
+    });
+  }
+
+  public clean():void {
+    this.shCServ.update((b) => {
+      b.cleanShoppingCar()
       return b;
     });
   }

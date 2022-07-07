@@ -4,16 +4,16 @@ import ShoppingCarRepo from "./ShoppingCarRepo";
 
 export default class ShoppingCarService {
 
-  private storage:ShoppingCarRepo = new ShoppingCarRepo();
-  private ordersVM:OrdersViewModel = OrdersViewModel.getInstance();
+  private storage:ShoppingCarRepo;
 
   constructor(
     public lines:BillLine[]= [],
   ) {
+    this.storage = new ShoppingCarRepo();
     const inStorage = this.storage.getAll()
     if(inStorage != null) {
       this.lines.push(...inStorage)
-    } 
+    }
   }
 
   public addProduct(newLine:BillLine) {
@@ -61,7 +61,10 @@ export default class ShoppingCarService {
   }
 
   public addBillToOrder():void {
-    this.ordersVM.addOrder(this.lines);
+    OrdersViewModel.getInstance().addOrder(this.lines);
+  }
+
+  public cleanShoppingCar():void {
     this.lines = [];
     this.storage.clean();
   }

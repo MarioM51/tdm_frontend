@@ -1,13 +1,15 @@
 <script lang="ts">
-  import Constants from "../../common/Constants";
+  import { Writable, writable } from "svelte/store";
+  import Gallery from "../../common/Gallery.svelte";
   import Like from "../../common/Like.svelte";
+  import { Consts } from "../../Constants";
 
   import ProductModel from "../01_model/ProductModel";
 
   const products = ProductModel.fromArrayJsonLDInDocument();
 
   function addToCar(product: ProductModel): void {
-    const addToCardEvent = new CustomEvent(Constants.EVENT_ADD_TO_CARD, {
+    const addToCardEvent = new CustomEvent(Consts.EVENT_ADD_TO_CARD, {
       detail: product,
     });
     window.dispatchEvent(addToCardEvent);
@@ -22,15 +24,20 @@
 
   <div class="products">
     {#each products as p}
-      <article class="product card card-compact bg-base-200 shadow-xl">
+      <article
+        class="product card card-compact bg-base-200 shadow-xl min-w-[300px]"
+      >
         <figure>
+          <Gallery images={p.images} />
           <Like type="products" id={p.id} amount={p.likes} />
+          <!--
           <img
             loading="lazy"
-            class="w-full"
+            class="w-full cursor-pointer"
             src="/api/products/image/{p.id}?a={p.image.updateAt}"
             alt="image of {p.name}"
           />
+          -->
         </figure>
         <div class="card-body">
           <h2 class="card-title">{p.name}</h2>

@@ -1,4 +1,3 @@
-import ProductModel from "src/product/01_model/ProductModel";
 import BillLine from "./BillLine";
 
 export default class ShoppingCarRepo {

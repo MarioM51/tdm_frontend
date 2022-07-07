@@ -1,12 +1,12 @@
 import wrap from "svelte-spa-router/wrap";
-import Constants from "../Constants";
+import { Consts } from "../../Constants";
 import OrdersClient from "../../orders/OrdersClient.svelte";
 import AuthPage from "../../auth/05_view/AuthPage.svelte";
 import UserInfo from "../../auth/05_view/UserInfo.svelte";
 
 
 function csrMode(is:boolean): void {
-  const addToCardEvent = new CustomEvent(Constants.CSR_MODE, {
+  const addToCardEvent = new CustomEvent(Consts.CSR_MODE, {
     detail: is,
   });
   window.dispatchEvent(addToCardEvent);

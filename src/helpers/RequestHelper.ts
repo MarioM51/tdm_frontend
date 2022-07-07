@@ -12,11 +12,9 @@ interface ICast<E> {
   (resp: Response): Promise<E>;
 }
 
-/*
 const sleep = (milliseconds) => {
   return new Promise(resolve => setTimeout(resolve, milliseconds))
 }
-*/
 
 export default class RequestHelper<E> {
   public method:HttpMethod;
@@ -55,7 +53,7 @@ export default class RequestHelper<E> {
 
     let resp:Response = null
     try {
-      //await sleep(1000)
+      await sleep(2000)
       resp = await fetch(this.url, options)
     } catch(err) {
       console.warn(err);

@@ -11,3 +11,11 @@
   overflow-y: unset;
 }
 */
+
+.btn.loading:before {
+  -webkit-animation: spin 1s linear infinite;
+  animation: spin 1s linear infinite;
+  height: 1.5rem;
+  width: 1.5rem;
+  border-width: 4px
+}

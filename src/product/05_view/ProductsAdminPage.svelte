@@ -2,8 +2,8 @@
   import { onMount } from "svelte";
   import FaPlus from "svelte-icons/fa/FaPlus.svelte";
   import FaImage from "svelte-icons/fa/FaImage.svelte";
-  import ProductViewModel from "../04_viewModel/ProductViewModel";
-  import type IProductViewModel from "../04_viewModel/IProductViewModel";
+  import ProductAdminViewModel from "../04_viewModel/ProductAdminViewModel";
+  import type IProductAdminViewModel from "../04_viewModel/IProductAdminViewModel";
   import FaRegTrashAlt from "svelte-icons/fa/FaRegTrashAlt.svelte";
   import FaEdit from "svelte-icons/fa/FaEdit.svelte";
   import { Consts } from "../../Constants";
@@ -11,7 +11,7 @@
   const prodImg = Consts.HOST + "/api/products/image/";
   const IMAGE_404 = "/favicon.ico";
 
-  const productVM: IProductViewModel = ProductViewModel.getInstance();
+  const productVM: IProductAdminViewModel = ProductAdminViewModel.getInstance();
 
   const productsRequest = productVM.getProductsRequest();
   const products = productVM.getProducts();

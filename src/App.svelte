@@ -5,12 +5,19 @@
   import AppViewModel from "./AppViewModel";
   import { ConfirmationState } from "./AppViewModel";
   import routes from "./routes";
+  import { get } from "svelte/store";
+  import UrlInfo from "./common/UrlInfo";
 
   const appVM = AppViewModel.getInstance();
   const deleteConfirmation = appVM.getDeleteConfirmation();
 
   const authMV: IAuthViewModel = AuthViewModel.getInstance();
   let session = authMV.getSession();
+
+  let urls: UrlInfo[] = UrlInfo.getAdminUrls(get(session), authMV);
+  session.subscribe((s) => {
+    urls = UrlInfo.getAdminUrls(get(session), authMV);
+  });
 </script>
 
 <main>
@@ -49,30 +56,11 @@
         <!-- Top menu in top bar -->
         <div class="flex-none hidden px-2 mx-2 sm:flex">
           <div class="flex items-stretch">
-            {#if $session != null}
-              {#if $session.hasRols(["admin"])}
-                <a class="btn btn-ghost btn-sm" href="#/users">Users</a>
-                <a class="btn btn-ghost btn-sm" href="#/orders">Orders</a>
-              {/if}
-
-              {#if $session.hasRols(["admin", "products"])}
-                <a class="btn btn-ghost btn-sm" href="#/products">Products</a>
-              {/if}
-
-              {#if $session.hasRols(["admin", "blogs"])}
-                <a class="btn btn-ghost btn-sm" href="#/blogs">Blogs</a>
-              {/if}
-
-              <a
-                class="btn btn-ghost btn-sm"
-                on:click={() => {
-                  authMV.logout();
-                }}
-                href="#/">Logout</a
+            {#each urls as u}
+              <a class="btn btn-ghost btn-sm" href={u.url} on:click={u.onClick}
+                >{u.label}</a
               >
-            {:else}
-              <a class="btn btn-ghost btn-sm" href="#/login">Auth</a>
-            {/if}
+            {/each}
           </div>
         </div>
       </div>
@@ -88,32 +76,17 @@
         class="menu p-4 overflow-y-auto w-4/5 sm:w-80 bg-base-100 text-base-content"
       >
         <!-- Sidebar content here -->
-        {#if $session != null}
-          {#if $session.hasRols(["admin"])}
-            <li><a href="#/users">Users</a></li>
-          {/if}
-
-          {#if $session.hasRols(["admin", "products"])}
-            <li>
-              <a href="#/products">Products</a>
-            </li>
-          {/if}
-
-          {#if $session.hasRols(["admin", "blogs"])}
-            <li><a href="#/blogs">Blogs</a></li>
-          {/if}
-
-          <li>
-            <a
-              on:click={() => {
-                authMV.logout();
-              }}
-              href="#/">Logout</a
-            >
-          </li>
-        {:else}
-          <li><a href="#/auth">Auth</a></li>
-        {/if}
+        {#each urls as u}
+          <a
+            class="btn btn-ghost btn-sm pt-3 pb-6"
+            style="display: -webkit-box;"
+            href={u.url}
+            on:click={() => {
+              u.onClick();
+              document.getElementById("my-drawer").click();
+            }}>{u.label}</a
+          >
+        {/each}
       </ul>
     </div>
   </div>

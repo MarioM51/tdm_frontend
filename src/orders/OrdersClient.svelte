@@ -1,4 +1,5 @@
 <script lang="ts">
+  import LoadingSpiner from "../common/LoadingSpiner.svelte";
   import ButtonAsyncAction from "../common/ButtonAsyncAction.svelte";
 
   import OrdersViewModel from "./OrdersClientViewModel";
@@ -10,16 +11,20 @@
   const orders = orderVM.getOrders();
   const reqAdd = orderVM.getReqAdd();
   const reqAll = orderVM.getReqAll();
+  const errormsg = orderVM.getErrorMessage();
 </script>
 
 <div>
   <h1 class="text-2xl font-bold underline">Orders</h1>
   {#await $reqAll}
-    <center>Fetching orders...</center>
+    <center><LoadingSpiner />Fetching orders...</center>
   {/await}
   {#await $reqAdd}
-    <center>Adding...</center>
+    <center><LoadingSpiner /> Adding...</center>
   {/await}
+  {#if $errormsg != null}
+    <center>{$errormsg}</center>
+  {/if}
 
   {#if $orders.length <= 0}
     {#if $reqAdd == null}

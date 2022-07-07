@@ -5,6 +5,7 @@
   import AuthViewModel from "../04_viewModel/auth/AuthViewModel";
   import type IAuthViewModel from "../04_viewModel/auth/IAuthViewModel";
   import { get } from "svelte/store";
+  import ButtonAsyncAction from "../../common/ButtonAsyncAction.svelte";
 
   const authMV: IAuthViewModel = AuthViewModel.getInstance();
   let session = authMV.getSession();
@@ -24,16 +25,12 @@
     <button class="btn btn-circle loading btn-disabled" />
   {:then _}
     {#if $userDetails != null}
-      {#await $userRequestEdit}
-        <button class="btn btn-primary disabled loading">Update</button>
-      {:then _}
-        <button
-          class="btn btn-primary"
-          on:click={() => {
-            userMV.editUserDetails();
-          }}>Update</button
-        >
-      {/await}
+      <ButtonAsyncAction
+        obs={userRequestEdit}
+        label="Update"
+        onAct={() => userMV.editUserDetails()}
+        clases="btn btn-primary my-3 max-w-xs"
+      />
 
       <div class="bg-base-200 p-4">
         <FormUserAdditionalInfo user={$userDetails} />

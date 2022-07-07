@@ -8,6 +8,7 @@
   import AuthViewModel from "../04_viewModel/auth/AuthViewModel";
   import FormUserAdditionalInfo from "./FormUserAdditionalInfo.svelte";
   import RouteUtiles from "../../common/utils/RouteUtiles";
+  import ButtonAsyncAction from "../../common/ButtonAsyncAction.svelte";
 
   let showingPanel: AuthPanel = AuthPanel.LOGIN;
   let userForm: UserModel = null;
@@ -113,8 +114,8 @@
 
               <div
                 class="collapse bg-base-300 mt-4 {isOptionalsOpen
-                  ? 'collapse-open'
-                  : 'collapse-close'}"
+                  ? 'collapse-close'
+                  : 'collapse-open'}"
               >
                 <div
                   on:click={() => {
@@ -132,9 +133,19 @@
               </div>
             {/if}
           </div>
-
+          <div class="card-actions justify-end">
+            <ButtonAsyncAction
+              obs={authResp}
+              letShowError={false}
+              label={txtBtnForm}
+              onAct={() => authMV.onSubmit()}
+              clases="btn btn-primary"
+            />
+          </div>
           {#if errorMessage != ""}
-            <div class="alert alert-warning mx-auto w-2/3 ">
+            <div
+              class="alert alert-warning mx-auto w-2/3 opacity-60 rounded-none"
+            >
               <div class="flex-1">
                 <div class="icon">
                   <MdWarning />
@@ -145,7 +156,9 @@
           {/if}
 
           {#if $successMsg != ""}
-            <div class="alert alert-success mx-auto w-2/3 ">
+            <div
+              class="alert alert-success mx-auto w-2/3 opacity-60 rounded-none"
+            >
               <div class="flex-1">
                 <div class="icon">
                   <FaCheck />
@@ -154,19 +167,6 @@
               </div>
             </div>
           {/if}
-
-          {#await $authResp}
-            Loading...
-          {/await}
-
-          <div class="card-actions justify-end">
-            <button
-              class="btn btn-primary"
-              on:click={() => {
-                authMV.onSubmit();
-              }}>{txtBtnForm}</button
-            >
-          </div>
         </div>
       </div>
     </div>
