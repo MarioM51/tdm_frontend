@@ -25,8 +25,17 @@ export default class ProductService implements IProductService {
     return this._productsApi.remove(p);
   }
 
-  public addFile(idProduct:number, images:FileList): Promise<ProductImage> {
-    return this._productsApi.addFile(idProduct, images);
+  public async addFile(idProduct:number, images:FileList[]): Promise<ProductImage> {
+    const resp:ProductImage[] = []
+    for (let i = 0; i < images.length; i++) {
+      let temp = await this._productsApi.addFile(idProduct, images[i]);
+      resp.push(temp)
+    }
+    return resp[0];
+  }
+
+  public removeImage(img: ProductImage): Promise<ProductImage> {
+    return this._productsApi.removeIImageById(img.id_image);
   }
 
 }

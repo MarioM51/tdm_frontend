@@ -7,8 +7,10 @@
   import FaRegTrashAlt from "svelte-icons/fa/FaRegTrashAlt.svelte";
   import FaEdit from "svelte-icons/fa/FaEdit.svelte";
   import { Consts } from "../../Constants";
+  import { writable, Writable } from "svelte/store";
+  import MultipleImageInput from "../../common/MultipleImageInput.svelte";
+  import ProductImage from "../01_model/ProductImage";
 
-  const prodImg = Consts.HOST + "/api/products/image/";
   const IMAGE_404 = "/favicon.ico";
 
   const productVM: IProductAdminViewModel = ProductAdminViewModel.getInstance();
@@ -23,11 +25,13 @@
   const productToDelete = productVM.getProductToDelete();
   const productToDeleteRequest = productVM.getProductToDeleteRequest();
 
+  const deleteImageReq = productVM.getDeleteImageReq();
+
   const errorMsg = productVM.getErrorMsg();
   const errorFormMsg = productVM.getErrorFormMsg();
   const errorUploadImage = productVM.getErrorUploadImage();
 
-  let files: FileList;
+  let files: Writable<FileList[]> = writable([]);
   let showForm = false;
   let showDelForm = false;
 
@@ -46,21 +50,6 @@
       showDelForm = toDel != null;
     }, 10);
   });
-
-  let imgPreview;
-  let imgPreviewImage = null;
-  function previewImage() {
-    const fileReader = new FileReader();
-    if (files[0] != undefined) {
-      fileReader.readAsDataURL(files[0]);
-      fileReader.addEventListener("load", function () {
-        imgPreview.src = this.result;
-        imgPreviewImage = this.result;
-      });
-    } else {
-      imgPreview.src = IMAGE_404;
-    }
-  }
 </script>
 
 <section>
@@ -106,19 +95,15 @@
                   <tr>
                     <td>
                       <a
-                        href={prodImg +
-                          product.id +
-                          "?updateAt=" +
-                          product.image?.updateAt}
+                        href={product.images.length > 0
+                          ? product.images[0].getUrlImage()
+                          : IMAGE_404}
                         rel="noopener noreferrer"
                         target="_blank"
                       >
                         <img
-                          src={product.image != null
-                            ? prodImg +
-                              product.id +
-                              "?updateAt=" +
-                              product.image?.updateAt
+                          src={product.images[0] != null
+                            ? product.images[0].getUrlImage()
                             : IMAGE_404}
                           onerror="if (this.src != '{IMAGE_404}') this.src = '{IMAGE_404}';"
                           height="50"
@@ -166,18 +151,16 @@
               {#if $productOnForm?.id == null}
                 <button
                   on:click={() => {
-                    productVM.onSubmitAdd(files);
-                    imgPreviewImage = undefined;
-                    files = null;
+                    productVM.onSubmitAdd($files);
+                    files = writable([]);
                   }}
                   class="btn btn-success">Add</button
                 >
               {:else}
                 <button
                   on:click={() => {
-                    productVM.onConfirmEdit(files);
-                    imgPreviewImage = undefined;
-                    files = null;
+                    productVM.onConfirmEdit($files);
+                    files = writable([]);
                   }}
                   class="btn btn-info">Edit</button
                 >
@@ -217,43 +200,21 @@
               <label class="label" for="image">
                 <span class="label-text">Image</span>
               </label>
-              <div class="relative">
-                <button
-                  class="absolute top-0 left-0 rounded-r-none btn disabled"
-                  class:loading={$uploadImageReq != null}
-                >
-                  {#if $uploadImageReq == null}
-                    <div class="icon"><FaImage /></div>
-                  {/if}
-                </button>
-
-                <input
-                  id="image"
-                  type="file"
-                  accept="image/png, image/jpeg"
-                  bind:files
-                  on:change={previewImage}
-                  class="w-full pr-16 input input-bordered pl-[75px]"
-                />
-              </div>
-
-              <div class="flex justify-center pt-3">
-                <img
-                  src={$productOnForm.image != null && imgPreviewImage == null
-                    ? prodImg +
-                      $productOnForm.id +
-                      "?updateAt=" +
-                      $productOnForm.image.updateAt
-                    : imgPreviewImage != null
-                    ? imgPreviewImage
-                    : IMAGE_404}
-                  height="200px"
-                  width="200px"
-                  onerror="if (this.src != '{IMAGE_404}') this.src = '{IMAGE_404}';"
-                  bind:this={imgPreview}
-                  alt="icon"
-                  loading="lazy"
-                />
+              <div class="flex justify-center">
+                <div style="width: 300px; height: 200px;">
+                  <MultipleImageInput
+                    initials_path={ProductImage.IMG_URL}
+                    initials={$productOnForm.images.map(
+                      (pi) => pi.id_image + ""
+                    )}
+                    {uploadImageReq}
+                    {deleteImageReq}
+                    allFiles={files}
+                    onDelete={(id) => {
+                      productVM.onDeleteImage(id);
+                    }}
+                  />
+                </div>
               </div>
 
               {#if $errorUploadImage != null}
@@ -320,7 +281,6 @@
     cursor: pointer;
     width: 22px;
     height: 22px;
-    margin: 10px;
   }
 
   .icon-btn {

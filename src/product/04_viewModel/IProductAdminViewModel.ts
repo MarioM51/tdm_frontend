@@ -7,13 +7,15 @@ export default interface IProductViewModel {
   onInit():void
 
   onClickAdd():void
-  onSubmitAdd(image:FileList):void
+  onSubmitAdd(image:FileList[]):void
 
   onClickRemove(rowNum: number):void
   onConfirmRemove(): void
 
   onClickEdit(rowNum:number):void
-  onConfirmEdit(image:FileList):void
+  onConfirmEdit(image:FileList[]):void
+
+  onDeleteImage(idImage:number):void
 
   closeProductForm():void
 
@@ -31,5 +33,7 @@ export default interface IProductViewModel {
   getErrorMsg():Readable<string> 
   getErrorFormMsg():Readable<string> 
   getErrorUploadImage():Readable<string>
+
+  getDeleteImageReq():Readable<Promise<ProductImage>>
 
 }

@@ -128,7 +128,6 @@ export default class OrdersViewModel extends OrdersAbstractViewModel {
 
         })
         .catch((err) => {
-          debugger
           ErrorModel.handleRequestErrors(err, this.errorMessage, this._authMV);
         })
       ;

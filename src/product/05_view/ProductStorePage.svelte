@@ -1,8 +1,8 @@
 <script lang="ts">
-  import { Writable, writable } from "svelte/store";
   import Gallery from "../../common/Gallery.svelte";
   import Like from "../../common/Like.svelte";
   import { Consts } from "../../Constants";
+  import ProductImage from "../01_model/ProductImage";
 
   import ProductModel from "../01_model/ProductModel";
 
@@ -28,7 +28,7 @@
         class="product card card-compact bg-base-200 shadow-xl min-w-[300px]"
       >
         <figure>
-          <Gallery images={p.images} />
+          <Gallery allImages={p.images.map((i) => i.getUrlImage())} />
           <Like type="products" id={p.id} amount={p.likes} />
           <!--
           <img

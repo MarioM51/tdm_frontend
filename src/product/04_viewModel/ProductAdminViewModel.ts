@@ -28,6 +28,8 @@ export default class ProductAdminViewModel implements IProductViewModel {
   private _productToDelete:Writable<ProductModel> = writable(null);
   private _productToDeleteRequest:Writable<Promise<ProductModel>> = writable(null);
 
+  private _deleteImageReq:Writable<Promise<ProductImage>> = writable(null);
+
   private _errorProductsMsg:Writable<string> = writable(null);
   private _errorFormMsg:Writable<string> = writable(null);
   private _errorUploadImage:Writable<string> = writable(null);
@@ -56,7 +58,7 @@ export default class ProductAdminViewModel implements IProductViewModel {
   public onClickAdd():void {
     this._productOnForm.set(new ProductModel())
   }
-  public onSubmitAdd(image: FileList): void {
+  public onSubmitAdd(image: FileList[]): void {
     //Add product request
     const addRequest = this._productServ.add(get(this._productOnForm))
     this._productOnFormRequest.set(addRequest);
@@ -73,7 +75,7 @@ export default class ProductAdminViewModel implements IProductViewModel {
           this._uploadImageReq.set(uploadImageReq);
           uploadImageReq
             .then(imageAdded => {
-              productAdded.image = imageAdded
+              productAdded.images.unshift(imageAdded);
               //Update UI when image product is uploaded
               this.productAddedSucces(productAdded);
 
@@ -139,7 +141,7 @@ export default class ProductAdminViewModel implements IProductViewModel {
     this._productOnForm.set(get(this._products)[rowNum]);
     this._oldInfoOnForm = get(this._products)[rowNum]
   }
-  public onConfirmEdit(image:FileList): void {
+  public onConfirmEdit(image:FileList[]): void {
     //send request
     const editReq = this._productServ.edit(get(this._productOnForm));
     this._productOnFormRequest.set(editReq);
@@ -147,13 +149,13 @@ export default class ProductAdminViewModel implements IProductViewModel {
     //react to edit response
     editReq
       .then(pEdited => {
-        if (image != null || image?.length >= 1) {
+        if (image != null && image?.length >= 1) {
           const uploadImageReq = this._productServ.addFile(pEdited.id, image);
           this._uploadImageReq.set(uploadImageReq);
 
           uploadImageReq
             .then(imageAdded => {
-              pEdited.image = imageAdded
+              pEdited.images.unshift(imageAdded);
               //Update UI when image product is uploaded
               this.productUpdateSuccess(pEdited);
             })
@@ -164,7 +166,7 @@ export default class ProductAdminViewModel implements IProductViewModel {
           ;
         } else {
           //letting the image like it was
-          pEdited.image = get(this._productOnForm).image
+          pEdited.images = get(this._productOnForm).images;
           pEdited.files = get(this._productOnForm).files
           this.productUpdateSuccess(pEdited);
         }
@@ -192,6 +194,24 @@ export default class ProductAdminViewModel implements IProductViewModel {
     this._uploadImageReq.set(null);
   }
 
+  public onDeleteImage(idImage: number): void {
+    const imgToDel = get(this._productOnForm).images.filter(i => i.id_image == idImage)[0];
+    const delReq = this._productServ.removeImage(imgToDel);
+    this._deleteImageReq.set(delReq); 
+
+    delReq.then((_)=>{
+      get(this._productOnForm).images = get(this._productOnForm).images.filter(i => i.id_image != idImage);
+    });
+    
+    delReq.catch(err => {
+      ErrorModel.handleRequestErrors(err, this._errorProductsMsg, this._authMV)
+    });
+
+    delReq.finally(() => {
+      this._deleteImageReq.set(null);
+    })
+  }
+
   public getProducts():Readable<ProductModel[]> { return this._products; }
   public getProductsRequest():Readable<Promise<ProductModel[]>> { return this._productsRequest; }
   
@@ -205,6 +225,10 @@ export default class ProductAdminViewModel implements IProductViewModel {
   public getErrorMsg():Readable<string> { return this._errorProductsMsg }
   public getErrorFormMsg():Readable<string> { return this._errorFormMsg }
   public getErrorUploadImage():Readable<string> { return this._errorUploadImage }
+
+
+  public getDeleteImageReq():Readable<Promise<ProductImage>> { return this._deleteImageReq; }
+  
 
 
 }

@@ -21,7 +21,7 @@
 </script>
 
 <div
-  class="absolute left-3 top-3 w-fit"
+  class="absolute left-3 top-3 w-fit z-20"
   on:click={() => {
     swap();
   }}

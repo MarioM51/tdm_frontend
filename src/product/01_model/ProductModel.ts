@@ -1,3 +1,4 @@
+
 import ProductImage from "./ProductImage";
 
 export default class ProductModel {
@@ -6,17 +7,21 @@ export default class ProductModel {
     public id:number=null,
     public name:string=null,
     public price:number=null,
-    public image:ProductImage=null,
+    public images:ProductImage[]=[],
     public description:string=null,
     public likes:number=null,
     public files: FileList=null,
-    public images:string[]=[],
   ){}
 
   public static fromJson(rawProduct: any): ProductModel {
     const p = new ProductModel();
     Object.assign(p, rawProduct);
-    p.image = ProductImage.fromJson(rawProduct.image);
+    if(rawProduct.images != null) {
+      p.images = rawProduct.images.map(i => ProductImage.fromJson(i) );
+    } else {
+      p.images = [];
+    }
+    
     return p
   }
 
@@ -28,28 +33,17 @@ export default class ProductModel {
   public static fromArrayJsonLDInDocument(): ProductModel[] {
     const elm = JSON.parse((document.querySelector("#products_jsonld") as any).innerText)
     const arrayJsonld = elm.itemListElement;
-    const products = arrayJsonld.map((rawProduct: any) => {
+    const products:ProductModel[] = arrayJsonld.map((rawProduct: any) => {
       const product = new ProductModel();
       product.id = rawProduct.identifier;
       product.name = rawProduct.name;
       product.price = rawProduct.offers.price;
       product.description = rawProduct.description;
       product.likes = rawProduct.likes;
-
-      const img = new ProductImage();
-      img.updateAt = rawProduct.image_updated_at;
-      product.image = img;
+      product.images = rawProduct.images.map(i => ProductImage.fromJson(i) );
 
       return product;
     });
-
-    let imageType = ["animals", "arch", "nature", "people"]
-    for (let i = 0; i < products.length; i++) {
-      for (let j = 0; j < 3; j++) {
-        products[i].images.push("https://placeimg.com/1280/720/"+imageType[j] + "?is=" + products[i].id)
-      } 
-    }
-    console.log("all products", products);
 
     return products
   }

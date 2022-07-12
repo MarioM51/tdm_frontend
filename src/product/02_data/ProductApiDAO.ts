@@ -89,5 +89,21 @@ export default class ProductApiDAO {
     return imageAdded
   }
 
+  public removeIImageById(idImage: number): Promise<ProductImage> {
+    const r = new RequestHelper<ProductImage>();
+    r.url = ProductApiDAO._API + "/image/" + idImage;
+    r.method = HttpMethod.DELETE;
+    r.token = this._userStore.getToken();
+
+    r.cast = async (resp) => {
+      const img = await resp.json();
+      return ProductImage.fromJson(img);
+    };
+
+    const imageDeleted = r.doRequest();
+
+    return imageDeleted; 
+  }
+
 
 }

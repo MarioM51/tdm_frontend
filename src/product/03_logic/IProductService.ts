@@ -11,6 +11,8 @@ export default interface IProductService {
   
   remove(arg0: ProductModel): Promise<ProductModel>
 
-  addFile(idProduct:number, images:FileList): Promise<ProductImage>
+  addFile(idProduct:number, images:FileList[]): Promise<ProductImage>
+
+  removeImage(img: ProductImage): Promise<ProductImage>
 
 }
