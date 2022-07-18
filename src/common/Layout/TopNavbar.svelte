@@ -30,10 +30,8 @@
       {#each navUrls as nu}
         <a class="btn btn-ghost" href={nu.url}>{nu.label}</a>
       {/each}
-    </span>
-    <span>
       <UserLoggedMenu />
-      <ShoppingCar />
     </span>
+    <ShoppingCar />
   </div>
 </div>

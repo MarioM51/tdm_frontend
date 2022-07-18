@@ -20,7 +20,7 @@
     <center><LoadingSpiner />Fetching orders...</center>
   {/await}
   {#await $reqAdd}
-    <center><LoadingSpiner /> Adding...</center>
+    <center><LoadingSpiner />Adding...</center>
   {/await}
   {#if $errormsg != null}
     <center>{$errormsg}</center>

@@ -8,9 +8,24 @@
   //const products = shoppingCar.getProducts();
   const bill = shoppingCar.getBill();
   const isOpen = writable(false);
+  let closeSC = false;
 </script>
 
-<div class="dropdown dropdown-end" class:dropdown-open={$isOpen}>
+<div
+  class="dropdown dropdown-end"
+  class:dropdown-open={$isOpen}
+  on:mouseenter={() => {
+    closeSC = false;
+  }}
+  on:mouseleave={() => {
+    closeSC = true;
+    setTimeout(() => {
+      if (closeSC) {
+        isOpen.set(false);
+      }
+    }, 200);
+  }}
+>
   <div
     class="btn btn-ghost btn-circle"
     on:click={() => {
@@ -20,7 +35,7 @@
     <div class="indicator">
       <svg
         xmlns="http://www.w3.org/2000/svg"
-        class="h-5 w-5"
+        style="height: 32px; width:32px"
         fill="none"
         viewBox="0 0 24 24"
         stroke="currentColor"
@@ -40,7 +55,10 @@
   </div>
 
   <div
-    class="!fixed sm:!absolute w-full sm:w-[420px] z-10 mt-1 card card-compact dropdown-content shadow bg-base-300 text-base-content shadow-xl"
+    class="!fixed sm:!absolute w-full sm:w-[420px] z-10 pt-1 card card-compact dropdown-content shadow bg-base-200 text-base-content shadow-xl pt-8"
+    on:click={() => {
+      console.log("gano click");
+    }}
   >
     <div class="card-body">
       <div class="text-center">
@@ -48,9 +66,9 @@
           <div class="overflow-x-auto max-h-[256px]">
             <table class="table table-zebra w-full table-compact">
               <thead>
-                <th>Name</th>
-                <th>Add Up</th>
-                <th />
+                <th class="bg-neutral text-neutral-content">Name</th>
+                <th class="bg-neutral text-neutral-content">Add Up</th>
+                <th class="bg-neutral" />
               </thead>
               <tbody>
                 {#each $bill.lines as l}
@@ -123,6 +141,12 @@
         {:else}
           <p>Nothing over here</p>
         {/if}
+        <span
+          class="btn btn-sm btn-circle btn-ghost absolute right-3 top-3 bg-base-300"
+          on:click={() => {
+            isOpen.set(!$isOpen);
+          }}>✕</span
+        >
       </div>
     </div>
   </div>

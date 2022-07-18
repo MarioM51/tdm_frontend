@@ -1,6 +1,7 @@
 <script lang="ts">
   import Carousel from "svelte-carousel";
   import { Writable, writable } from "svelte/store";
+  import WideRatio from "./WideRatio.svelte";
 
   export let allImages: string[] = [];
   let indedLoaded = 0;
@@ -16,7 +17,6 @@
     if (allImages.length - 1 > indedLoaded) {
       indedLoaded++;
       loadedImages.push(allImages[indedLoaded]);
-      console.log("loadedImages", loadedImages);
       reDraw.set(false);
       setTimeout(() => {
         reDraw.set(true);
@@ -26,12 +26,9 @@
             bubbles: true,
             cancelable: false,
           });
-
           if (toRight) {
-            console.log("btnDer", btnDer);
             btnDer.dispatchEvent(clickEvent);
           } else {
-            console.log("btnIzq", btnIzq);
             btnIzq.dispatchEvent(clickEvent);
           }
         }, 10);
@@ -42,7 +39,15 @@
 
 <!-- Put this part before </body> tag -->
 {#if $reDraw}
-  <Carousel let:showPrevPage let:showNextPage>
+  <Carousel let:showPrevPage let:showNextPage let:currentPageIndex>
+    <div slot="dots" class="c-dots">
+      {#each allImages as _, pageIndex (pageIndex)}
+        <div
+          class="c-dot"
+          class:c-dot-active={currentPageIndex === pageIndex}
+        />
+      {/each}
+    </div>
     <div slot="prev" class="gallery-btn-ontainer" style="left: 5px;">
       <svg
         xmlns="http://www.w3.org/2000/svg"
@@ -94,28 +99,30 @@
     </div>
   </Carousel>
 {:else}
-  <div class="ratio_container">
-    <div class="ratio_text" />
-  </div>
+  <WideRatio />
 {/if}
 
 <style>
   .gallery-btn-ontainer {
     @apply grid content-center z-10 absolute h-full;
   }
-  .ratio_container {
-    background-color: lightgray;
-    width: 100%;
-    padding-top: 56.25%;
-    position: relative; /* If you want text inside of it */
+
+  .c-dots {
+    position: absolute;
+    top: 10px;
+    display: flex;
+  }
+  .c-dot {
+    width: 16px;
+    height: 16px;
+    border-radius: 10px;
+    background-color: black;
+    opacity: 0.5;
+    margin-right: 5px;
   }
 
-  /* If you want text inside of the container */
-  .ratio_text {
-    position: absolute;
-    top: 0;
-    left: 0;
-    bottom: 0;
-    right: 0;
+  .c-dot-active {
+    background-color: white;
+    opacity: 0.5;
   }
 </style>

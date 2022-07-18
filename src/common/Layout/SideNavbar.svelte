@@ -5,7 +5,6 @@
   export let navUrls: Array<any>;
 
   function switchMenu() {
-    console.log("aa");
     isOpen.set(!$isOpen);
   }
 </script>

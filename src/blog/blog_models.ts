@@ -1,3 +1,5 @@
+import RouteUtiles from "../common/utils/RouteUtiles";
+import DateUtils from "../common/utils/DateUtils";
 import { Consts } from "../Constants";
 
 export class BlogModel {
@@ -25,8 +27,8 @@ export class BlogModel {
     b.thumbnail = rawBlog.thumbnail;
     b.author = rawBlog.author;
     b.abstract = rawBlog.abstract;
-    b.createdAt = rawBlog.created_at;
-    b.updateAt = rawBlog.updated_at;
+    b.createdAt = DateUtils.castDateFromServer(rawBlog.created_at);
+    b.updateAt = DateUtils.castDateFromServer(rawBlog.updated_at);
 
     return b;
   }
@@ -64,14 +66,19 @@ export class BlogModel {
       blog.likes = 0;
     }
     blog.author = rawBlog.author?.name;
-    blog.updateAt = rawBlog.dateModified;
-    blog.createdAt = rawBlog.datePublished;
+    blog.updateAt = DateUtils.castDateFromServer(rawBlog.dateModified);
+    blog.createdAt = DateUtils.castDateFromServer(rawBlog.datePublished);
     return blog;
   }
 
   public buildImgURL(): string {
-    let newUrl: string = BlogModel.URL_IMG + "/" + this.id + "/image?updateAt="+this.updateAt;
+    const newUrl: string = BlogModel.URL_IMG + "/" + this.id + "/image?updateAt="+this.updateAt;
     return newUrl;
+  }
+
+  public getSlug( ):string {
+    const resp = '/blogs/' + RouteUtiles.toSlug(this.title) + '-' + this.id;
+    return resp;
   }
 
 }

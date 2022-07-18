@@ -95,14 +95,14 @@
                   <tr>
                     <td>
                       <a
-                        href={product.images.length > 0
+                        href={product.hasImages()
                           ? product.images[0].getUrlImage()
                           : IMAGE_404}
                         rel="noopener noreferrer"
                         target="_blank"
                       >
                         <img
-                          src={product.images[0] != null
+                          src={product.hasImages()
                             ? product.images[0].getUrlImage()
                             : IMAGE_404}
                           onerror="if (this.src != '{IMAGE_404}') this.src = '{IMAGE_404}';"
@@ -204,9 +204,9 @@
                 <div style="width: 300px; height: 200px;">
                   <MultipleImageInput
                     initials_path={ProductImage.IMG_URL}
-                    initials={$productOnForm.images.map(
+                    initials={$productOnForm.hasImages() ? $productOnForm.images.map(
                       (pi) => pi.id_image + ""
-                    )}
+                    ) : [] }
                     {uploadImageReq}
                     {deleteImageReq}
                     allFiles={files}

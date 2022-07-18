@@ -5,6 +5,7 @@
   import { to_number } from "svelte/internal";
   import { Writable, Readable, writable, get } from "svelte/store";
   import ButtonAsyncAction from "./ButtonAsyncAction.svelte";
+  import WideRatio from "./WideRatio.svelte";
 
   interface OnActFunc {
     (idImage: number): void;
@@ -32,17 +33,12 @@
   let files: FileList;
 
   function previewImage() {
-    console.log("onChange");
-
     const fileReader = new FileReader();
     if (files[0] != undefined) {
       $allFiles.push(files);
       fileReader.readAsDataURL(files[0]);
       fileReader.addEventListener("load", function () {
-        //imgPreview.src = this.result;
-
         images.unshift(this.result);
-
         reload.set(false);
         setTimeout(() => {
           reload.set(true);
@@ -54,10 +50,11 @@
   function onChangeimage(event: any) {
     currentIndex = event.detail;
     if (images[currentIndex] == null) {
+      showDelete.set(false);
       return;
     }
     const isLocal = images[currentIndex].startsWith("data:image");
-    showDelete.set(!isLocal);
+    showDelete.set(true);
     if (!isLocal) {
       let idString = images[event.detail].slice(
         images[currentIndex].lastIndexOf("/") + 1,
@@ -69,22 +66,30 @@
   }
 
   function deleteImage(): void {
-    onDelete(currentIdImage);
+    const isLocal = images[currentIndex].startsWith("data:image");
+    if(isLocal) {
+      removeCurrentImage();
+    } else {
+      onDelete(currentIdImage);
+    }
   }
   deleteImageReq.subscribe((delReq) => {
     if (delReq != null) {
       delReq.then((img) => {
         if (currentIdImage == img.id_image) {
-          images = images.filter((i) => i != images[currentIndex]);
-
-          reload.set(false);
-          setTimeout(() => {
-            reload.set(true);
-          }, 100);
+          removeCurrentImage()
         }
       });
     }
   });
+
+  function removeCurrentImage() {
+    images = images.filter((i) => i != images[currentIndex]);
+    reload.set(false);
+    setTimeout(() => {
+      reload.set(true);
+    }, 100);
+  }
 </script>
 
 <div>
@@ -147,12 +152,7 @@
           <img {src} alt="nature" style="height: 100%; width: 100%;" />
         {/each}
       {:else}
-        <img
-          src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA8AAAAKCAIAAADkeZOuAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAAnSURBVChTY1BQUGAgDhCvkjxAa/NpATIyMqAs2oD29nYoiyBgYAAAseYD7lDjvCMAAAAASUVORK5CYII="
-          loading="lazy"
-          alt="nature"
-          style="height: 100%; width: 100%;"
-        />
+        <WideRatio msg="No image" />
       {/if}
 
       <div slot="next" class="gallery-btn-ontainer" style="right: 5px;">

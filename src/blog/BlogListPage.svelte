@@ -1,28 +1,10 @@
 <script lang="ts">
   import Like from "../common/Like.svelte";
-
   import { BlogModel } from "./blog_models";
-
+  import DateUtils from "../common/utils/DateUtils.ts";
+  import RouteUtiles from "../common/utils/RouteUtiles.ts";
+  
   const blogs = BlogModel.fromArrayJsonLDInDocument();
-
-  function string_to_slug(str: string): string {
-    str = str.replace(/^\s+|\s+$/g, ""); // trim
-    str = str.toLowerCase();
-
-    // remove accents, swap ñ for n, etc
-    var from = "àáäâèéëêìíïîòóöôùúüûñç·/_,:;";
-    var to = "aaaaeeeeiiiioooouuuunc------";
-    for (var i = 0, l = from.length; i < l; i++) {
-      str = str.replace(new RegExp(from.charAt(i), "g"), to.charAt(i));
-    }
-
-    str = str
-      .replace(/[^a-z0-9 -]/g, "") // remove invalid chars
-      .replace(/\s+/g, "-") // collapse whitespace and replace by -
-      .replace(/-+/g, "-"); // collapse dashes
-
-    return str;
-  }
 </script>
 
 <section>
@@ -32,20 +14,20 @@
       <article class="card sm:card-side bg-base-300 shadow-lg mb-16">
         <figure>
           <Like type="blogs" id={b.id} amount={b.likes} />
+          <a href={b.getSlug()}>
           <img
-            class="w-[355.5px] h-[200px]"
             src="/api/blogs/{b.id}/image?updateAt={b.updateAt}"
             alt="Album"
           />
+          </a>
         </figure>
-        <a href="/blogs/{string_to_slug(b.title) + '-' + b.id}">
+        <a href={b.getSlug()}>
           <div class="card-body">
             <h2 class="card-title">{b.title}</h2>
 
             <p>{b.abstract}</p>
             <div class="flex flex-col">
-              <span>Created: <kbd class="kbd kbd-sm">{b.createdAt}</kbd></span>
-              <span>Updated: <kbd class="kbd kbd-sm">{b.updateAt}</kbd></span>
+              <span>Created: <kbd class="kbd kbd-sm">{DateUtils.format(b.createdAt)}</kbd></span>
             </div>
           </div>
         </a>

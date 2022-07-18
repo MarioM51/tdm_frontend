@@ -172,3 +172,9 @@
     </div>
   </div>
 </section>
+
+<style>
+  .icon {
+    max-width: 32px;
+  }
+</style>

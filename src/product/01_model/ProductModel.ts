@@ -47,5 +47,10 @@ export default class ProductModel {
 
     return products
   }
+
+  public hasImages():boolean {
+    const resp = this.images.length > 0 && this.images[0] != null;
+    return resp;
+  }
   
 }

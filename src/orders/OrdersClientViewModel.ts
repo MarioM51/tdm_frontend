@@ -1,11 +1,11 @@
 import ErrorModel from "../error/ErrorModel";
-import { get, Readable, writable, Writable } from "svelte/store";
+import type { Readable, Writable } from "svelte/store";
+import { get, writable, } from "svelte/store";
 import type BillLine from "../shopping_car/BillLine";
 import OrderModelMV, { ActionType } from "./OrderModelMV";
 import OrdersAbstractViewModel from "./OrdersAbstractViewModel";
 import { push } from "svelte-spa-router";
-import type ShoppingCarService from "../shopping_car/ShoppingCarService";
-import ShoppingCarVM from "src/shopping_car/ShoppingCarVM";
+import ShoppingCarVM from "../shopping_car/ShoppingCarVM";
 
 export default class OrdersViewModel extends OrdersAbstractViewModel {
   private static instance:OrdersViewModel = null;
@@ -15,6 +15,7 @@ export default class OrdersViewModel extends OrdersAbstractViewModel {
   //ui elements
   private readonly errorMessage: Writable<string> = null; 
   private readonly reqAdd: Writable<Promise<any>> = null;
+  private _requestOfTwoRequests: boolean = false;
 
   private constructor() {
     super();
@@ -30,7 +31,7 @@ export default class OrdersViewModel extends OrdersAbstractViewModel {
     return this.instance;
   }
 
-  private resetState():void {
+  public resetState():void {
     this.errorMessage.set(null);
     this.reqAdd.set(null);
     this.allReq.set(null);
@@ -44,39 +45,29 @@ export default class OrdersViewModel extends OrdersAbstractViewModel {
 
   public addOrder(bill:BillLine[]):void {
     this.errorMessage.set(null);
-    const reqOrders = this.orderServ.fetchOrdersInBrowser();
-    this.allReq.set(reqOrders);
-    reqOrders
-      .then(fetchedOrders => {
-        const ordersCasted = fetchedOrders.map(o => OrderModelMV.cast(o));
-        this.all.set(ordersCasted);
-
-        const req = this.orderServ.addOrder(bill)
-        this.reqAdd.set(req);
-        req
-          .then(orderSaved => {
-            this.shoppingCarVM.clean();
+    //this.onInit();
+    const reqAddOrder = this.orderServ.addOrder(bill);
+    setTimeout(() => {
+      this.reqAdd.set(reqAddOrder);
+    }, 100)
+    reqAddOrder
+      .then(orderSaved => {
+        this.shoppingCarVM.clean();
+        Promise.all([reqAddOrder, this.allReq])
+          .then(_ => {
+            const orderCasted = OrderModelMV.cast(orderSaved);
             this.all.update(orders => {
-              const orderCasted = OrderModelMV.cast(orderSaved);
-              orders.unshift(orderCasted)
+              orders.unshift(orderCasted);
               return orders
             })
-          })
-          .catch((e) => {
-            ErrorModel.handleRequestErrors(e, this.errorMessage, this._authMV)
-          })
-          .finally(()=>{
             this.reqAdd.set(null);
           })
-        ;
-
+        ;//wait all request to add
       })
       .catch((e) => {
         ErrorModel.handleRequestErrors(e, this.errorMessage, this._authMV)
       })
-      .finally(() => {
-        this.allReq.set(null);
-      })
+      ;
     ;
     
   }
@@ -100,7 +91,12 @@ export default class OrdersViewModel extends OrdersAbstractViewModel {
         ErrorModel.handleRequestErrors(err, this.errorMessage, this._authMV)
       })
       .finally(() => {
-        this.allReq.set(null);
+        setTimeout(() => {
+          if(!this._requestOfTwoRequests) {
+            this.allReq.set(null);
+            this._requestOfTwoRequests = false;
+          }
+        }, 100);
       })
   }
 
@@ -108,6 +104,7 @@ export default class OrdersViewModel extends OrdersAbstractViewModel {
     const session = this._authMV.getSession();
     const userLogged = get(session);
     if (userLogged != null) {
+      this._requestOfTwoRequests = true;
       const ordersReq = this.orderServ.findOrderOfuserLogged();
       this.allReq.set(ordersReq);
       ordersReq
@@ -129,6 +126,10 @@ export default class OrdersViewModel extends OrdersAbstractViewModel {
         })
         .catch((err) => {
           ErrorModel.handleRequestErrors(err, this.errorMessage, this._authMV);
+        })
+        .finally(()=>{
+          this.allReq.set(null);
+          this._requestOfTwoRequests = false;
         })
       ;
     }

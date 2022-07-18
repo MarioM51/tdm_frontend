@@ -4,18 +4,18 @@
   const b = BlogModel.fromJsonLDInDocument();
 </script>
 
-<article class="bg-base-200">
-  <div class="flex flex-col justify-center sm:flex-row sm:justify-between">
-    <div>
-      <h1 class="text-5xl font-bold sm:ml-4 sm:mt-4">{b.title}</h1>
+<article>
+  <div class="flex flex-col justify-center sm:flex-row sm:justify-between bg-base-300">
+    <div class="m-4 max-w-2xl sm:max-w-[45%]">
+      <h1 class="text-5xl font-bold">{b.title}</h1>
       <p class="py-6 text-center">{b.abstract}</p>
     </div>
 
-    <figure class="mx-auto sm:mr-4 sm:mt-4">
-      <img class="w-[355.5px] h-[200px]" src={b.buildImgURL()} alt="Album" />
+    <figure class="mx-auto sm:mx-0">
+      <img class="w-full h-[200px]" src={b.buildImgURL()} alt="Album" />
     </figure>
   </div>
-  <div class="blog_body">
+  <div class="blog_body bg-base-200 pt-8 pb-16 mb-16">
     {@html b.body}
   </div>
 </article>

@@ -1,4 +1,5 @@
 import BillLine from "../shopping_car/BillLine";
+import DateUtils from "../common/utils/DateUtils"
 
 export default class OrderModel {
 
@@ -26,17 +27,9 @@ export default class OrderModel {
     o.id = rawOrder.id;
     o.idUser = rawOrder.idUser;
     o.products = BillLine.fromArrayJson(rawOrder.products);
-    o.created_at = new Date(rawOrder.created_at);
-    
-    o.confirmed_at = new Date(rawOrder.confirmed_at);
-    if (o.confirmed_at.getFullYear() == 0) {
-      o.confirmed_at = null
-    }
-
-    o.accepted_at = new Date(rawOrder.accepted_at);
-    if (o.accepted_at.getFullYear() == 0) {
-      o.accepted_at = null
-    }
+    o.created_at = DateUtils.castDateFromServer(rawOrder.created_at);
+    o.confirmed_at = DateUtils.castDateFromServer(rawOrder.confirmed_at);
+    o.accepted_at = DateUtils.castDateFromServer(rawOrder.accepted_at); 
     
     return o
   }
@@ -44,6 +37,10 @@ export default class OrderModel {
   public static fromArrayJson(rawOrders: any): OrderModel[] {
     const users = rawOrders.map((rawO: any) => OrderModel.fromJson(rawO) )
     return users
+  }
+
+  public isResently():boolean {
+    return DateUtils.isResently(this.created_at)
   }
 
 }

@@ -10,6 +10,7 @@ import UserModel from '../../01_model/UserModel';
 import type IAuthService from '../../03_logic/IAuthService';
 import ErrorModel from '../../../error/ErrorModel';
 import OrderService from '../../../orders/OrdersService';
+import OrdersViewModel from '../../../orders/OrdersClientViewModel';
 
 
 export default class AuthViewModel implements IAuthViewModel {
@@ -140,6 +141,7 @@ export default class AuthViewModel implements IAuthViewModel {
       msg = '?msg='+msg;
     }
     push('/login'+ msg)
+    OrdersViewModel.getInstance().resetState();
   }
 
   public getSession():Readable<UserModel> {

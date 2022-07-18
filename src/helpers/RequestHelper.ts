@@ -24,6 +24,7 @@ export default class RequestHelper<E> {
   public data:any = null;
   public cast:ICast<E>;
   private readonly API_PREFIX = "/api"
+  private static readonly  DELAY = 1000;
 
   public static readonly LOGIN_REQUIRED = new ErrorModel(401, "Login required");
   public static readonly USR_UNAUTH = new ErrorModel(403, "User Unauthorized");
@@ -53,7 +54,7 @@ export default class RequestHelper<E> {
 
     let resp:Response = null
     try {
-      await sleep(2000)
+      await sleep(RequestHelper.DELAY)
       resp = await fetch(this.url, options)
     } catch(err) {
       console.warn(err);

@@ -1,4 +1,3 @@
-import type BillLine from "../shopping_car/BillLine";
 import type OrderModel from "./OrderModel";
 
 export default class OrdersStore {
