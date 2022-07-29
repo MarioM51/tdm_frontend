@@ -52,10 +52,10 @@
 <section>
   <div class="auth-container">
     {#if params.get("msg") == "session_expired"}
-      <p class="text-center mb-4">Session Expired</p>
+      <p class="text-center mb-4">Sesion expirada</p>
     {/if}
     {#if params.get("msg") == "session_required"}
-      <p class="text-center mb-4">You need to have an account or be logged</p>
+      <p class="text-center mb-4">Autenticacion requerida</p>
     {/if}
     <div class="flex">
       <div class="card card-bordered mx-auto w-full sm:w-2/3 max-w-2xl">

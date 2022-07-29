@@ -10,7 +10,7 @@ import ShoppingCarVM from "../shopping_car/ShoppingCarVM";
 export default class OrdersViewModel extends OrdersAbstractViewModel {
   private static instance:OrdersViewModel = null;
 
-  private readonly shoppingCarVM = null;
+  private readonly shoppingCarVM:ShoppingCarVM = null;
 
   //ui elements
   private readonly errorMessage: Writable<string> = null; 
@@ -35,6 +35,7 @@ export default class OrdersViewModel extends OrdersAbstractViewModel {
     this.errorMessage.set(null);
     this.reqAdd.set(null);
     this.allReq.set(null);
+    this.all.set([]);
   }
 
   public onInit():void {

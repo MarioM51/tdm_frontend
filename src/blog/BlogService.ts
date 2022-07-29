@@ -1,8 +1,12 @@
 import type { IBlogRepository } from "./BlogRepository";
-import type { BlogModel } from "./blog_models";
+import { BlogComment, BlogModel } from "./blog_models";
 
 import ErrorModel from "../error/ErrorModel";
 import { BlogRepository } from "./BlogRepository";
+import type ICommentService from "../comments/ICommentService";
+import CommentModel from "../comments/CommentModel";
+import type IAuthService from "../auth/03_logic/IAuthService";
+import AuthService from "../auth/03_logic/AuthService";
 
 export default interface IBlogService {
 
@@ -18,15 +22,16 @@ export default interface IBlogService {
 
 }
 
-export class BlogService implements IBlogService {
+export class BlogService implements IBlogService, ICommentService {
 
-  private static instance:IBlogService = null;
+  private static instance:BlogService = null;
 
   private readonly _blogRepo:IBlogRepository = BlogRepository.getInstance();
+  private readonly _authServ:IAuthService = new AuthService();
 
   private constructor() { }
 
-  public static getInstance():IBlogService {
+  public static getInstance():BlogService {
     if(BlogService.instance == null) {
       BlogService.instance = new BlogService();
     }
@@ -61,6 +66,31 @@ export class BlogService implements IBlogService {
   public async deletePost(toDel: BlogModel): Promise<BlogModel> {
     const deleted = await this._blogRepo.deletePost(toDel);
 
+    return deleted;
+  }
+
+ public async addComment(newComment:CommentModel):Promise<CommentModel> {
+    const msgError = newComment.validateToSend();
+    if(msgError != null) {
+      throw new ErrorModel(400, msgError);
+    }
+
+    const newBlogComment:BlogComment = BlogComment.fromComment(newComment)
+    const blogCommentadded = await this._blogRepo.addComment(newBlogComment);
+    const added = CommentModel.fromBlogComment(blogCommentadded);
+
+    return added;
+  }
+
+  public async removeComment(commentToDel:CommentModel):Promise<CommentModel> {
+    const userLogged = this._authServ.getUserStored();
+    if(userLogged == null || commentToDel.idUser != userLogged.id) {
+      throw new ErrorModel(403, "The comment only can be deleted by the owner or by the admin user");
+    }
+    
+    const blogCommentToDel:BlogComment = BlogComment.fromComment(commentToDel)
+    const blogCommentDeleted = await this._blogRepo.removeComment(blogCommentToDel);
+    const deleted = CommentModel.fromBlogComment(blogCommentDeleted);
     return deleted;
   }
 

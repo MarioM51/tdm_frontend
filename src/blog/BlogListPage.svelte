@@ -1,9 +1,8 @@
 <script lang="ts">
+  import DateUtils from "../common/utils/DateUtils";
   import Like from "../common/Like.svelte";
   import { BlogModel } from "./blog_models";
-  import DateUtils from "../common/utils/DateUtils.ts";
-  import RouteUtiles from "../common/utils/RouteUtiles.ts";
-  
+
   const blogs = BlogModel.fromArrayJsonLDInDocument();
 </script>
 
@@ -11,14 +10,17 @@
   <h1 class="text-2xl font-bold underline">Blogs</h1>
   <div class="blogs">
     {#each blogs as b}
-      <article class="card sm:card-side bg-base-300 shadow-lg mb-16">
-        <figure>
+      <article
+        class="card sm:card-side bg-base-300 shadow-lg mb-16 sm:max-h-[280px]"
+      >
+        <figure class="img_ratio_16_9_container">
           <Like type="blogs" id={b.id} amount={b.likes} />
           <a href={b.getSlug()}>
-          <img
-            src="/api/blogs/{b.id}/image?updateAt={b.updateAt}"
-            alt="Album"
-          />
+            <img
+              class="img_ratio_16_9_content"
+              src="/api/blogs/{b.id}/image?updateAt={b.updateAt}"
+              alt="Album"
+            />
           </a>
         </figure>
         <a href={b.getSlug()}>
@@ -26,8 +28,29 @@
             <h2 class="card-title">{b.title}</h2>
 
             <p>{b.abstract}</p>
-            <div class="flex flex-col">
-              <span>Created: <kbd class="kbd kbd-sm">{DateUtils.format(b.createdAt)}</kbd></span>
+            <div class="flex flex-col mt-2">
+              <span
+                >Publicado: <kbd class="kbd kbd-sm"
+                  >{DateUtils.format(b.createdAt)}</kbd
+                ></span
+              >
+              <span
+                >Comentarios: <kbd class="kbd kbd-sm">({b.commentCount})</kbd
+                ></span
+              >
+              <span
+                >Calificacion: <kbd class="kbd kbd-sm">
+                  <div class="rating">
+                    <input
+                      type="radio"
+                      name="rating-new-comment"
+                      class="mask mask-star-2 bg-orange-400"
+                      checked
+                    />
+                  </div>
+                  {b.comments_rating}</kbd
+                ></span
+              >
             </div>
           </div>
         </a>
@@ -40,5 +63,20 @@
   @import "/static/tailwin.css";
   .blogs {
     margin-top: 2rem;
+  }
+
+  .img_ratio_16_9_container {
+    width: 100%;
+    padding-top: 56.25%;
+    position: relative;
+  }
+  .img_ratio_16_9_content {
+    position: absolute;
+    width: 100%;
+    max-height: 280px;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
   }
 </style>

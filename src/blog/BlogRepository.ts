@@ -1,6 +1,6 @@
 import AuthStoreDAO from "../auth/02_data/AuthStoreDAO";
 import RequestHelper, { HttpMethod } from "../helpers/RequestHelper";
-import { BlogModel } from "./blog_models";
+import { BlogComment, BlogModel } from "./blog_models";
 
 export interface IBlogRepository {
 
@@ -13,7 +13,11 @@ export interface IBlogRepository {
   edit(newInfo: BlogModel): Promise<BlogModel>;
 
   deletePost(toDel: BlogModel): Promise<BlogModel>;
-  
+
+  addComment(newComment: BlogComment): Promise<BlogComment>;
+
+  removeComment(toDel: BlogComment): Promise<BlogComment>
+
 }
 
 export class BlogRepository implements IBlogRepository {
@@ -91,9 +95,39 @@ export class BlogRepository implements IBlogRepository {
     return deleted
   }
 
-  private async castPost(resp: Response) {
+  public async addComment(newComment: BlogComment): Promise<BlogComment> {
+    const r = new RequestHelper<BlogComment>();
+    r.url = BlogRepository._API + "/" + newComment.idBlog + "/comment";
+    r.method = HttpMethod.POST;
+    r.token = this._userStore.getToken();
+    r.data = newComment;
+    r.cast = this.castBlogComment;
+    
+    const saved = await r.doRequest()
+    return saved
+  }
+  
+  public async removeComment(toDel: BlogComment): Promise<BlogComment> {
+    const r = new RequestHelper<BlogComment>();
+    r.url = BlogRepository._API + "/" + toDel.idBlog + "/comment/" + toDel.identifier;
+    r.method = HttpMethod.DELETE;
+    r.token = this._userStore.getToken();
+    r.cast = this.castBlogComment;
+
+    const deleted = await r.doRequest()
+    return deleted
+  }
+  
+
+  private async castPost(resp: Response):Promise<BlogModel> {
     const rawBlogs = await resp.json();
     const blog = BlogModel.fromJson(rawBlogs);
+    return blog
+  }
+
+  private async castBlogComment(resp:Response):Promise<BlogComment> {
+    const rawBlogs = await resp.json();
+    const blog = BlogComment.fromJson(rawBlogs);
     return blog
   }
 

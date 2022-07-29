@@ -10,9 +10,10 @@ export default class AuthStoreDAO {
     if (jsonStored == null ) {
       return null
     }
-    const jsonObject = JSON.parse(jsonStored);  
-    const clientWithType = Object.assign(new UserModel(), jsonObject)
-    return clientWithType;
+    const jsonObject = JSON.parse(jsonStored);
+    const user = new UserModel();
+    Object.assign(user, jsonObject)
+    return user;
   }
 
   public saveToken(token:string):void {

@@ -11,6 +11,7 @@ import type IAuthService from '../../03_logic/IAuthService';
 import ErrorModel from '../../../error/ErrorModel';
 import OrderService from '../../../orders/OrdersService';
 import OrdersViewModel from '../../../orders/OrdersClientViewModel';
+import { Consts } from '../../../Constants';
 
 
 export default class AuthViewModel implements IAuthViewModel {
@@ -81,7 +82,7 @@ export default class AuthViewModel implements IAuthViewModel {
     loginRequest
       .then(usr => {
         this.session.set(usr)
-        replace('/')
+        window.location.replace("/");
       })
       .catch(err => {
         if(err instanceof ErrorModel) {
@@ -134,7 +135,7 @@ export default class AuthViewModel implements IAuthViewModel {
 
   public logout(msg:string=''): void {
     this.authService.cleanSession();
-    this.session.set(null)
+    this.session.set(null);
     const ordersSrv = new OrderService()
     ordersSrv.deleteAllOrdersInBrowser();
     if(msg != ''){

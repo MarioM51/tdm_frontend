@@ -5,9 +5,9 @@ import AuthPage from "../../auth/05_view/AuthPage.svelte";
 import UserInfo from "../../auth/05_view/UserInfo.svelte";
 
 
-function csrMode(is:boolean): void {
+function csrMode(isIt:boolean): void {
   const addToCardEvent = new CustomEvent(Consts.CSR_MODE, {
-    detail: is,
+    detail: isIt,
   });
   window.dispatchEvent(addToCardEvent);
 }
