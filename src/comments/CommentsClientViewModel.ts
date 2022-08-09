@@ -23,7 +23,12 @@ export default class CommentViewModel {
   }
 
   public add(newComment:CommentModel):void {
-    newComment.idUser = get(this._authVM.getSession()).id;
+    const userLogged = get(this._authVM.getSession());
+    if(userLogged == null) {
+      this._authVM.logout("session_required");
+      return ;
+    }
+    newComment.idUser = userLogged.id;
     const addReq = this._commentServ.addComment(newComment);
     const updateType = UIUpdateTypeItem.ADD_TO_START;
 

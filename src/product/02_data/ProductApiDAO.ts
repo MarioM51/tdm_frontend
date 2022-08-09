@@ -2,6 +2,8 @@ import RequestHelper, { HttpMethod } from "../../helpers/RequestHelper";
 import ProductModel from "../01_model/ProductModel";
 import AuthStoreDAO from "../../auth/02_data/AuthStoreDAO";
 import ProductImage from "../01_model/ProductImage";
+import CommentModel from "src/comments/CommentModel";
+import ErrorModel from "src/error/ErrorModel";
 
 export default class ProductApiDAO {
 
@@ -105,5 +107,27 @@ export default class ProductApiDAO {
     return imageDeleted; 
   }
 
+  public async addComment(newComment: CommentModel): Promise<CommentModel> {
+    const r = new RequestHelper<CommentModel>();
+    r.url = ProductApiDAO._API + "/" + newComment.idTarget + "/comment";
+    r.method = HttpMethod.POST;
+    r.token = this._userStore.getToken();
+    r.data = newComment;
+    r.cast = CommentModel.fromResponse;
+    
+    const saved = await r.doRequest()
+    return saved
+  }
+  
+  public async removeComment(toDel: CommentModel): Promise<CommentModel> {
+    const r = new RequestHelper<CommentModel>();
+    r.url = ProductApiDAO._API + "/" + toDel.idTarget + "/comment/" + toDel.id;
+    r.method = HttpMethod.DELETE;
+    r.token = this._userStore.getToken();
+    r.cast = CommentModel.fromResponse;
+
+    const deleted = await r.doRequest()
+    return deleted
+  }
 
 }

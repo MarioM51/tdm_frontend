@@ -69,6 +69,8 @@ export class BlogService implements IBlogService, ICommentService {
     return deleted;
   }
 
+//Comments Implementation
+
  public async addComment(newComment:CommentModel):Promise<CommentModel> {
     const msgError = newComment.validateToSend();
     if(msgError != null) {

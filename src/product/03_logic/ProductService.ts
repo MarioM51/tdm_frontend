@@ -2,10 +2,16 @@ import type ProductImage from "../01_model/ProductImage";
 import type ProductModel from "../01_model/ProductModel";
 import ProductApiDAO from "../02_data/ProductApiDAO";
 import type IProductService from "./IProductService";
+import type ICommentService from "../../comments/ICommentService";
+import type CommentModel from "src/comments/CommentModel";
+import ErrorModel from "../../error/ErrorModel";
+import type IAuthService from "../../auth/03_logic/IAuthService";
+import AuthService from "../../auth/03_logic/AuthService";
 
-export default class ProductService implements IProductService {
+export default class ProductService implements IProductService, ICommentService {
 
   private readonly _productsApi = new ProductApiDAO();
+  private readonly _authServ:IAuthService = new AuthService();
 
   public async findAll(): Promise<ProductModel[]> {
     const all = await this._productsApi.findAll()
@@ -36,6 +42,28 @@ export default class ProductService implements IProductService {
 
   public removeImage(img: ProductImage): Promise<ProductImage> {
     return this._productsApi.removeIImageById(img.id_image);
+  }
+
+  public async addComment(newComment: CommentModel): Promise<CommentModel> {
+    const msgError = newComment.validateToSend();
+    if(msgError != null) {
+      throw new ErrorModel(400, msgError);
+    }
+
+    const commentAdded = await this._productsApi.addComment(newComment);
+    return commentAdded;
+    
+  }
+  
+  
+  public async removeComment(commentToDel:CommentModel):Promise<CommentModel> {
+    const userLogged = this._authServ.getUserStored();
+    if(userLogged == null || commentToDel.idUser != userLogged.id) {
+      throw new ErrorModel(403, "The comment only can be deleted by the owner or by the admin user");
+    }
+    
+    const commentDeleted:CommentModel = await this._productsApi.removeComment(commentToDel);
+    return commentDeleted;
   }
 
 }

@@ -1,11 +1,11 @@
 <script lang="ts">
   import { BlogModel } from "./blog_models";
   import ReviewsClient from "../comments/CommentsClient.svelte";
-  import ReviewModel from "../comments/CommentModel";
+  import CommentModel from "../comments/CommentModel";
   import { BlogService } from "./BlogService";
 
   const blog = BlogModel.fromJsonLDInDocument();
-  const comments = blog.comments.map((b) => ReviewModel.fromBlogComment(b));
+  const comments = blog.comments.map((b) => CommentModel.fromBlogComment(b));
   const blogServ = BlogService.getInstance();
 </script>
 
@@ -14,7 +14,7 @@
     class="flex flex-col justify-center sm:flex-row sm:justify-between bg-base-300"
   >
     <div class="m-4 max-w-2xl sm:max-w-[45%]">
-      <h1 class="text-5xl font-bold">{blog.title}</h1>
+      <h1 class="text-3xl font-bold">{blog.title}</h1>
       <p class="py-6 text-center">{blog.abstract}</p>
     </div>
 

@@ -1,4 +1,6 @@
 <script lang="ts">
+  import RouteUtiles from "../../common/utils/RouteUtiles";
+
   import Gallery from "../../common/Gallery.svelte";
   import Like from "../../common/Like.svelte";
   import { Consts } from "../../Constants";
@@ -28,20 +30,14 @@
         class="product card card-compact bg-base-200 shadow-xl min-w-[300px]"
       >
         <figure>
-          <Gallery allImages={p.images.map((i) => i.getUrlImage())} />
+          <Gallery allImages={p.imageUrls} />
           <Like type="products" id={p.id} amount={p.likes} />
-          <!--
-          <img
-            loading="lazy"
-            class="w-full cursor-pointer"
-            src="/api/products/image/{p.id}?a={p.image.updateAt}"
-            alt="image of {p.name}"
-          />
-          -->
         </figure>
         <div class="card-body">
-          <h2 class="card-title">{p.name}</h2>
-          <p>{p.description}</p>
+          <a href={p.getUrl()}>
+            <h2 class="card-title">{p.name}</h2>
+            <p>{p.description}</p>
+          </a>
           <div class="flex justify-between content-end">
             <span class="text-lg font-bold pt-4">${p.price}.00</span>
             <button class="btn btn-primary" on:click={() => addToCar(p)}

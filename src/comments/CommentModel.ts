@@ -56,4 +56,23 @@ export default class CommentModel extends Model {
     comment.stars = blogComment.rating;
     return comment;
   }
+
+  public static async fromResponse(resp:Response):Promise<CommentModel> {
+    const respJson= await resp.json();
+    const comment =  new CommentModel();
+    Object.assign(comment, respJson);
+    return comment;
+  }
+
+  public static fromReviewLDJson(ldJson:any, idTarget:number):CommentModel {
+    const comment =  new CommentModel();
+    comment.content = ldJson.text;
+    comment.created_at = ldJson.datePublished;
+    comment.id = ldJson.identifier;
+    comment.idTarget = idTarget;
+    comment.idUser = ldJson.idUser;
+    comment.stars = ldJson.reviewRating.ratingValue;
+
+    return comment;
+  }
 }

@@ -25,6 +25,7 @@
 </script>
 
 <div>
+  <h2>Comments</h2>
   <CommentForm
     onSubmit={(newComment) => {
       newComment.idTarget = parseInt(idTarget + "");
@@ -40,7 +41,7 @@
   <section class="p-2">
     {#each $allComments as c, numComm (c.id)}
       <article class="relative bg-base-200 mb-4">
-        <h2>{$allComments.length - numComm}</h2>
+        <h3 class="mb-2">{$allComments.length - numComm}</h3>
         <p class="p-1">{c.content}</p>
         <div class="rating absolute right-1 top-1">
           {#if $session?.id == c.idUser}

@@ -32,7 +32,6 @@
 </script>
 
 <div class="flex flex-col mb-8">
-  <h2>Comments</h2>
   <div class="rating mb-1">
     Rating:
     {#key $comment.stars}
