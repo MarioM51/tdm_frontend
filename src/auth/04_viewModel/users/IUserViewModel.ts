@@ -1,4 +1,4 @@
-import type UserModel from "src/auth/01_model/UserModel";
+import type UserModel from "../../../auth/01_model/UserModel";
 import type { Readable } from "svelte/store";
 import type RolModel from "../../01_model/RolModel";
 

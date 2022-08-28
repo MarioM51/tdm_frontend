@@ -45,7 +45,7 @@ export default class OrderService {
       return confirmedCasted;
     } catch (error) {
       if(error.status == 403) {
-        throw new ErrorModel(error.status, 'You need to add <a style="color: lightblue; text-decoration: underline;" href="#/user-info">aditional info</a>')
+        throw new ErrorModel(error.status, 'Necesitas agregar tu telefono y nombre en <a style="color: lightblue; text-decoration: underline;" href="#/user-info">informacion adicional</a>')
       }
       throw error;
     }

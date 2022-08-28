@@ -1,7 +1,7 @@
 import RouteUtiles from "../common/utils/RouteUtiles";
 import DateUtils from "../common/utils/DateUtils";
 import { Consts } from "../Constants";
-import type CommentModel from "src/comments/CommentModel";
+import type CommentModel from "../comments/CommentModel";
 
 export class BlogModel {
 

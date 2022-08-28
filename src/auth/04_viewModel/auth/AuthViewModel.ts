@@ -53,6 +53,8 @@ export default class AuthViewModel implements IAuthViewModel {
   }
 
   public onSubmit():void {
+    this.successMessage.set("");
+    this.errorMessage.set("");
     if(get(this.userToLogin) != null) {
       this.onLogin()
     } else if(get(this.userToRegister) != null) {
@@ -126,7 +128,7 @@ export default class AuthViewModel implements IAuthViewModel {
     registerReqest
       .then(_ => {
         this.setPanel(AuthPanel.LOGIN)
-        this.successMessage.set("Check your email for activation");
+        this.successMessage.set("Usuario registrado");
       }).catch(error => {
         this.errorMessage.set(error.cause);
       })

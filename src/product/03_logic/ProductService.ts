@@ -3,7 +3,7 @@ import type ProductModel from "../01_model/ProductModel";
 import ProductApiDAO from "../02_data/ProductApiDAO";
 import type IProductService from "./IProductService";
 import type ICommentService from "../../comments/ICommentService";
-import type CommentModel from "src/comments/CommentModel";
+import type CommentModel from "../../comments/CommentModel";
 import ErrorModel from "../../error/ErrorModel";
 import type IAuthService from "../../auth/03_logic/IAuthService";
 import AuthService from "../../auth/03_logic/AuthService";

@@ -13,7 +13,7 @@
       <article
         class="card sm:card-side bg-base-300 shadow-lg mb-16 sm:max-h-[280px]"
       >
-        <figure class="img_ratio_16_9_container">
+        <figure class="img_ratio_16_9_container w-full md:max-w-[400px]">
           <Like type="blogs" id={b.id} amount={b.likes} />
           <a href={b.getSlug()}>
             <img

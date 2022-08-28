@@ -1,5 +1,5 @@
 <script lang="ts">
-  import type ProductImage from "src/product/01_model/ProductImage";
+  import type ProductImage from "../product/01_model/ProductImage";
 
   import Carousel from "svelte-carousel";
   import { to_number } from "svelte/internal";

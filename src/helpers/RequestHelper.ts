@@ -23,14 +23,14 @@ export default class RequestHelper<E> {
   public headers:Map<string, string> = null;
   public data:any = null;
   public cast:ICast<E>;
-  private readonly API_PREFIX = "/api"
-  private static readonly  DELAY = 1000;
+  private static readonly API_PREFIX = "/api"
+  private static readonly  DELAY = 500;
 
   public static readonly LOGIN_REQUIRED = new ErrorModel(401, "Login required");
   public static readonly USR_UNAUTH = new ErrorModel(403, "User Unauthorized");
 
   public async doRequest():Promise<E> {
-    this.url = Consts.HOST + this.API_PREFIX + this.url;
+    this.url = Consts.HOST + RequestHelper.API_PREFIX + this.url;
 
     const myHeaders = new Headers();
     if (this.token != null) {

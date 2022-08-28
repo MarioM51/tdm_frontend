@@ -1,5 +1,5 @@
 import AuthViewModel from "../auth/04_viewModel/auth/AuthViewModel";
-import type IAuthViewModel from "src/auth/04_viewModel/auth/IAuthViewModel";
+import type IAuthViewModel from "../auth/04_viewModel/auth/IAuthViewModel";
 import ErrorModel from "../error/ErrorModel";
 import type Model from "./AbstractModel";
 import { Readable, writable, Writable } from "svelte/store";

@@ -3,10 +3,10 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "build": "vite build --outDir ./../dist/public/admin-spa",
+    "build": "vite build --outDir ./dist/public/admin-spa",
     "wc_build": "rollup -c --environment BUILD:deploy",
-    "wc_build_styles": "npx tailwindcss -c ./tailwind.config.cjs -i ./src/common/input.css -o ./../dist/public/static/tailwin.css",
-    "dev": "vite",
+    "wc_build_styles": "npx tailwindcss -c ./tailwind.config.cjs -i ./src/common/input.css -o ./dist/public/static/tailwin.css",
+    "dev": "vite build --outDir ./../api/public/admin-spa --watch",
     "wc_dev": "rollup -c -w",
     "wc_dev_styles": "npx tailwindcss -c ./tailwind.config.cjs -w -i ./src/common/input.css -o ./../api/public/static/tailwin.css",
     "preview": "vite preview",

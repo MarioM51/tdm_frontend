@@ -35,7 +35,7 @@ function serve() {
 */
 const input_path = 'src/web_components';
 const output_path_dev = './../api/public/static/web_components';
-const output_path_deploy = './../dist/public/static/web_components';
+const output_path_deploy = './dist/public/static/web_components';
 let entryPoints = readFiles()
 
 function readFiles() {

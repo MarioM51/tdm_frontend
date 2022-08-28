@@ -1,5 +1,5 @@
 
-import CommentModel from "src/comments/CommentModel";
+import CommentModel from "../../comments/CommentModel";
 import RouteUtiles from "../../common/utils/RouteUtiles";
 import ProductImage from "./ProductImage";
 

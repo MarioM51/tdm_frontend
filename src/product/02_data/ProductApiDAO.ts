@@ -2,8 +2,8 @@ import RequestHelper, { HttpMethod } from "../../helpers/RequestHelper";
 import ProductModel from "../01_model/ProductModel";
 import AuthStoreDAO from "../../auth/02_data/AuthStoreDAO";
 import ProductImage from "../01_model/ProductImage";
-import CommentModel from "src/comments/CommentModel";
-import ErrorModel from "src/error/ErrorModel";
+import CommentModel from "../../comments/CommentModel";
+import ErrorModel from "../../error/ErrorModel";
 
 export default class ProductApiDAO {
 
