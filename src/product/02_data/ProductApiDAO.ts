@@ -33,8 +33,8 @@ export default class ProductApiDAO {
     r.method = HttpMethod.GET;
     r.cast = async (resp) => {
       const rawProducts = await resp.json();
-      const products = ProductModel.fromArrayJson(rawProducts);
-      return products
+      const castedProducts = rawProducts.map((rawP: any) => ProductModel.fromJson(rawP) );
+      return castedProducts;
     }
 
     const products = r.doRequest();

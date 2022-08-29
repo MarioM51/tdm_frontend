@@ -14,7 +14,8 @@ export default class ProductService implements IProductService, ICommentService 
   private readonly _authServ:IAuthService = new AuthService();
 
   public async findAll(): Promise<ProductModel[]> {
-    const all = await this._productsApi.findAll()
+    const all = await this._productsApi.findAll();
+    all.sort((a, b) => (a.id > b.id) ? 1 : -1)
     return all;
   }
 

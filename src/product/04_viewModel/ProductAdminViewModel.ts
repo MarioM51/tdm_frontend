@@ -47,6 +47,7 @@ export default class ProductAdminViewModel implements IProductViewModel {
     this._productOnFormRequest.set(null)
     this._productToDeleteRequest.set(null)
 
+    this._products.set([]);
     const allProdRequest = this._productServ.findAll();
     this._productsRequest.set(allProdRequest);
     allProdRequest

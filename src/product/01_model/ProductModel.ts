@@ -1,4 +1,5 @@
 
+import DateUtils from "../../common/utils/DateUtils";
 import CommentModel from "../../comments/CommentModel";
 import RouteUtiles from "../../common/utils/RouteUtiles";
 import ProductImage from "./ProductImage";
@@ -15,6 +16,7 @@ export default class ProductModel {
     public likes:number=null,
     public files: FileList=null,
     public comments: CommentModel[]=[],
+    public onHomeScreen: Date=null,
   ){}
 
   public static fromJson(rawProduct: any): ProductModel {
@@ -25,14 +27,12 @@ export default class ProductModel {
     } else {
       p.images = [];
     }
+
+    p.onHomeScreen = DateUtils.castDateFromServer(rawProduct.onHomeScreen); 
     
     return p
   }
 
-  public static fromArrayJson(rawProducts: any): ProductModel[] {
-    const users = rawProducts.map((rawP: any) => ProductModel.fromJson(rawP) )
-    return users
-  }
 
   public static fromArrayJsonLDInDocument(): ProductModel[] {
     const elmJson = ProductModel.textElementInDocumentToJsonById("products_jsonld");

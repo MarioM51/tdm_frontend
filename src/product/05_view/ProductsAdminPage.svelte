@@ -1,12 +1,11 @@
 <script lang="ts">
   import { onMount } from "svelte";
   import FaPlus from "svelte-icons/fa/FaPlus.svelte";
-  import FaImage from "svelte-icons/fa/FaImage.svelte";
   import ProductAdminViewModel from "../04_viewModel/ProductAdminViewModel";
   import type IProductAdminViewModel from "../04_viewModel/IProductAdminViewModel";
   import FaRegTrashAlt from "svelte-icons/fa/FaRegTrashAlt.svelte";
   import FaEdit from "svelte-icons/fa/FaEdit.svelte";
-  import { Consts } from "../../Constants";
+  import IoMdRefreshCircle from "svelte-icons/io/IoMdRefreshCircle.svelte";
   import { writable, Writable } from "svelte/store";
   import MultipleImageInput from "../../common/MultipleImageInput.svelte";
   import ProductImage from "../01_model/ProductImage";
@@ -64,15 +63,43 @@
         </div>
       {/if}
 
-      <button
-        class="btn btn-sm btn-success mb-4"
-        on:click={() => {
-          productVM.onClickAdd();
-        }}
-      >
-        <div class="icon-btn"><FaPlus /></div>
-        Add
-      </button>
+      <div class="mb-4">
+        <button
+          class="btn btn-sm btn-success"
+          on:click={() => {
+            productVM.onClickAdd();
+          }}
+        >
+          <div class="icon-btn"><FaPlus /></div>
+          Agrear
+        </button>
+
+        <button
+          class="btn btn-sm gap-2"
+          on:click={() => {
+            productVM.onInit();
+          }}
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="16"
+            height="16"
+            fill="currentColor"
+            class="bi bi-arrow-clockwise"
+            viewBox="0 0 16 16"
+          >
+            <path
+              fill-rule="evenodd"
+              d="M8 3a5 5 0 1 0 4.546 2.914.5.5 0 0 1 .908-.417A6 6 0 1 1 8 2v1z"
+            />
+            <path
+              d="M8 4.466V.534a.25.25 0 0 1 .41-.192l2.36 1.966c.12.1.12.284 0 .384L8.41 4.658A.25.25 0 0 1 8 4.466z"
+            />
+          </svg>
+          Recargar
+        </button>
+      </div>
+
       <div class="overflow-x-auto flex justify-center">
         <table class="table m-auto table-compact table-zebra">
           <thead>
@@ -197,6 +224,24 @@
             </div>
 
             <div class="form-control">
+              <label class="label cursor-pointer">
+                <span class="label-text">On Home Screen</span>
+                <input
+                  type="checkbox"
+                  class="toggle toggle-info"
+                  checked={$productOnForm.onHomeScreen != null}
+                  on:change={() => {
+                    if ($productOnForm.onHomeScreen != null) {
+                      $productOnForm.onHomeScreen = null;
+                    } else {
+                      $productOnForm.onHomeScreen = new Date();
+                    }
+                  }}
+                />
+              </label>
+            </div>
+
+            <div class="form-control">
               <label class="label" for="image">
                 <span class="label-text">Image</span>
               </label>
@@ -204,9 +249,9 @@
                 <div style="width: 300px; height: 200px;">
                   <MultipleImageInput
                     initials_path={ProductImage.IMG_URL}
-                    initials={$productOnForm.hasImages() ? $productOnForm.images.map(
-                      (pi) => pi.id_image + ""
-                    ) : [] }
+                    initials={$productOnForm.hasImages()
+                      ? $productOnForm.images.map((pi) => pi.id_image + "")
+                      : []}
                     {uploadImageReq}
                     {deleteImageReq}
                     allFiles={files}
