@@ -49,6 +49,7 @@ export class BlogAdminViewModel implements IBlogAdminViewModel {
   
 
   public onInit(): void {
+    this._blogs.set([]);
     const allProdRequest = this._blogServ.findAll();
     this._blogsReq.set(allProdRequest);
 

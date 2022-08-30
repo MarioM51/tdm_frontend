@@ -21,6 +21,7 @@ export class BlogModel {
     public comments:BlogComment[]=[],
     public commentCount:number=0,
     public comments_rating:number=0,
+    public onHomeScreen: Date=null,
   ){}
 
   public static fromJson(rawBlog: any): BlogModel {
@@ -36,6 +37,7 @@ export class BlogModel {
     b.comments_rating = rawBlog.comments_rating;
     b.createdAt = DateUtils.castDateFromServer(rawBlog.created_at);
     b.updateAt = DateUtils.castDateFromServer(rawBlog.updated_at);
+    b.onHomeScreen = DateUtils.castDateFromServer(rawBlog.onHomeScreen); 
 
     return b;
   }

@@ -41,6 +41,7 @@ export class BlogService implements IBlogService, ICommentService {
 
   public async findAll():Promise<BlogModel[]> {
     const blogs = await this._blogRepo.findAll();
+    blogs.sort((a, b) => (a.id > b.id) ? 1 : -1);
 
     return blogs;
   }

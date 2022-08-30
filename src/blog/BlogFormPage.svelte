@@ -188,6 +188,24 @@
       />
     </div>
 
+    <div class="form-control" style="max-width: 350px; margin-bottom: 1rem;">
+      <label class="label cursor-pointer">
+        <span class="label-text">En pagina principal</span>
+        <input
+          type="checkbox"
+          class="toggle toggle-info"
+          checked={$blogOnForm.onHomeScreen != null}
+          on:change={() => {
+            if ($blogOnForm.onHomeScreen != null) {
+              $blogOnForm.onHomeScreen = null;
+            } else {
+              $blogOnForm.onHomeScreen = new Date();
+            }
+          }}
+        />
+      </label>
+    </div>
+
     <div class="editor-wrapper">
       <div class="editor" bind:this={editor} />
     </div>

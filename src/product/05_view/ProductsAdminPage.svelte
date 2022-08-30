@@ -71,7 +71,7 @@
           }}
         >
           <div class="icon-btn"><FaPlus /></div>
-          Agrear
+          Agregar
         </button>
 
         <button
@@ -103,10 +103,10 @@
       <div class="overflow-x-auto flex justify-center">
         <table class="table m-auto table-compact table-zebra">
           <thead>
-            <th>Image</th>
-            <th>Name</th>
-            <th>Price</th>
-            <th>Actions</th>
+            <th>Imagen</th>
+            <th>Nombre</th>
+            <th>Precio</th>
+            <th>Acciones</th>
           </thead>
           <tbody>
             {#await $productsRequest}
@@ -115,7 +115,7 @@
               {#if $products != null}
                 {#if $products.length <= 0}
                   <tr>
-                    <td colspan="3">No Products</td>
+                    <td colspan="3">No hay producto</td>
                   </tr>
                 {/if}
                 {#each $products as product, k}
@@ -169,11 +169,11 @@
     {#if $productOnForm != null}
       <div class="modal" class:modal-open={showForm}>
         <div class="modal-box">
-          <h3>{$productOnForm.id == null ? "Add" : "Update"} Product</h3>
+          <h3>{$productOnForm.id == null ? "Add" : "Update"} Producto</h3>
 
           <div class="modal-action">
             {#await $productOnFormRequest}
-              <button class="btn loading btn-disabled">Loading</button>
+              <button class="btn loading btn-disabled">Cargando...</button>
             {:then _}
               {#if $productOnForm?.id == null}
                 <button
@@ -181,7 +181,7 @@
                     productVM.onSubmitAdd($files);
                     files = writable([]);
                   }}
-                  class="btn btn-success">Add</button
+                  class="btn btn-success">Agregar</button
                 >
               {:else}
                 <button
@@ -189,7 +189,7 @@
                     productVM.onConfirmEdit($files);
                     files = writable([]);
                   }}
-                  class="btn btn-info">Edit</button
+                  class="btn btn-info">Editar</button
                 >
               {/if}
             {/await}
@@ -201,7 +201,7 @@
           <div id="product-form">
             <div class="form-control">
               <label class="label" for="name">
-                <span class="label-text">Name</span>
+                <span class="label-text">Nombre</span>
               </label>
               <input
                 type="text"
@@ -213,7 +213,7 @@
 
             <div class="form-control">
               <label class="label" for="price">
-                <span class="label-text">Price</span>
+                <span class="label-text">Precio</span>
               </label>
               <input
                 type="number"
@@ -225,7 +225,7 @@
 
             <div class="form-control">
               <label class="label cursor-pointer">
-                <span class="label-text">On Home Screen</span>
+                <span class="label-text">En pagina de inicio</span>
                 <input
                   type="checkbox"
                   class="toggle toggle-info"
