@@ -72,7 +72,7 @@
     <div id="navbar" class="z-20" bind:this={navbar}>
       <TopNavbar {navUrls} />
     </div>
-    <div class="page-container p-1 sm:p-8">
+    <div class="page-container p-1 sm:p-8 mb-4">
       <Router {routes} />
       <div style={hideSSR ? "display: none;" : ""}>
         <div id="layout-content-page">Default content</div>

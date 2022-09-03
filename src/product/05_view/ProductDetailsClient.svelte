@@ -23,11 +23,28 @@
     <div class="flex flex-col sm:flex-row justify-between">
       <div class="mb-4 mt-2">
         <h1 class="text-2xl font-bold mb-4">{product.name}</h1>
-        <div class="mb-4">
+        <div class="flex flex-col mb-4">
           Precio:
-          <span class="text-lg font-bold">${product.price}.00</span>
+          <span class="text-lg font-bold mb-4">${product.price}.00</span>
+
+          <span
+            >Comentarios: <kbd class="kbd kbd-sm">({product.commentCount})</kbd
+            ></span
+          >
+          <span class="flex"
+            >Calificacion: <kbd class="kbd kbd-sm">
+              <div class="rating">
+                <input
+                  type="radio"
+                  name="rating-new-comment"
+                  class="mask mask-star-2 bg-orange-400"
+                  checked
+                />
+              </div>
+              {product.commentsRating}</kbd
+            ></span
+          >
         </div>
-        <p class="mb-4">{product.description}</p>
       </div>
       <div class="relative w-full sm:w-1/2 mb-4">
         <figure>
@@ -41,7 +58,14 @@
         >Add</button
       >
     </div>
+    <div>
+      Descripcion:
+      <p class="mb-4">{product.description}</p>
+    </div>
   </article>
+
+  <div class="divider" />
+
   <ReviewsClient
     comments={product.comments}
     idTarget={product.id}

@@ -17,6 +17,8 @@ export default class ProductModel {
     public files: FileList=null,
     public comments: CommentModel[]=[],
     public onHomeScreen: Date=null,
+    public commentCount: number = 0,
+    public commentsRating: number = 0,
   ){}
 
   public static fromJson(rawProduct: any): ProductModel {
@@ -64,6 +66,8 @@ export default class ProductModel {
     product.likes = rawProduct.likes;
     product.imageUrls = rawProduct.image;
     product.comments = rawProduct.review?.map(r => CommentModel.fromReviewLDJson(r, product.id));
+    product.commentCount = rawProduct.aggregateRating.ratingCount;
+    product.commentsRating = rawProduct.aggregateRating.ratingValue;
 
     return product;
   }

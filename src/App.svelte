@@ -50,7 +50,7 @@
 
         <!-- Top Title-logo Page -->
         <div class="flex-1 px-2 mx-2">
-          <span class="text-lg font-bold">USER ADMIN</span>
+          <a href="/admin" class="text-lg font-bold">Tienda de Mario</a>
         </div>
 
         <!-- Top menu in top bar -->

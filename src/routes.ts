@@ -7,7 +7,7 @@ import { get } from "svelte/store";
 import type IAuthViewModel from "./auth/04_viewModel/auth/IAuthViewModel";
 import AuthViewModel from "./auth/04_viewModel/auth/AuthViewModel";
 
-import Home from "./home/05_view/Home.svelte";
+import HomeAdmin from "./home/05_view/HomeAdmin.svelte";
 import AuthPage from "./auth/05_view/AuthPage.svelte"
 import NotFound from "./error/05_view/NotFound.svelte"
 
@@ -15,7 +15,7 @@ const auth: IAuthViewModel = AuthViewModel.getInstance();
 
 const routes = {
   // Exact path
-  "/": Home,
+  "/": HomeAdmin,
 
   // Using named parameters, with last being optional
   "/login": AuthPage,

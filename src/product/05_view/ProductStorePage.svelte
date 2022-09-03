@@ -1,12 +1,10 @@
 <script lang="ts">
-  import RouteUtiles from "../../common/utils/RouteUtiles";
-
   import Gallery from "../../common/Gallery.svelte";
   import Like from "../../common/Like.svelte";
   import { Consts } from "../../Constants";
-  import ProductImage from "../01_model/ProductImage";
-
   import ProductModel from "../01_model/ProductModel";
+
+  export let onHomeScreen: boolean = false;
 
   const products = ProductModel.fromArrayJsonLDInDocument();
 
@@ -19,7 +17,18 @@
 </script>
 
 <section class="page-container">
-  <h1 class="text-2xl font-bold underline">Products</h1>
+  <h1
+    class="text-2xl font-bold"
+    class:cursor-pointer={onHomeScreen}
+    class:underline={onHomeScreen}
+    on:click={() => {
+      if (onHomeScreen) {
+        window.location.href = "/products";
+      }
+    }}
+  >
+    Products
+  </h1>
   {#if products.length <= 0}
     There is no products
   {/if}
@@ -30,7 +39,7 @@
         class="product card card-compact bg-base-200 shadow-xl min-w-[300px]"
       >
         <figure>
-          <Gallery allImages={p.imageUrls} />
+          <Gallery allImages={p.imageUrls} urlImages={p.getUrl()} />
           <Like type="products" id={p.id} amount={p.likes} />
         </figure>
         <div class="card-body">
@@ -43,6 +52,25 @@
             <button class="btn btn-primary" on:click={() => addToCar(p)}
               >Add</button
             >
+          </div>
+          <div class="flex flex-col mt-2 text-right text-xs">
+            <div class="mb-2">
+              Comentarios: <kbd class="kbd kbd-sm">({p.commentCount})</kbd>
+            </div>
+            <div class="flex content-center justify-end">
+              <div>Calificacion:</div>
+              <kbd class="kbd kbd-sm">
+                <div class="rating">
+                  <input
+                    type="radio"
+                    name="rating-new-comment"
+                    class="mask mask-star-2 bg-orange-400"
+                    checked
+                  />
+                </div>
+                {p.commentsRating}
+              </kbd>
+            </div>
           </div>
         </div>
       </article>

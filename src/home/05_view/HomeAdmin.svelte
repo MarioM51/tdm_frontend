@@ -1,0 +1,1 @@
+<main>Hello admin</main>

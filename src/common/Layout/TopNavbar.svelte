@@ -23,7 +23,7 @@
   </label>
 
   <div class="flex-1">
-    <span class="btn btn-ghost normal-case text-xl">My Store</span>
+    <a href="/" class="btn btn-ghost normal-case text-xl">Tienda de Mario</a>
   </div>
   <div class="flex-none">
     <span class="hidden sm:inline">

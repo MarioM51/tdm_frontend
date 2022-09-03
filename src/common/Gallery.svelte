@@ -4,6 +4,7 @@
   import WideRatio from "./WideRatio.svelte";
 
   export let allImages: string[] = [];
+  export let urlImages: string = null;
   let indedLoaded = 0;
   const loadedImages: string[] = [allImages[indedLoaded]];
 
@@ -73,7 +74,17 @@
       <img src="/favicon.ico" loading="lazy" alt="nature" />
     {:else}
       {#each loadedImages as src, imageIndex}
-        <img {src} loading="lazy" alt="nature" />
+        <img
+          {src}
+          loading="lazy"
+          alt="nature"
+          class:cursor-pointer={urlImages != null}
+          on:click={() => {
+            if (urlImages != null) {
+              window.location.href = urlImages;
+            }
+          }}
+        />
       {/each}
     {/if}
 

@@ -3,15 +3,29 @@
   import Like from "../common/Like.svelte";
   import { BlogModel } from "./blog_models";
 
+  export let onHomeScreen: boolean = false;
+
   const blogs = BlogModel.fromArrayJsonLDInDocument();
 </script>
 
 <section>
-  <h1 class="text-2xl font-bold underline">Blogs</h1>
+  <h1
+    class="text-2xl font-bold"
+    class:cursor-pointer={onHomeScreen}
+    class:underline={onHomeScreen}
+    on:click={() => {
+      if (onHomeScreen) {
+        window.location.href = "/blogs";
+      }
+    }}
+  >
+    Blogs
+  </h1>
+
   <div class="blogs">
     {#each blogs as b}
       <article
-        class="card sm:card-side bg-base-300 shadow-lg mb-16 sm:max-h-[280px]"
+        class="card sm:card-side bg-base-300 shadow-lg mb-16 last:mb-8 sm:max-h-[280px]"
       >
         <figure class="img_ratio_16_9_container w-full md:max-w-[400px]">
           <Like type="blogs" id={b.id} amount={b.likes} />
