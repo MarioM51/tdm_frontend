@@ -6,6 +6,8 @@
 <main>
   <h1 class="text-3xl font-bold mb-8">Tienda De Mario</h1>
 
+  <h2>{import.meta.env.VITE_APP_TITLE}</h2>
+
   <ProductStorePage onHomeScreen={true} />
   <div class="flex justify-end">
     <a href="/products" class="link link-primary text-base font-bold"

@@ -3,24 +3,27 @@
   import ButtonAsyncAction from "../common/ButtonAsyncAction.svelte";
 
   import OrdersViewModel from "./OrdersClientViewModel";
+  import InfoPayment from "./InfoPayment";
 
   const orderVM = OrdersViewModel.getInstance();
   orderVM.onInit();
 
   //observers
   const orders = orderVM.getOrders();
+  const errormsg = orderVM.getErrorMessage();
+
   const reqAdd = orderVM.getReqAdd();
   const reqAll = orderVM.getReqAll();
-  const errormsg = orderVM.getErrorMessage();
+  const reqPayment = orderVM.getReqAll();
 </script>
 
 <div>
-  <h1 class="text-2xl font-bold underline">Orders</h1>
+  <h1 class="text-2xl font-bold underline">Ordenes</h1>
   {#await $reqAll}
-    <center><LoadingSpiner />Fetching orders...</center>
+    <center><LoadingSpiner />Buscando ordenes realizadas...</center>
   {/await}
   {#await $reqAdd}
-    <center><LoadingSpiner />Adding...</center>
+    <center><LoadingSpiner />Agregando orden...</center>
   {/await}
   {#if $errormsg != null}
     <center>{$errormsg}</center>
@@ -28,19 +31,19 @@
 
   {#if $orders.length <= 0}
     {#if $reqAdd == null}
-      Add a order whit the shoping car
+      Aun ningun producto agregado
     {/if}
   {:else}
     {#each $orders as order}
       <div class="card overflow-x-auto bg-neutral mt-4">
         <div class="card-body">
           <h2 class="card-title text-white">
-            Order ID: {order.id}
+            Orden ID: {order.id}
           </h2>
           <table class="table w-full table-compact mb-2">
             <thead>
               <th>Name</th>
-              <th>Add Up</th>
+              <th>Agregado</th>
             </thead>
             <tbody>
               {#each order.products as l}
@@ -77,12 +80,28 @@
           </div>
           {#if order.confirmed_at != null && order.accepted_at == null}
             <p class="text-primary-content text-center">
-              Waiting to be accepted
+              Esperando ser aceptada
             </p>
           {/if}
 
           {#if order.accepted_at != null}
-            <p class="text-primary-content text-center">Order Accepted</p>
+            <div class="text-primary-content">
+              <p class="text-center mb-8">Orden Aceptada</p>
+              {#await $reqPayment}
+                <center><LoadingSpiner />Obteniendo informacion de pago</center>
+              {/await}
+              <div class="payment-info">
+                <p class="font-bold text-lg ">Informacion de pago</p>
+                <p>Clabe: <span>{InfoPayment.CLABE}</span></p>
+                <p>
+                  Nombre del beneficiario: <span>{InfoPayment.OWNER}</span>
+                </p>
+                <p>Banco/Entidad: <span>{InfoPayment.BANK_NAME}</span></p>
+                <p>Importe: <span>${order.totalSum()}.00</span></p>
+                <p>Referencia: <span>{order.id}</span></p>
+                <p>Concepto: <span>{InfoPayment.CONCEPT}</span></p>
+              </div>
+            </div>
           {/if}
         </div>
       </div>
@@ -93,6 +112,14 @@
 
 <style>
   @import "/static/tailwin.css";
+
+  .payment-info p {
+    margin-bottom: 0.5rem;
+  }
+
+  .payment-info p span {
+    font-style: italic;
+  }
 
   hr {
     margin-top: 1rem;
