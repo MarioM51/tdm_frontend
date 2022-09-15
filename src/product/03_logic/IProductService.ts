@@ -3,15 +3,15 @@ import type ProductModel from "../01_model/ProductModel"
 
 export default interface IProductService {
 
-  findAll():Promise<ProductModel[]>
+  findAll(): Promise<ProductModel[]>
 
-  add(toAdd:ProductModel):Promise<ProductModel>
+  add(toAdd: ProductModel): Promise<ProductModel>
 
   edit(arg0: ProductModel): Promise<ProductModel>
-  
+
   remove(arg0: ProductModel): Promise<ProductModel>
 
-  addFile(idProduct:number, images:FileList[]): Promise<ProductImage>
+  addFile(idProduct: number, images: FileList[]): Promise<ProductImage[]>
 
   removeImage(img: ProductImage): Promise<ProductImage>
 

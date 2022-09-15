@@ -7,31 +7,31 @@ import ProductImage from "./ProductImage";
 export default class ProductModel {
 
   constructor(
-    public id:number=null,
-    public name:string=null,
-    public price:number=null,
-    public images:ProductImage[]=[],
-    public imageUrls:string[]=[],
-    public description:string=null,
-    public likes:number=null,
-    public files: FileList=null,
-    public comments: CommentModel[]=[],
-    public onHomeScreen: Date=null,
+    public id: number = null,
+    public name: string = null,
+    public price: number = null,
+    public images: ProductImage[] = [],
+    public imageUrls: string[] = [],
+    public description: string = null,
+    public likes: number = null,
+    public files: FileList = null,
+    public comments: CommentModel[] = [],
+    public onHomeScreen: Date = null,
     public commentCount: number = 0,
     public commentsRating: number = 0,
-  ){}
+  ) { }
 
   public static fromJson(rawProduct: any): ProductModel {
     const p = new ProductModel();
     Object.assign(p, rawProduct);
-    if(rawProduct.images != null) {
-      p.images = rawProduct.images.map(i => ProductImage.fromJson(i) );
+    if (rawProduct.images != null) {
+      p.images = rawProduct.images.map(i => ProductImage.fromJson(i));
     } else {
       p.images = [];
     }
 
-    p.onHomeScreen = DateUtils.castDateFromServer(rawProduct.onHomeScreen); 
-    
+    p.onHomeScreen = DateUtils.castDateFromServer(rawProduct.onHomeScreen);
+
     return p
   }
 
@@ -39,7 +39,7 @@ export default class ProductModel {
   public static fromArrayJsonLDInDocument(): ProductModel[] {
     const elmJson = ProductModel.textElementInDocumentToJsonById("products_jsonld");
     const arrayJsonld = elmJson.itemListElement;
-    const products:ProductModel[] = arrayJsonld.map(ProductModel.fromLDJson);
+    const products: ProductModel[] = arrayJsonld.map(ProductModel.fromLDJson);
     return products
   }
 
@@ -49,15 +49,15 @@ export default class ProductModel {
     return products;
   }
 
-  private static textElementInDocumentToJsonById(idElement:string):any {
-    const elm = document.querySelector("#"+idElement) as any;
+  private static textElementInDocumentToJsonById(idElement: string): any {
+    const elm = document.querySelector("#" + idElement) as any;
     const elmText = elm.innerText;
     const elmJson = JSON.parse(elmText);
     return elmJson;
   }
-  
 
-  private static fromLDJson(rawProduct:any): ProductModel {
+
+  private static fromLDJson(rawProduct: any): ProductModel {
     const product = new ProductModel();
     product.id = rawProduct.identifier;
     product.name = rawProduct.name;
@@ -72,13 +72,13 @@ export default class ProductModel {
     return product;
   }
 
-  public hasImages():boolean {
+  public hasImages(): boolean {
     const resp = this.images.length > 0 && this.images[0] != null;
     return resp;
   }
 
-  public getUrl():string {
+  public getUrl(): string {
     return "/products/" + RouteUtiles.toSlug(this.name) + "-" + this.id;
   }
-  
+
 }

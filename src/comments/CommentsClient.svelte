@@ -1,6 +1,6 @@
 <script lang="ts">
   import AuthViewModel from "../auth/04_viewModel/auth/AuthViewModel";
-  import ButtonAsyncAction from "../common/ButtonAsyncAction.svelte";
+  import ButtonAsyncActionOnCollection from "../common/ButtonAsyncActionOnCollection.svelte";
   import CommentForm from "./CommentForm.svelte";
   import type CommentModel from "./CommentModel";
   import CommentsClientViewModel from "./CommentsClientViewModel";
@@ -16,7 +16,7 @@
   const allComments = commentVM.getAll();
   const allReq = commentVM.getAllReq();
   const addReq = commentVM.getAddReq();
-  const delReq = commentVM.getDeleteReq();
+  const delReqs = commentVM.getDeleteReq();
   const session = _authVM.getSession();
 
   function removeComment(c: CommentModel): void {
@@ -46,13 +46,16 @@
         <div class="rating absolute right-1 top-1">
           {#if $session?.id == c.idUser}
             <div style="max-width: 90px;">
-              <ButtonAsyncAction
+              <ButtonAsyncActionOnCollection
                 label="Remove"
                 clases="btn btn-sm btn-error"
                 onAct={() => {
+                  console.log("delReqs1", $delReqs);
                   removeComment(c);
+                  console.log("delReqs2", $delReqs);
                 }}
-                obs={delReq}
+                observers={delReqs}
+                indexItem={numComm}
               />
             </div>
           {/if}

@@ -67,7 +67,7 @@
 
   function deleteImage(): void {
     const isLocal = images[currentIndex].startsWith("data:image");
-    if(isLocal) {
+    if (isLocal) {
       removeCurrentImage();
     } else {
       onDelete(currentIdImage);
@@ -76,8 +76,8 @@
   deleteImageReq.subscribe((delReq) => {
     if (delReq != null) {
       delReq.then((img) => {
-        if (currentIdImage == img.id_image) {
-          removeCurrentImage()
+        if (currentIdImage == img.id) {
+          removeCurrentImage();
         }
       });
     }

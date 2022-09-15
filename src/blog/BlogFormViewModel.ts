@@ -13,62 +13,62 @@ import { BlogAdminViewModel } from "./BlogAdminViewModel";
 
 export default interface IBlogFormViewModel {
 
-  onInit():void
-  onDestroy():void
+  onInit(): void
+  onDestroy(): void
 
-  findBlogById(id:number): void;
-  save():void
-  edit():void
-  deletePost():void
+  findBlogById(id: number): void;
+  save(): void
+  edit(): void
+  deletePost(): void
 
-  getBlogOnForm():Readable<BlogModel>;
-  getBlogOnFormReq():Readable<Promise<BlogModel>>;
-  getBlogDeleteReq():Readable<Promise<BlogModel>>;
-  getErrorBlogMsg():Readable<string>;
+  getBlogOnForm(): Readable<BlogModel>;
+  getBlogOnFormReq(): Readable<Promise<BlogModel>>;
+  getBlogDeleteReq(): Readable<Promise<BlogModel>>;
+  getErrorBlogMsg(): Readable<string>;
 }
 
 
 export class BlogFormViewModel implements IBlogFormViewModel {
 
-  private static instance:IBlogFormViewModel = null;
+  private static instance: IBlogFormViewModel = null;
 
-  private _blogServ:IBlogService = BlogService.getInstance();
+  private _blogServ: IBlogService = BlogService.getInstance();
   private _authMV: IAuthViewModel = AuthViewModel.getInstance();
-  private _blogAdminVM:IBlogAdminViewModel = BlogAdminViewModel.getInstance();
+  private _blogAdminVM: IBlogAdminViewModel = BlogAdminViewModel.getInstance();
 
 
-  private _blogOnForm:Writable<BlogModel> = writable(new BlogModel(0,"","",null,"",null,null));
-  private _blogOnFormReq:Writable<Promise<BlogModel>> = writable(null);
-  private _blogDeleteReq:Writable<Promise<BlogModel>> = writable(null);
-  
-  private _errorBlogMsg:Writable<string> = writable(null);
+  private _blogOnForm: Writable<BlogModel> = writable(new BlogModel(0, "", "", null, "", null, null));
+  private _blogOnFormReq: Writable<Promise<BlogModel>> = writable(null);
+  private _blogDeleteReq: Writable<Promise<BlogModel>> = writable(null);
 
-  private constructor(){}
+  private _errorBlogMsg: Writable<string> = writable(null);
 
-  public static getInstance():IBlogFormViewModel {
-    if(BlogFormViewModel.instance == null ) {
+  private constructor() { }
+
+  public static getInstance(): IBlogFormViewModel {
+    if (BlogFormViewModel.instance == null) {
       BlogFormViewModel.instance = new BlogFormViewModel();
     }
 
     return BlogFormViewModel.instance;
   }
 
-  public onInit():void {
+  public onInit(): void {
     this._errorBlogMsg.set(null);
   }
 
-  public onDestroy():void {
+  public onDestroy(): void {
     this._blogOnFormReq.set(null);
-    this._blogOnForm.set(new BlogModel(0,"","",null,"",null,null));
+    this._blogOnForm.set(new BlogModel(0, "", "", null, "", null, null));
     this._errorBlogMsg.set(null);
   }
 
   public findBlogById(id: number): void {
-    if(id == 0) {
-      return ;
+    if (id == 0) {
+      return;
     }
 
-    const req:Promise<BlogModel> = this._blogServ.findById(id);
+    const req: Promise<BlogModel> = this._blogServ.findById(id);
     this._blogOnFormReq.set(req);
 
     req
@@ -81,22 +81,22 @@ export class BlogFormViewModel implements IBlogFormViewModel {
         this._errorBlogMsg.set(null);
       })
       .catch(err => {
-        ErrorModel.handleRequestErrors(err, this._errorBlogMsg, this._authMV) 
+        ErrorModel.handleRequestErrors(err, this._errorBlogMsg, this._authMV)
       })
       .finally(() => {
         setTimeout(() => {
           this._blogOnFormReq.set(null);
         }, 100);
       })
-    ;
+      ;
   }
 
   public save(): void {
-    const addReq:Promise<BlogModel> = this._blogServ.save(get(this._blogOnForm));
+    const addReq: Promise<BlogModel> = this._blogServ.save(get(this._blogOnForm));
     this._blogOnFormReq.set(addReq);
 
     addReq
-      .then(b => { 
+      .then(b => {
         console.log("saved", b);
         replace("/blogs")
         this._blogAdminVM.showMessage(new AlertMessage("Blog '" + b.title + "' added", "success"))
@@ -108,16 +108,16 @@ export class BlogFormViewModel implements IBlogFormViewModel {
       .finally(() => {
         this._blogOnFormReq.set(null);
       })
-    ;
+      ;
   }
 
 
   public edit(): void {
-    const editReq:Promise<BlogModel> = this._blogServ.edit(get(this._blogOnForm));
+    const editReq: Promise<BlogModel> = this._blogServ.edit(get(this._blogOnForm));
     this._blogOnFormReq.set(editReq);
 
     editReq
-      .then(b => { 
+      .then(b => {
         console.log("Edited", b);
         replace("/blogs")
         this._blogAdminVM.showMessage(new AlertMessage("Blog '" + b.title + "' edited", "success"))
@@ -129,15 +129,15 @@ export class BlogFormViewModel implements IBlogFormViewModel {
       .finally(() => {
         this._blogOnFormReq.set(null);
       })
-    ;
+      ;
   }
 
   public deletePost(): void {
-    const delReq:Promise<BlogModel> = this._blogServ.deletePost(get(this._blogOnForm));
+    const delReq: Promise<BlogModel> = this._blogServ.deletePost(get(this._blogOnForm));
     this._blogOnFormReq.set(delReq);
 
     delReq
-      .then(b => { 
+      .then(b => {
         console.log("deleted", b);
         replace("/blogs")
         this._blogAdminVM.showMessage(new AlertMessage("Blog '" + b.title + "' deleted", "success"))
@@ -149,7 +149,7 @@ export class BlogFormViewModel implements IBlogFormViewModel {
       .finally(() => {
         this._blogOnFormReq.set(null);
       })
-    ;
+      ;
 
   }
 
@@ -158,7 +158,7 @@ export class BlogFormViewModel implements IBlogFormViewModel {
   public getBlogOnForm(): Readable<BlogModel> {
     return this._blogOnForm;
   }
-  
+
   public getBlogOnFormReq(): Readable<Promise<BlogModel>> {
     return this._blogOnFormReq;
   }

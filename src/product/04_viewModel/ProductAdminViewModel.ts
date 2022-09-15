@@ -12,37 +12,37 @@ import type ProductImage from "../01_model/ProductImage";
 export default class ProductAdminViewModel implements IProductViewModel {
 
   //utils
-  private static _instance:IProductViewModel = null;
-  private readonly _productServ:IProductService = new ProductService();
+  private static _instance: IProductViewModel = null;
+  private readonly _productServ: IProductService = new ProductService();
   private _authMV: IAuthViewModel = AuthViewModel.getInstance();
 
   //Data UI
-  private _products:Writable<ProductModel[]> = writable([]);
-  private _productsRequest:Writable<Promise<ProductModel[]>> = writable(null);
+  private _products: Writable<ProductModel[]> = writable([]);
+  private _productsRequest: Writable<Promise<ProductModel[]>> = writable(null);
 
-  private _productOnForm:Writable<ProductModel> = writable(null);
-  private _productOnFormRequest:Writable<Promise<ProductModel>> = writable(null);
-  private _uploadImageReq:Writable<Promise<ProductImage>> = writable(null);
-  private _oldInfoOnForm:ProductModel = null;
+  private _productOnForm: Writable<ProductModel> = writable(null);
+  private _productOnFormRequest: Writable<Promise<ProductModel>> = writable(null);
+  private _uploadImageReq: Writable<Promise<ProductImage[]>> = writable(null);
+  private _oldInfoOnForm: ProductModel = null;
 
-  private _productToDelete:Writable<ProductModel> = writable(null);
-  private _productToDeleteRequest:Writable<Promise<ProductModel>> = writable(null);
+  private _productToDelete: Writable<ProductModel> = writable(null);
+  private _productToDeleteRequest: Writable<Promise<ProductModel>> = writable(null);
 
-  private _deleteImageReq:Writable<Promise<ProductImage>> = writable(null);
+  private _deleteImageReq: Writable<Promise<ProductImage>> = writable(null);
 
-  private _errorProductsMsg:Writable<string> = writable(null);
-  private _errorFormMsg:Writable<string> = writable(null);
-  private _errorUploadImage:Writable<string> = writable(null);
+  private _errorProductsMsg: Writable<string> = writable(null);
+  private _errorFormMsg: Writable<string> = writable(null);
+  private _errorUploadImage: Writable<string> = writable(null);
 
-  private constructor(){}
+  private constructor() { }
 
-  public static getInstance():IProductViewModel {
-    if(ProductAdminViewModel._instance == null) {
+  public static getInstance(): IProductViewModel {
+    if (ProductAdminViewModel._instance == null) {
       ProductAdminViewModel._instance = new ProductAdminViewModel();
     }
     return ProductAdminViewModel._instance;
   }
-  
+
   public onInit(): void {
     this._productOnFormRequest.set(null)
     this._productToDeleteRequest.set(null)
@@ -53,10 +53,10 @@ export default class ProductAdminViewModel implements IProductViewModel {
     allProdRequest
       .then(allProductsFinded => this._products.set(allProductsFinded))
       .catch(err => ErrorModel.handleRequestErrors(err, this._errorProductsMsg, this._authMV))
-    ;
+      ;
   }
 
-  public onClickAdd():void {
+  public onClickAdd(): void {
     this._productOnForm.set(new ProductModel())
   }
   public onSubmitAdd(image: FileList[]): void {
@@ -76,7 +76,7 @@ export default class ProductAdminViewModel implements IProductViewModel {
           this._uploadImageReq.set(uploadImageReq);
           uploadImageReq
             .then(imageAdded => {
-              productAdded.images.unshift(imageAdded);
+              productAdded.images.unshift(...imageAdded);
               //Update UI when image product is uploaded
               this.productAddedSucces(productAdded);
 
@@ -85,7 +85,7 @@ export default class ProductAdminViewModel implements IProductViewModel {
               ErrorModel.handleRequestErrors(saveImageError, this._errorUploadImage, this._authMV)
               this._uploadImageReq.set(null);
             })
-          ;
+            ;
         } else {
           this.productAddedSucces(productAdded);
         }
@@ -93,10 +93,10 @@ export default class ProductAdminViewModel implements IProductViewModel {
       .catch(saveProductError => {
         ErrorModel.handleRequestErrors(saveProductError, this._errorFormMsg, this._authMV)
       })
-    ;
+      ;
   }
 
-  private productAddedSucces(added:ProductModel):void {
+  private productAddedSucces(added: ProductModel): void {
     this._uploadImageReq.set(null);
     this._products.update(table => {
       table.push(added);
@@ -109,7 +109,7 @@ export default class ProductAdminViewModel implements IProductViewModel {
 
 
   public onClickRemove(rowNum: number): void {
-    if(rowNum < 0) {
+    if (rowNum < 0) {
       this._productToDelete.set(null);
     }
 
@@ -130,19 +130,19 @@ export default class ProductAdminViewModel implements IProductViewModel {
       .catch(err => {
         ErrorModel.handleRequestErrors(err, this._errorProductsMsg, this._authMV)
       })
-    ; 
+
   }
 
-  
+
 
   public onClickEdit(rowNum: number): void {
-    if(rowNum < 0) {
+    if (rowNum < 0) {
       this.closeProductForm()
     }
     this._productOnForm.set(get(this._products)[rowNum]);
     this._oldInfoOnForm = get(this._products)[rowNum]
   }
-  public onConfirmEdit(image:FileList[]): void {
+  public onConfirmEdit(image: FileList[]): void {
     //send request
     const editReq = this._productServ.edit(get(this._productOnForm));
     this._productOnFormRequest.set(editReq);
@@ -156,7 +156,7 @@ export default class ProductAdminViewModel implements IProductViewModel {
 
           uploadImageReq
             .then(imageAdded => {
-              pEdited.images.unshift(imageAdded);
+              pEdited.images.unshift(...imageAdded);
               //Update UI when image product is uploaded
               this.productUpdateSuccess(pEdited);
             })
@@ -164,28 +164,31 @@ export default class ProductAdminViewModel implements IProductViewModel {
               ErrorModel.handleRequestErrors(updateImageError, this._errorUploadImage, this._authMV)
               this._uploadImageReq.set(null);
             })
-          ;
+            ;
         } else {
           //letting the image like it was
           pEdited.images = get(this._productOnForm).images;
-          pEdited.files = get(this._productOnForm).files
+          pEdited.files = get(this._productOnForm).files;
           this.productUpdateSuccess(pEdited);
         }
-      //react to error edit response
+        //react to error edit response
       })
       .catch(err => {
         ErrorModel.handleRequestErrors(err, this._errorProductsMsg, this._authMV)
       })
-    ;
+      ;
   }
 
-  private productUpdateSuccess(pEdited:ProductModel) {
+  private productUpdateSuccess(pEdited: ProductModel, closeForm: boolean = true) {
     this._products.update((table) => {
       const index = table.findIndex(p => p.id == get(this._productOnForm).id)
       table[index] = pEdited;
       return table;
     });
-    this.closeProductForm()
+    if (closeForm) {
+      this.closeProductForm();
+    }
+
   }
 
   public closeProductForm(): void {
@@ -196,14 +199,16 @@ export default class ProductAdminViewModel implements IProductViewModel {
   }
 
   public onDeleteImage(idImage: number): void {
-    const imgToDel = get(this._productOnForm).images.filter(i => i.id_image == idImage)[0];
+    const productOnForm = get(this._productOnForm);
+    const imgToDel = productOnForm.images.filter(i => i.id == idImage)[0];
     const delReq = this._productServ.removeImage(imgToDel);
-    this._deleteImageReq.set(delReq); 
+    this._deleteImageReq.set(delReq);
 
-    delReq.then((_)=>{
-      get(this._productOnForm).images = get(this._productOnForm).images.filter(i => i.id_image != idImage);
+    delReq.then((_) => {
+      productOnForm.images = productOnForm.images.filter(i => i.id != idImage);
+      this.productUpdateSuccess(productOnForm, false);
     });
-    
+
     delReq.catch(err => {
       ErrorModel.handleRequestErrors(err, this._errorProductsMsg, this._authMV)
     });
@@ -213,23 +218,23 @@ export default class ProductAdminViewModel implements IProductViewModel {
     })
   }
 
-  public getProducts():Readable<ProductModel[]> { return this._products; }
-  public getProductsRequest():Readable<Promise<ProductModel[]>> { return this._productsRequest; }
-  
-  public getProductOnForm():Readable<ProductModel> { return this._productOnForm; }
-  public getProductOnFormRequest():Readable<Promise<ProductModel>> { return this._productOnFormRequest; }
-  public getUploadImageReq():Readable<Promise<ProductImage>> { return this._uploadImageReq; }
+  public getProducts(): Readable<ProductModel[]> { return this._products; }
+  public getProductsRequest(): Readable<Promise<ProductModel[]>> { return this._productsRequest; }
 
-  public getProductToDelete():Readable<ProductModel> { return this._productToDelete; }
-  public getProductToDeleteRequest():Readable<Promise<ProductModel>> { return this._productToDeleteRequest; }
+  public getProductOnForm(): Readable<ProductModel> { return this._productOnForm; }
+  public getProductOnFormRequest(): Readable<Promise<ProductModel>> { return this._productOnFormRequest; }
+  public getUploadImageReq(): Readable<Promise<ProductImage[]>> { return this._uploadImageReq; }
 
-  public getErrorMsg():Readable<string> { return this._errorProductsMsg }
-  public getErrorFormMsg():Readable<string> { return this._errorFormMsg }
-  public getErrorUploadImage():Readable<string> { return this._errorUploadImage }
+  public getProductToDelete(): Readable<ProductModel> { return this._productToDelete; }
+  public getProductToDeleteRequest(): Readable<Promise<ProductModel>> { return this._productToDeleteRequest; }
+
+  public getErrorMsg(): Readable<string> { return this._errorProductsMsg }
+  public getErrorFormMsg(): Readable<string> { return this._errorFormMsg }
+  public getErrorUploadImage(): Readable<string> { return this._errorUploadImage }
 
 
-  public getDeleteImageReq():Readable<Promise<ProductImage>> { return this._deleteImageReq; }
-  
+  public getDeleteImageReq(): Readable<Promise<ProductImage>> { return this._deleteImageReq; }
+
 
 
 }
