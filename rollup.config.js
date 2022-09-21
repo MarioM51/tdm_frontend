@@ -6,6 +6,10 @@ import { terser } from 'rollup-plugin-terser';
 import sveltePreprocess from 'svelte-preprocess';
 import typescript from '@rollup/plugin-typescript';
 import { readdirSync } from 'fs';
+
+const dotenv = require("dotenv")
+dotenv.config()
+
 //import livereload from 'rollup-plugin-livereload';
 //import css from 'rollup-plugin-css-only';
 
@@ -33,9 +37,10 @@ function serve() {
   };
 }
 */
+const static_resources_version = process.env.STATIC_FILES_VERSION;
 const input_path = 'src/web_components';
-const output_path_dev = './../api/public/static/web_components';
-const output_path_deploy = './dist/public/static/web_components';
+const output_path_dev = './../api/public/static_'+static_resources_version+'/web_components';
+const output_path_deploy = './build/public/static_'+static_resources_version+'/web_components';
 let entryPoints = readFiles()
 
 function readFiles() {

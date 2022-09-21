@@ -6,10 +6,7 @@
     "build": "vite build --outDir ./dist/public/admin-spa",
     "wc_build": "rollup -c --environment BUILD:deploy",
     "wc_build_styles": "npx tailwindcss -c ./tailwind.config.cjs -i ./src/common/input.css -o ./dist/public/static/tailwin.css",
-    "dev": "vite",
-    "dev_test": "vite build --outDir ./../api/public/admin-spa --watch",
-    "wc_dev": "rollup -c -w",
-    "wc_dev_styles": "npx tailwindcss -c ./tailwind.config.cjs -w -i ./src/common/input.css -o ./../api/public/static/tailwin.css",
+    "dev": "bash ./start_dev_mode.sh",
     "preview": "vite preview",
     "check": "svelte-check --tsconfig ./tsconfig.json"
   },
@@ -36,6 +33,7 @@
     "tailwindcss": "^3.0.17",
     "tslib": "^2.3.1",
     "typescript": "^4.4.4",
+    "dotenv": "^16.0.2",
     "vite": "^2.7.2"
   },
   "dependencies": {

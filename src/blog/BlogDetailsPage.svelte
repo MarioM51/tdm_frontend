@@ -33,7 +33,7 @@
 </article>
 
 <style>
-  @import "/static/tailwin.css";
+  @import "/static_003/tailwin.css";
   @import "/static/blog_content.css";
 
   @media screen and (min-width: 641px) {

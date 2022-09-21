@@ -1,5 +1,6 @@
 #!/bin/bash
 set -e 
+source .env
 
 echo "#### frontend building start"
 
@@ -16,8 +17,7 @@ done
 
 
 if [ "$output_dir" == "null" ]; then
-  echo "--output_dir: output building files directory required"
-  exit 1
+  echo "--output_dir: not defined, leaving build folder result in the same place"
 fi
 
 SCRIPTPATH="$( cd "$(dirname "$0")" >/dev/null 2>&1 ; pwd -P )"
@@ -25,30 +25,30 @@ cd $SCRIPTPATH
 
 
 #Compile tailwind styles
-npm run wc_build_styles
+npx tailwindcss \
+  --config ./tailwind.config.cjs \
+  --input ./src/common/input.css \
+  --output ./build/public/static_$STATIC_FILES_VERSION/tailwin.css
 
 #Build spa admin
-npm run build
-#---changes to avoid problems of deliver spa in a sub-folder, and not in root-folder
-
-sed -i -e 's|/assets/|./assets/|g' ./dist/public/admin-spa/index.html
-
-sed -i -e 's|/favicon.ico|./favicon.ico|g' ./dist/public/admin-spa/index.html
-
-sed -i -e 's|assets/|./admin/assets/|g' ./dist/public/admin-spa/assets/index.*.js
-
-sed -i -e 's|"/favicon.ico|"./favicon.ico|g' ./dist/public/admin-spa/assets/*.js
-sed -i -e 's|"favicon.ico|"./favicon.ico|g' ./dist/public/admin-spa/assets/*.js
-
+npx vite build \
+  --base $HOST/admin/ \
+  --outDir ./build/public/admin-spa
 
 #Bulld web components for the go templates
-npm run wc_build
+npx rollup \
+  --config ./rollup.config.js \
+  --environment BUILD:deploy
 
-#Copy static (not generated) files
-cp -v ./src/00_assets/blog_content.css ./dist/public/static
-cp -v ./public/favicon.ico ./dist/public/static
+#Copy static (not generated) files to build folder
+cp -v ./src/00_assets/blog_content.css ./build/public/static_$STATIC_FILES_VERSION
+cp -v ./public/favicon.ico ./build/public/static_$STATIC_FILES_VERSION
 
 #Copy generated files to dist folder
-cp -v -r ./dist/public/ $output_dir
+if [ "$output_dir" != "null" ]; then
+  cp -v -r ./build/public/ $output_dir
+fi
+
 
 echo "#### frontend building finish"
+

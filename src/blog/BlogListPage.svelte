@@ -74,7 +74,7 @@
 </section>
 
 <style>
-  @import "/static/tailwin.css";
+  @import "/static_003/tailwin.css";
   .blogs {
     margin-top: 2rem;
   }

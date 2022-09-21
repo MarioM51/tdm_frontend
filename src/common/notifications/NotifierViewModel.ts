@@ -1,7 +1,33 @@
 
 import type { Readable, Writable } from "svelte/store";
-import Context from "../Context";
 import MyNotification from "./MyNotification";
+
+class Context {
+
+  getNotifications(): Writable<MyNotification[]> {
+    throw new Error("Method not implemented.");
+  }
+  getMainMessage(): Writable<string> {
+    throw new Error("Method not implemented.");
+  }
+  setMainMessage(msg: string) {
+    throw new Error("Method not implemented.");
+  }
+
+  private static _instance: Context = null;
+
+  public static getInstance(): Context {
+    if (Context._instance == null) {
+      Context._instance = new Context();
+    }
+    return Context._instance;
+  }
+
+  private constructor() {
+
+  }
+
+}
 
 export default class NotifierViewModel {
 

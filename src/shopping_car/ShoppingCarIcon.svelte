@@ -153,5 +153,5 @@
 </div>
 
 <style>
-  @import "/static/tailwin.css";
+  @import "/static_003/tailwin.css"; ;
 </style>

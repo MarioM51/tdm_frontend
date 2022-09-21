@@ -111,8 +111,6 @@
 </div>
 
 <style>
-  @import "/static/tailwin.css";
-
   .payment-info p {
     margin-bottom: 0.5rem;
   }
