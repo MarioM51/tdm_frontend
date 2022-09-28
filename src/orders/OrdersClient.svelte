@@ -80,7 +80,7 @@
           </div>
           {#if order.confirmed_at != null && order.accepted_at == null}
             <p class="text-primary-content text-center">
-              Esperando ser aceptada
+              Se revizara su pedido para ver si puede ser realizado.
             </p>
           {/if}
 

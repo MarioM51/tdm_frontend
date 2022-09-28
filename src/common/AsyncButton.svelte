@@ -3,6 +3,7 @@
 
   export let label: string;
   export let onClick: AsyncAction;
+  export let className: string = "";
 
   let req: Promise<any>;
 
@@ -16,8 +17,8 @@
 
 <div>
   {#await req}
-    Cargando...
+    <button class={className} disabled>{label}</button>
   {:then _}
-    <button on:click={action}>{label}</button>
+    <button class={className} on:click={action}>{label}</button>
   {/await}
 </div>

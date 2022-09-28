@@ -116,7 +116,7 @@
 </div>
 
 <style>
-  @import "/static_003/tailwin.css";
+  @import "http://192.168.1.81/static_003/tailwin.css";
 
   .page-container {
     /* padding-top: 5rem; */

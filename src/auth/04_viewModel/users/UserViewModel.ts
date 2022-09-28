@@ -10,6 +10,7 @@ import AuthService from '../../03_logic/AuthService';
 import type IAuthService from '../../03_logic/IAuthService';
 import type UserModel from '../../01_model/UserModel';
 import ErrorModel from '../../../error/ErrorModel';
+import AlertMessage from '../../../common/AlertMessage';
 
 export default class UserViewModel implements IUserViewModel {
 
@@ -36,6 +37,7 @@ export default class UserViewModel implements IUserViewModel {
   public allRols: Writable<RolModel[]> = writable([]);
 
   private static _instance: IUserViewModel = null;
+  private _notification: Writable<AlertMessage> = writable(null);;
 
   public static getInstance(): IUserViewModel {
     if (UserViewModel._instance === null) {
@@ -105,9 +107,14 @@ export default class UserViewModel implements IUserViewModel {
             if (finded) {
               user = get(this._userToEdit)
             }
-          })
+          });
           return table;
         });
+
+        this._notification.set(new AlertMessage("Cambios guardados", "success"));
+        setTimeout(() => {
+          this._notification.set(null);
+        }, 5000);
 
         this._userToEdit.set(null)//to close modal
         this._userRequestEdit.set(null);//clear memory
@@ -162,6 +169,14 @@ export default class UserViewModel implements IUserViewModel {
   public editUserDetails(): void {
     this._userToEdit.set(get(this._userDetails));
     this.onSubmitEdit();
+  }
+
+  public hiddeMotification(): void {
+    this._notification.set(null);
+  }
+
+  public getNotification(): Readable<AlertMessage> {
+    return this._notification;
   }
 
   public get usersTable(): Readable<UserModel[]> { return this._usersTable }

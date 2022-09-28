@@ -1,6 +1,7 @@
 import type UserModel from "../../../auth/01_model/UserModel";
 import type { Readable } from "svelte/store";
 import type RolModel from "../../01_model/RolModel";
+import type AlertMessage from "../../../common/AlertMessage";
 
 
 export default interface IUserViewModel {
@@ -16,6 +17,7 @@ export default interface IUserViewModel {
 
   fetchUserDetails(idUser: number): void
   editUserDetails(): void;
+  hiddeMotification(): void;
 
   get usersTable(): Readable<UserModel[]>
   get errorMsg(): Readable<String>
@@ -29,5 +31,6 @@ export default interface IUserViewModel {
 
   getUserDetails(): Readable<UserModel>
   getUserDetailsRequest(): Readable<Promise<UserModel>>
+  getNotification(): Readable<AlertMessage>;
 
 }

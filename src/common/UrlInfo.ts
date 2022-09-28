@@ -21,6 +21,7 @@ export default class UrlInfo {
         urls.push(
           new UrlInfo('Users', '#/users'),
           new UrlInfo('Orders', '#/orders'),
+          new UrlInfo('Comments', '#/comments'),
         )
       }
 

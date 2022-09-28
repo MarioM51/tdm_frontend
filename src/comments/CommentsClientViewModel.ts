@@ -1,5 +1,5 @@
 import { get, Readable, writable, Writable } from "svelte/store";
-import type CommentModel from "./CommentModel";
+import CommentModel from "./CommentModel";
 import UIAsyncCollection, { UIUpdateTypeItem } from "../helpers/UIHelper";
 import type ICommentService from "./ICommentService";
 import AuthViewModel from "../auth/04_viewModel/auth/AuthViewModel";
@@ -8,36 +8,68 @@ import type IAuthViewModel from "../auth/04_viewModel/auth/IAuthViewModel";
 export default class CommentViewModel {
 
   //tools
-  private readonly _commentServ:ICommentService;
-  private readonly _authVM:IAuthViewModel;
+  private readonly _commentServ: ICommentService;
+  private readonly _authVM: IAuthViewModel;
 
   //UI elements
-  private readonly _uiListComments:UIAsyncCollection<CommentModel> = null;
-  private readonly _errorMsg:Writable<string> = null;
+  private readonly _uiListComments: UIAsyncCollection<CommentModel> = null;
+  public readonly _errorMsg: Writable<string> = null;
 
-  constructor(commentsPreloaded:CommentModel[]=[], commentServImpl: ICommentService){
+  constructor(commentsPreloaded: CommentModel[] = [], commentServImpl: ICommentService) {
     this._commentServ = commentServImpl;
-    this._errorMsg = writable(null);
-    this._uiListComments = new UIAsyncCollection(commentsPreloaded, this._errorMsg);
+    this._errorMsg = writable(``);
+    const commentsWithResponse = CommentModel.mergeResponsesIntoComments(commentsPreloaded);
+    this._uiListComments = new UIAsyncCollection(commentsWithResponse, this._errorMsg);
     this._authVM = AuthViewModel.getInstance();
   }
 
-  public add(newComment:CommentModel):void {
+  public async add(newComment: CommentModel): Promise<CommentModel> {
     const userLogged = get(this._authVM.getSession());
-    if(userLogged == null) {
+    if (userLogged == null) {
       this._authVM.logout("session_required");
-      return ;
+      return;
     }
     newComment.idUser = userLogged.id;
     const addReq = this._commentServ.addComment(newComment);
     const updateType = UIUpdateTypeItem.ADD_TO_START;
 
-    this._uiListComments.getItemsObserver()
-
-    this._uiListComments.updateItemAsync(null, addReq, updateType);
+    const added = await this._uiListComments.updateItemAsync(null, addReq, updateType);
+    return added
   }
 
-  public remove(toDel:CommentModel):void {
+  public addResponse(newResponse: CommentModel): void {
+    if (newResponse.responseTo <= 0) {
+      this._errorMsg.set("Error inesperado (2bu2j9): intente mas tarde")
+      return
+    }
+    const userLogged = get(this._authVM.getSession());
+    if (userLogged == null) {
+      this._authVM.logout("session_required");
+      return;
+    }
+    newResponse.idUser = userLogged.id;
+    const addReq = this._commentServ.addResponse(newResponse);
+    this._uiListComments._addReq.set(addReq);
+
+    addReq
+      .then(responseSaved => {
+        this._uiListComments._allItemsInUI.update(comments => {
+          const commentResponded = comments.find(c => c.id == responseSaved.responseTo)
+          commentResponded.responses.push(responseSaved);
+          return comments;
+        });
+      })
+      .catch(err => {
+        this._uiListComments.handleGenericError(err);
+      })
+      .finally(() => {
+        this._uiListComments._addReq.set(addReq);
+      })
+
+
+  }
+
+  public remove(toDel: CommentModel): void {
     const removeRequest = this._commentServ.removeComment(toDel);
     const updateType = UIUpdateTypeItem.DELETE;
 
@@ -45,19 +77,19 @@ export default class CommentViewModel {
   }
 
   //Getters/Setters
-  public getAll():Readable<CommentModel[]> {
+  public getAll(): Readable<CommentModel[]> {
     return this._uiListComments.getItemsObserver();
   }
 
-  public getAllReq():Readable<Promise<CommentModel[]>> {
+  public getAllReq(): Readable<Promise<CommentModel[]>> {
     return this._uiListComments.getRemplaceAllReq();
   }
 
-  public getAddReq():Readable<Promise<CommentModel[]>> {
+  public getAddReq(): Readable<Promise<CommentModel[]>> {
     return this._uiListComments.getAddReq();
   }
 
-  public getDeleteReq():Readable<Array<Promise<CommentModel>>> {
+  public getDeleteReq(): Readable<Array<Promise<CommentModel>>> {
     return this._uiListComments.getDeleteReq();
   }
 

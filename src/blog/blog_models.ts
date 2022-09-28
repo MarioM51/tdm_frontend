@@ -139,11 +139,3 @@ export class BlogComment {
   }
 
 }
-
-export class AlertMessage {
-  constructor(
-    public msg: string,
-    public type: string
-  ) { }
-
-}

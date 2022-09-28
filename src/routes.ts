@@ -107,6 +107,23 @@ const routes = {
     ],
   }),
 
+  "/comments": wrap({
+    // Use a dynamically-loaded component for this
+    asyncComponent: () => import("./comments/CommentsAdmin.svelte"),
+    // Adding one pre-condition that's an async function
+    conditions: [
+      async (_) => {
+        const session = get(auth.getSession());
+        const isAuth = session != null && session.hasRols(["admin"]);
+        if (!isAuth) {
+          console.warn("Permision denied /comments");
+          replace("/");
+        }
+        return isAuth;
+      },
+    ],
+  }),
+
   // Catch-all
   // This is optional, but if present it must be the last
   "*": NotFound,

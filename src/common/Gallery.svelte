@@ -1,10 +1,11 @@
 <script lang="ts">
   import Carousel from "svelte-carousel";
-  import { Writable, writable } from "svelte/store";
+  import { writable } from "svelte/store";
   import WideRatio from "./WideRatio.svelte";
 
   export let allImages: string[] = [];
-  export let urlImages: string = null;
+  export let urlForAllImages: string = null;
+
   let indedLoaded = 0;
   const loadedImages: string[] = [allImages[indedLoaded]];
 
@@ -78,10 +79,14 @@
           {src}
           loading="lazy"
           alt="nature"
-          class:cursor-pointer={urlImages != null}
+          class:cursor-pointer={allImages != null && allImages.length > 0}
           on:click={() => {
-            if (urlImages != null) {
-              window.location.href = urlImages;
+            if (allImages != null && allImages.length > 0) {
+              if (urlForAllImages != null) {
+                window.location.href = urlForAllImages;
+              } else {
+                window.location.href = allImages[imageIndex];
+              }
             }
           }}
         />

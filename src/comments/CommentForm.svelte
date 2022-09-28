@@ -1,26 +1,33 @@
 <script lang="ts">
-  import { Readable, writable } from "svelte/store";
+  import { Readable, Writable, writable } from "svelte/store";
   import ButtonAsyncAction from "../common/ButtonAsyncAction.svelte";
   import CommentModel from "./CommentModel";
 
+  interface FnVoid {
+    (): void;
+  }
+
   interface FnSubmit<E> {
-    (resp: E): void;
+    (resp: E, cleanForm: FnVoid): void;
   }
 
   export let onSubmit: FnSubmit<CommentModel>;
   export let req: Readable<Promise<any>>;
+  export let errorMsg: Writable<string>;
 
   let comment = writable(new CommentModel());
-  let errorMsg: string = ``;
 
+  function cleanForm(): void {
+    comment.set(new CommentModel());
+  }
   function submit(): void {
-    errorMsg = $comment.validateInForm();
-    if (errorMsg != ``) {
+    const err = $comment.validateInForm();
+    errorMsg.set(err);
+    if ($errorMsg != ``) {
       return;
     }
     $comment.created_at = new Date();
-    onSubmit($comment);
-    comment.set(new CommentModel());
+    onSubmit($comment, cleanForm);
   }
   function calcel(): void {
     comment.update((c) => {
@@ -56,19 +63,19 @@
       class="textarea textarea-bordered h-24"
       placeholder="Write a new comment"
     />
-    {#if errorMsg != ``}
+    {#if $errorMsg != ``}
       <div class="label">
         <span class="label-text-alt" />
-        <span class="label-text-alt">{errorMsg}</span>
+        <span class="label-text-alt text-error">{$errorMsg}</span>
       </div>
     {/if}
   </div>
   <div class="flex justify-center sm:justify-end mt-1">
-    <button class="btn btn-error" on:click={calcel}>Cancel</button>
+    <button class="btn btn-error" on:click={calcel}>Borrar</button>
     <button class="" on:click={submit} />
 
     <ButtonAsyncAction
-      label="Publish"
+      label="Comentar"
       clases="btn btn-success ml-2"
       onAct={submit}
       obs={req}

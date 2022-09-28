@@ -1,9 +1,8 @@
 <script lang="ts">
   import { onMount, onDestroy } from "svelte";
-  import MdClose from "svelte-icons/md/MdClose.svelte";
-  import MdCheck from "svelte-icons/md/MdCheck.svelte";
 
   import { BlogAdminViewModel } from "./BlogAdminViewModel";
+  import Notification from "../common/Notification.svelte";
 
   const blodAdminMV = BlogAdminViewModel.getInstance();
   onMount(() => {
@@ -19,28 +18,14 @@
 </script>
 
 <section>
-  <div
-    class="alert shadow-lg p-1 w-[90%] flex flex-row mb-4 absolute bottom-0 right-3 max-w-xl"
-    class:hidden={$msg == null}
-  >
-    <div class="w-full px-4 pt-2">
-      <div class="icon-btn mx-3"><MdCheck /></div>
-      <div>
-        <h3>{$msg?.msg}</h3>
-        <!-- <div class="text-xs">You have 1 unread message</div> -->
-      </div>
-    </div>
-    <div class="flex-none">
-      <div
-        class="icon-btn m-3"
-        on:click={() => {
-          blodAdminMV.hiddeMessage();
-        }}
-      >
-        <MdClose />
-      </div>
-    </div>
-  </div>
+  <h1 class="text-2xl font-bold underline mb-8">Blogs</h1>
+
+  <Notification
+    {msg}
+    onClose={() => {
+      blodAdminMV.hiddeMessage();
+    }}
+  />
 
   {#if $blogsReq != null}
     <a class="btn btn-sm" href="#/blog-form/0">Agregar</a>
@@ -114,12 +99,3 @@
     <button class="btn">Cargar</button>
   {/if}
 </section>
-
-<style>
-  .icon-btn {
-    cursor: pointer;
-    width: 25px;
-    height: 25px;
-    margin: 5px;
-  }
-</style>

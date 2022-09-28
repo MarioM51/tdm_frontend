@@ -18,7 +18,7 @@
 
 <section class="page-container">
   <h1
-    class="text-2xl font-bold"
+    class="text-2xl font-bold my-4"
     class:cursor-pointer={onHomeScreen}
     class:underline={onHomeScreen}
     on:click={() => {
@@ -30,7 +30,7 @@
     Products
   </h1>
   {#if products.length <= 0}
-    There is no products
+    <p>No hay productos principales para mostrar</p>
   {/if}
 
   <div class="products">
@@ -39,7 +39,7 @@
         class="product card card-compact bg-base-200 shadow-xl min-w-[300px]"
       >
         <figure>
-          <Gallery allImages={p.imageUrls} urlImages={p.getUrl()} />
+          <Gallery allImages={p.imageUrls} urlForAllImages={p.getUrl()} />
           <Like type="products" id={p.id} amount={p.likes} />
         </figure>
         <div class="card-body">
@@ -58,18 +58,18 @@
               Comentarios: <kbd class="kbd kbd-sm">({p.commentCount})</kbd>
             </div>
             <div class="flex content-center justify-end">
-              <div>Calificacion:</div>
-              <kbd class="kbd kbd-sm">
-                <div class="rating">
+              <div class="rating mb-1">
+                Calificacion ({p.commentsRating}):
+                {#each [1, 2, 3, 4, 5] as i}
                   <input
                     type="radio"
                     name="rating-new-comment"
+                    value={i}
                     class="mask mask-star-2 bg-orange-400"
-                    checked
+                    checked={i <= Math.round(p.commentsRating)}
                   />
-                </div>
-                {p.commentsRating}
-              </kbd>
+                {/each}
+              </div>
             </div>
           </div>
         </div>
@@ -79,7 +79,7 @@
 </section>
 
 <style>
-  @import "/static_003/tailwin.css";
+  @import "http://192.168.1.81/static_003/tailwin.css";
 
   .products {
     display: flex;

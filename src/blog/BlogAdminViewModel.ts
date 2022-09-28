@@ -6,7 +6,7 @@ import { writable } from "svelte/store";
 import type IBlogService from "./BlogService";
 import { BlogService } from "./BlogService";
 import type { BlogModel } from "./blog_models";
-import type { AlertMessage } from "./blog_models";
+import type AlertMessage from "../common/AlertMessage";
 
 
 export default interface IBlogAdminViewModel {

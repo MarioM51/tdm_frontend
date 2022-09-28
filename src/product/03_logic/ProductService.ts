@@ -67,4 +67,15 @@ export default class ProductService implements IProductService, ICommentService 
     return commentDeleted;
   }
 
+  public async findAllComments(): Promise<CommentModel[]> {
+    const allComments: CommentModel[] = await this._productsApi.findAllComments();
+
+    return allComments;
+  }
+
+  public async addResponse(toadd: CommentModel): Promise<CommentModel> {
+    const commentAdded: CommentModel = await this._productsApi.addCommentResponse(toadd);
+    return commentAdded;
+  }
+
 }

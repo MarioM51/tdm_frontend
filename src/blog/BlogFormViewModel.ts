@@ -6,10 +6,11 @@ import type { Readable } from "svelte/store";
 import type { Writable } from "svelte/store";
 import { BlogService } from "./BlogService";
 import type IBlogService from "./BlogService";
-import { AlertMessage, BlogModel } from "./blog_models";
+import { BlogModel } from "./blog_models";
 import { replace } from "svelte-spa-router";
 import type IBlogAdminViewModel from "./BlogAdminViewModel";
 import { BlogAdminViewModel } from "./BlogAdminViewModel";
+import AlertMessage from "../common/AlertMessage";
 
 export default interface IBlogFormViewModel {
 
