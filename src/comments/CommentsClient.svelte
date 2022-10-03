@@ -2,12 +2,12 @@
   import LoadingSpiner from "../common/LoadingSpiner.svelte";
 
   import AuthViewModel from "../auth/04_viewModel/auth/AuthViewModel";
-  import ButtonAsyncActionOnCollection from "../common/ButtonAsyncActionOnCollection.svelte";
   import CommentForm from "./CommentForm.svelte";
   import ResponseForm from "./ResponseForm.svelte";
   import type CommentModel from "./CommentModel";
   import CommentsClientViewModel from "./CommentsClientViewModel";
   import type ICommentService from "./ICommentService";
+  import AsyncButton from "../common/AsyncButton.svelte";
 
   export let idTarget: number;
   export let comments: CommentModel[];
@@ -21,10 +21,6 @@
   const allReq = commentVM.getAllReq();
   const addReq = commentVM.getAddReq();
   const delReqs = commentVM.getDeleteReq();
-
-  function removeComment(c: CommentModel): void {
-    commentVM.remove(c);
-  }
 </script>
 
 <div>
@@ -47,44 +43,42 @@
   {/await}
 
   <section class="p-2">
-    {#each $allComments as c, numComm (c.id)}
+    {#each $allComments as comment (comment.id)}
       <article class="bg-base-200 mb-4 p-4">
         <div class="flex justify-between m-2">
           <div>
-            {"User " + c.idUser}
+            {"User " + comment.idUser}
           </div>
           <div class="flex">
             <div class="rating">
-              {#if c.stars != 0}
+              {#if comment.stars != 0}
                 {#each [1, 2, 3, 4, 5] as i (i + "_ran")}
                   <input
                     disabled
                     type="radio"
-                    name="rating-blog-{c.id}"
+                    name="rating-blog-{comment.id}"
                     value={i}
                     class="mask mask-star-2 bg-orange-400 cursor-default"
-                    checked={i <= c.stars}
+                    checked={i <= comment.stars}
                   />
                 {/each}
               {/if}
             </div>
             <div id="comment-actions" style="max-width: 90px;">
-              {#if $session?.id == c.idUser || $session?.hasRols(["admin"])}
-                <ButtonAsyncActionOnCollection
+              {#if $session?.id == comment.idUser || $session?.hasRols( ["admin"] )}
+                <AsyncButton
                   label="Eliminar"
-                  clases="btn btn-xs btn-error"
-                  onAct={() => {
-                    removeComment(c);
+                  className="btn btn-xs btn-error"
+                  onClick={() => {
+                    return commentVM.remove(comment);
                   }}
-                  observers={delReqs}
-                  indexItem={numComm}
                 />
               {/if}
             </div>
           </div>
         </div>
-        <p class="p-1">{c.content}</p>
-        {#each c.responses as response}
+        <p class="p-1">{comment.content}</p>
+        {#each comment.responses as response}
           <article id="comment-response" class="relative bg-base-300 mb-4 ml-8">
             <div class="flex justify-between m-2">
               <div>
@@ -92,14 +86,12 @@
               </div>
               <div style="max-width: 90px;">
                 {#if $session?.id == response.idUser || $session?.hasRols( ["admin"] )}
-                  <ButtonAsyncActionOnCollection
+                  <AsyncButton
                     label="Eliminar"
-                    clases="btn btn-xs btn-error"
-                    onAct={() => {
-                      removeComment(response);
+                    className="btn btn-xs btn-error"
+                    onClick={() => {
+                      return commentVM.remove(response);
                     }}
-                    observers={delReqs}
-                    indexItem={numComm}
                   />
                 {/if}
               </div>
@@ -110,7 +102,7 @@
         <ResponseForm
           onSubmit={(newComment) => {
             newComment.idTarget = parseInt(idTarget + "");
-            newComment.responseTo = parseInt(c.id + "");
+            newComment.responseTo = parseInt(comment.id + "");
             commentVM.addResponse(newComment);
           }}
           req={addReq}

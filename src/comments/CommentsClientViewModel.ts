@@ -19,6 +19,7 @@ export default class CommentViewModel {
     this._commentServ = commentServImpl;
     this._errorMsg = writable(``);
     const commentsWithResponse = CommentModel.mergeResponsesIntoComments(commentsPreloaded);
+    commentsWithResponse.sort((a, b) => b.created_at.getTime() - a.created_at.getTime());
     this._uiListComments = new UIAsyncCollection(commentsWithResponse, this._errorMsg);
     this._authVM = AuthViewModel.getInstance();
   }
@@ -69,11 +70,27 @@ export default class CommentViewModel {
 
   }
 
-  public remove(toDel: CommentModel): void {
+  public remove(toDel: CommentModel): Promise<CommentModel> {
     const removeRequest = this._commentServ.removeComment(toDel);
-    const updateType = UIUpdateTypeItem.DELETE;
 
-    this._uiListComments.updateItemAsync(toDel, removeRequest, updateType);
+    removeRequest
+      .then(removed => {
+        this._uiListComments._allItemsInUI.update(comments => {
+          const filtered = comments.filter(c => c.id != removed.id);
+          if (comments.length == filtered.length) {
+            for (let i = 0; i < filtered.length; i++) {
+              const responsesFiltered = comments[i].responses.filter(c => c.id != removed.id);
+              if (filtered[i].responses.length != responsesFiltered.length) {
+                filtered[i].responses = responsesFiltered;
+                break;
+              }
+            }
+          }
+          return filtered;
+        })
+      })
+
+    return removeRequest;
   }
 
   //Getters/Setters

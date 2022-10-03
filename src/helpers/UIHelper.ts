@@ -72,7 +72,7 @@ abstract class UIAsyncInfo {
 }
 
 export default class UIAsyncCollection<E extends Model> extends UIAsyncInfo {
-  public readonly _allItemsInUI: Writable<E[]> = writable(null);
+  public readonly _allItemsInUI: Writable<E[]> = writable([]);
   protected readonly _itemOnForm: Writable<E> = writable(null);
   protected readonly _itemToDelete: Writable<E> = writable(null);
 

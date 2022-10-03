@@ -33,6 +33,7 @@ export default class RequestHelper<E> {
     this.url = Consts.HOST + RequestHelper.API_PREFIX + this.url;
 
     const myHeaders = new Headers();
+    myHeaders.append("Content-Type", "application/json; charset=utf-8")
     if (this.token != null) {
       myHeaders.append('Token', this.token);
     }
@@ -70,7 +71,13 @@ export default class RequestHelper<E> {
         throw new ErrorModel(403, "User Unauthorized")
       }
 
-      const errorData = await resp.json()
+      const errorTextData = await resp.text();
+      let errorData: any;
+      try {
+        errorData = JSON.parse(errorTextData);
+      } catch (err) {
+        throw new ErrorModel(500, "It's not a JSON");
+      }
 
       const causeOk = errorData.cause == null && !(errorData.cause instanceof String);
       const statusOk = errorData.status == null && !(errorData.status instanceof Number);

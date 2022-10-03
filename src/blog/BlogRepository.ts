@@ -16,7 +16,9 @@ export interface IBlogRepository {
 
   addComment(newComment: BlogComment): Promise<BlogComment>;
 
-  removeComment(toDel: BlogComment): Promise<BlogComment>
+  removeComment(toDel: BlogComment): Promise<BlogComment>;
+
+  findAllComments(): Promise<BlogComment[]>;
 
 }
 
@@ -118,6 +120,16 @@ export class BlogRepository implements IBlogRepository {
     return deleted
   }
 
+  public async findAllComments(): Promise<BlogComment[]> {
+    const r = new RequestHelper<BlogComment[]>();
+    r.url = BlogRepository._API + "/comments";
+    r.method = HttpMethod.GET;
+    r.cast = this.castBlogComments;
+
+    const foundBlogC = await r.doRequest()
+    return foundBlogC;
+  }
+
 
   private async castPost(resp: Response): Promise<BlogModel> {
     const rawBlogs = await resp.json();
@@ -126,9 +138,15 @@ export class BlogRepository implements IBlogRepository {
   }
 
   private async castBlogComment(resp: Response): Promise<BlogComment> {
-    const rawBlogs = await resp.json();
-    const blog = BlogComment.fromJson(rawBlogs);
+    const rawBlog = await resp.json();
+    const blog = BlogComment.fromJson(rawBlog);
     return blog
+  }
+
+  private async castBlogComments(resp: Response): Promise<BlogComment[]> {
+    const rawBlogs = await resp.json();
+    const blogs = rawBlogs.map(rb => BlogComment.fromJson(rb));
+    return blogs
   }
 
 }

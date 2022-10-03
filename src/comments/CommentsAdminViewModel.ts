@@ -4,35 +4,60 @@ import { BlogService } from "../blog/BlogService";
 import ProductService from "../product/03_logic/ProductService";
 import type CommentModel from "./CommentModel";
 
+
+export enum CommentType {
+  BLOG,
+  PRODUCT,
+}
+
 export default class CommentsAdminViewModel {
 
-  private readonly _isProductPanelVisible = writable(true);
   private readonly _productService = new ProductService();
-  private readonly _productComments: Writable<CommentModel[]> = writable([]);
-  private readonly _productCommentsReq: Writable<Promise<CommentModel[]>> = writable(null);
+  private readonly _commentsOnTable: Writable<CommentModel[]> = writable([]);
+  private readonly _commentsOnTableReq: Writable<Promise<CommentModel[]>> = writable(null);
 
-  private readonly _isBlogPanelVisible = writable(false);
   private readonly _blogService = BlogService.getInstance();
   private readonly _errorMessage: Writable<string> = writable("");
 
+  public readonly commentTypeShowing = writable(CommentType.PRODUCT);
 
   public onInit(): void {
     this.getAllProductComments();
   }
 
   public getAllProductComments(): void {
+    this.commentTypeShowing.set(CommentType.PRODUCT);
     const productReq: Promise<CommentModel[]> = this._productService.findAllComments();
-    this._productCommentsReq.set(productReq);
+    this._commentsOnTableReq.set(productReq);
 
     productReq
       .then(productCommentsFinded => {
-        this._productComments.set(productCommentsFinded);
+        this._commentsOnTable.set(productCommentsFinded);
       })
       .catch(error => {
         this._handleError(error);
       })
       .finally(() => {
-        this._productCommentsReq.set(null);
+        this._commentsOnTableReq.set(null);
+      })
+      ;
+  }
+
+  public getAllBlogComments(): void {
+    this.commentTypeShowing.set(CommentType.BLOG);
+    const blogCommentsReq: Promise<CommentModel[]> = this._blogService.findAllComments();
+    this._commentsOnTableReq.set(blogCommentsReq);
+    this._commentsOnTable.set([]);
+
+    blogCommentsReq
+      .then(blogCommentsFinded => {
+        this._commentsOnTable.set(blogCommentsFinded);
+      })
+      .catch(error => {
+        this._handleError(error);
+      })
+      .finally(() => {
+        this._commentsOnTableReq.set(null);
       })
       ;
   }
@@ -48,30 +73,14 @@ export default class CommentsAdminViewModel {
     }
   }
 
-  public showBlogPanel() {
-    this._isBlogPanelVisible.set(true);
-    this._isProductPanelVisible.set(false);
-  }
-
-  public showProductPanel() {
-    this._isBlogPanelVisible.set(false);
-    this._isProductPanelVisible.set(true);
-  }
-
-  public getIsBlogPanelVisible(): Readable<boolean> {
-    return this._isBlogPanelVisible;
-  }
-  public getIsProductPanelVisible(): Readable<boolean> {
-    return this._isProductPanelVisible;
-  }
   public getErrorMessage(): Readable<string> {
     return this._errorMessage;
   }
-  public getProductCommentsReq(): Readable<Promise<CommentModel[]>> {
-    return this._productCommentsReq;
+  public getTableReq(): Readable<Promise<CommentModel[]>> {
+    return this._commentsOnTableReq;
   }
-  public getProductComments(): Readable<CommentModel[]> {
-    return this._productComments;
+  public getCommentsOnTable(): Readable<CommentModel[]> {
+    return this._commentsOnTable;
   }
 
 }

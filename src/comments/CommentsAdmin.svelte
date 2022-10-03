@@ -1,20 +1,18 @@
 <script lang="ts">
   import LoadingSpiner from "../common/LoadingSpiner.svelte";
-  import type { Readable } from "svelte/store";
 
-  import CommentsAdminViewModel from "./CommentsAdminViewModel";
+  import CommentsAdminViewModel, {
+    CommentType,
+  } from "./CommentsAdminViewModel";
   import AsyncButton from "../common/AsyncButton.svelte";
 
   const commentsAVM = new CommentsAdminViewModel();
   commentsAVM.onInit();
 
-  const isProductPanelVisible: Readable<boolean> =
-    commentsAVM.getIsProductPanelVisible();
-  const productComments = commentsAVM.getProductComments();
-  const productCommentsReq = commentsAVM.getProductCommentsReq();
-
-  const isBlogPanelVisible: Readable<boolean> =
-    commentsAVM.getIsBlogPanelVisible();
+  const productComments = commentsAVM.getCommentsOnTable();
+  const productCommentsReq = commentsAVM.getTableReq();
+  const commentTypeShowing = commentsAVM.commentTypeShowing;
+  const errorMsg = commentsAVM.getErrorMessage();
 </script>
 
 <div>
@@ -22,39 +20,51 @@
   <div class="tabs flex justify-center">
     <span
       class="tab tab-bordered"
-      class:tab-active={$isProductPanelVisible}
+      class:tab-active={$commentTypeShowing == CommentType.PRODUCT}
       on:click={() => {
-        commentsAVM.showProductPanel();
+        commentsAVM.getAllProductComments();
       }}>Products</span
     >
     <span
       class="tab tab-bordered"
-      class:tab-active={$isBlogPanelVisible}
+      class:tab-active={$commentTypeShowing == CommentType.BLOG}
       on:click={() => {
-        commentsAVM.showBlogPanel();
+        commentsAVM.getAllBlogComments();
       }}>Blogs</span
     >
   </div>
 
-  <div class:hidden={!$isProductPanelVisible}>
-    <h2 class="text-1xl font-bold underline mb-2">Product Comments</h2>
+  <div>
     <AsyncButton
       className="btn btn-primary btn-sm"
       label="Recargar"
       onClick={() => {
-        commentsAVM.getAllProductComments();
+        if ($commentTypeShowing == CommentType.PRODUCT) {
+          commentsAVM.getAllProductComments();
+        } else if ($commentTypeShowing == CommentType.BLOG) {
+          commentsAVM.getAllBlogComments();
+        }
         return $productCommentsReq;
       }}
     />
+
+    {#if $errorMsg != null || $errorMsg != ""}
+      {$errorMsg}
+    {/if}
+
     {#await $productCommentsReq}
       <LoadingSpiner /> Cargando...
     {:then _}
-      <div class="overflow-x-auto">
-        <table class="table w-full">
+      <div class="overflow-x-auto mt-8">
+        <table class="table table-zebra table-compact w-full">
           <thead>
-            <th>id</th>
+            <th />
             <th>User</th>
-            <th>Product</th>
+            <th
+              >{$commentTypeShowing == CommentType.BLOG
+                ? "Blog"
+                : "Product"}</th
+            >
             <th>Stars</th>
             <th>Comment</th>
           </thead>
@@ -69,7 +79,10 @@
                   <td>
                     <a
                       class="link link-accent"
-                      href="/products/temp-{pc.idTarget}"
+                      href="/{$commentTypeShowing == CommentType.BLOG
+                        ? 'blogs'
+                        : 'products'}/temp-{pc.idTarget}"
+                      target="_blank"
                     >
                       {pc.idTarget}
                     </a>
@@ -83,9 +96,5 @@
         </table>
       </div>
     {/await}
-  </div>
-
-  <div class:hidden={!$isBlogPanelVisible}>
-    <h2 class="text-1xl font-bold underline mb-2">Blog Comments</h2>
   </div>
 </div>

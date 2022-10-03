@@ -87,14 +87,37 @@ export class BlogService implements IBlogService, ICommentService {
 
   public async removeComment(commentToDel: CommentModel): Promise<CommentModel> {
     const userLogged = this._authServ.getUserStored();
-    if (userLogged == null || commentToDel.idUser != userLogged.id) {
+    if (userLogged == null && (commentToDel.idUser != userLogged.id || userLogged?.hasRols(["admin"]))) {
       throw new ErrorModel(403, "The comment only can be deleted by the owner or by the admin user");
     }
 
-    const blogCommentToDel: BlogComment = BlogComment.fromComment(commentToDel)
+    const blogCommentToDel: BlogComment = BlogComment.fromComment(commentToDel);
     const blogCommentDeleted = await this._blogRepo.removeComment(blogCommentToDel);
     const deleted = CommentModel.fromBlogComment(blogCommentDeleted);
     return deleted;
+  }
+
+  public async addResponse(newResponse: CommentModel): Promise<CommentModel> {
+    const msgError = newResponse.validateToSend(true);
+    if (msgError != null) {
+      throw new ErrorModel(400, msgError);
+    }
+    if (newResponse.responseTo <= 0) {
+      throw new ErrorModel(500, "Error inesperado: intente mas terde, respuesta no ligada a comentario");
+    }
+
+    const newBlogComment: BlogComment = BlogComment.fromComment(newResponse)
+    const blogCommentadded = await this._blogRepo.addComment(newBlogComment);
+    const added = CommentModel.fromBlogComment(blogCommentadded);
+
+    return added;
+  }
+
+  public async findAllComments(): Promise<CommentModel[]> {
+    const allBlogComments: BlogComment[] = await this._blogRepo.findAllComments();
+    const allComments = allBlogComments.map(c => CommentModel.fromBlogComment(c));
+
+    return allComments;
   }
 
 }

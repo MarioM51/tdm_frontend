@@ -1,3 +1,4 @@
+import DateUtils from "../common/utils/DateUtils";
 import type { BlogComment } from "../blog/blog_models";
 import Model from "../helpers/AbstractModel"
 
@@ -32,7 +33,7 @@ export default class CommentModel extends Model {
     return parentComments;
   }
 
-  public validateToSend(): string {
+  public validateToSend(isResponse: boolean = false): string {
     if (this.idTarget <= 0) {
       return "id target defined";
     }
@@ -41,8 +42,8 @@ export default class CommentModel extends Model {
       return "comment content defined";
     }
 
-    if (this.stars <= 0 || this.stars > 5) {
-      return "stars not defined or aout of range"
+    if (!isResponse && (this.stars <= 0 || this.stars > 5)) {
+      return "stars not defined or out of range"
     }
 
     if (this.created_at == null) {
@@ -63,11 +64,17 @@ export default class CommentModel extends Model {
   public static fromBlogComment(blogComment: BlogComment): CommentModel {
     const comment = new CommentModel();
     comment.content = blogComment.text;
-    comment.created_at = blogComment.datePublished;
+    if (typeof blogComment.datePublished == 'string') {
+      comment.created_at = DateUtils.castDateFromServer(blogComment.datePublished);
+    } else {
+      comment.created_at = blogComment.datePublished;
+    }
+
     comment.id = blogComment.identifier;
     comment.idTarget = blogComment.idBlog;
     comment.idUser = blogComment.idUser;
     comment.stars = blogComment.rating;
+    comment.responseTo = blogComment.responseTo;
     return comment;
   }
 

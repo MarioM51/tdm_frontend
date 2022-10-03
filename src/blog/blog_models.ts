@@ -50,13 +50,13 @@ export class BlogModel {
   public static fromArrayJsonLDInDocument(): BlogModel[] {
     const elm = document.querySelector("#blogs_jsonld") as any;
     const elmText = (elm).innerText;
-    const elmJson = JSON.parse(elmText)
+    const elmJson = JSON.parse(elmText);
     const arrayJsonld = elmJson.itemListElement;
     const blogs = arrayJsonld.map((rawBlog: any) => {
-      const b = this.fromAnyJSONLD(rawBlog)
+      const b = this.fromAnyJSONLD(rawBlog);
       return b;
     });
-    return blogs
+    return blogs;
   }
 
   public static fromJsonLDInDocument(): BlogModel {
@@ -106,6 +106,7 @@ export class BlogComment {
     public text: string = '',
     public datePublished: Date = null,
     public rating: number = 0,
+    public responseTo: number = 0,
   ) { }
 
   public static fromJsonLD(idBlog: number, jsonld: any): BlogComment {
@@ -124,6 +125,7 @@ export class BlogComment {
     resp.rating = ori.rating;
     resp.text = ori.text;
     resp.identifier = ori.identifier;
+    resp.responseTo = ori.responseTo;
     return resp;
   }
 
@@ -135,6 +137,7 @@ export class BlogComment {
     resp.identifier = n.id;
     resp.rating = n.stars;
     resp.text = n.content;
+    resp.responseTo = n.responseTo;
     return resp;
   }
 
