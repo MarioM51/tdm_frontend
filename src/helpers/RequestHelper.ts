@@ -33,7 +33,6 @@ export default class RequestHelper<E> {
     this.url = Consts.HOST + RequestHelper.API_PREFIX + this.url;
 
     const myHeaders = new Headers();
-    myHeaders.append("Content-Type", "application/json; charset=utf-8")
     if (this.token != null) {
       myHeaders.append('Token', this.token);
     }
@@ -44,6 +43,7 @@ export default class RequestHelper<E> {
 
       this.data = payload;
     } else {
+      myHeaders.append("Content-Type", "application/json; charset=utf-8");
       this.data = (this.data != null) ? JSON.stringify(this.data) : null;
     }
 

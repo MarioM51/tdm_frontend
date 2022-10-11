@@ -20,8 +20,11 @@
 
     <figure class="img_ratio_16_9_container mx-auto sm:mx-0">
       <img
-        class="img_ratio_16_9_content w-full sm:h-[200px]"
+        class="img_ratio_16_9_content w-full sm:h-[200px] cursor-pointer"
         src={blog.imageUrl}
+        on:click={() => {
+          window.location.href = blog.imageUrl;
+        }}
         alt="Album"
       />
     </figure>
@@ -34,10 +37,10 @@
 
 <style>
   @import "http://192.168.1.81/static_003/tailwin.css";
-  @import "/static/blog_content.css";
+  @import "http://192.168.1.81/static_003/blog_content.css";
 
   @media screen and (min-width: 641px) {
-    /* desktop */
+    /* desktopp */
     .img_ratio_16_9_container {
       width: 60%;
       max-width: 500px;

@@ -64,12 +64,7 @@ export default class CommentModel extends Model {
   public static fromBlogComment(blogComment: BlogComment): CommentModel {
     const comment = new CommentModel();
     comment.content = blogComment.text;
-    if (typeof blogComment.datePublished == 'string') {
-      comment.created_at = DateUtils.castDateFromServer(blogComment.datePublished);
-    } else {
-      comment.created_at = blogComment.datePublished;
-    }
-
+    comment.created_at = DateUtils.castDateFromServer(blogComment.datePublished);
     comment.id = blogComment.identifier;
     comment.idTarget = blogComment.idBlog;
     comment.idUser = blogComment.idUser;
@@ -98,7 +93,7 @@ export default class CommentModel extends Model {
   public static fromReviewLDJson(ldJson: any, idTarget: number): CommentModel {
     const comment = new CommentModel();
     comment.content = ldJson.text;
-    comment.created_at = ldJson.datePublished;
+    comment.created_at = DateUtils.castDateFromServer(ldJson.datePublished);
     comment.id = ldJson.identifier;
     comment.idTarget = idTarget;
     comment.idUser = ldJson.idUser;

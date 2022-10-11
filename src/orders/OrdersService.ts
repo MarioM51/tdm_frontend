@@ -1,5 +1,6 @@
 import ErrorModel from "../error/ErrorModel";
 import type BillLine from "../shopping_car/BillLine";
+import type InfoPayment from "./InfoPayment";
 import OrderModel from "./OrderModel";
 import OrderModelMV from "./OrderModelMV";
 import OrdersApiRepository from "./OrdersApiRepository";
@@ -74,6 +75,11 @@ export default class OrderService {
     const orders = await this.api.findByUserLogged();
     const ordersCasted = orders.map(o => OrderModelMV.cast(o));
     return ordersCasted;
+  }
+
+  public async getPaymnetInfo(): Promise<InfoPayment> {
+    const info = await this.api.fetchPaymentInfo();
+    return info;
   }
 
 }

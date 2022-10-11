@@ -1,5 +1,8 @@
+import ErrorModel from "../error/ErrorModel";
+import { select_multiple_value } from "svelte/internal";
 import AuthStoreDAO from "../auth/02_data/AuthStoreDAO";
 import RequestHelper, { HttpMethod } from "../helpers/RequestHelper";
+import InfoPayment from "./InfoPayment";
 import OrderModel from "./OrderModel";
 
 export default class OrdersApiRepository {
@@ -93,6 +96,18 @@ export default class OrdersApiRepository {
     return all;
   }
 
+  public async fetchPaymentInfo(): Promise<InfoPayment> {
+    const r = new RequestHelper<InfoPayment>();
+    r.url = OrdersApiRepository._API + "/paymentInfo";
+    r.method = HttpMethod.GET;
+    r.token = OrdersApiRepository._authStore.getToken();
+    r.cast = InfoPayment.fromAPIResponse;
+
+    const infoPayment = await r.doRequest();
+    return infoPayment;
+  }
+
+  //utils
   private async castOrder(resp: any): Promise<OrderModel> {
     const rawOrder = await resp.json();
     const order = OrderModel.fromJson(rawOrder);

@@ -6,6 +6,7 @@ import OrderModelMV, { ActionType } from "./OrderModelMV";
 import OrdersAbstractViewModel from "./OrdersAbstractViewModel";
 import { push } from "svelte-spa-router";
 import ShoppingCarVM from "../shopping_car/ShoppingCarVM";
+import type InfoPayment from "./InfoPayment";
 
 export default class OrdersViewModel extends OrdersAbstractViewModel {
   private static instance: OrdersViewModel = null;
@@ -76,6 +77,7 @@ export default class OrdersViewModel extends OrdersAbstractViewModel {
   private findOrdersInBrowser(): void {
     const ordersReq = this.orderServ.fetchOrdersInBrowser()
     this.allReq.set(ordersReq);
+    this.errorMessage.set(null);
     ordersReq
       .then(ordersFinded => {
         this.all.update(orders => {
@@ -104,6 +106,7 @@ export default class OrdersViewModel extends OrdersAbstractViewModel {
   private findOrderOfuserLogged(): void {
     const session = this._authMV.getSession();
     const userLogged = get(session);
+    this.errorMessage.set(null);
     if (userLogged != null) {
       this._requestOfTwoRequests = true;
       const ordersReq = this.orderServ.findOrderOfuserLogged();
@@ -169,6 +172,22 @@ export default class OrdersViewModel extends OrdersAbstractViewModel {
         this.setPromiseToOrderInAllOrders(id, actionType, null);
       })
       ;
+  }
+
+  public async getPaymnetInfo(): Promise<InfoPayment> {
+    const infoReq = this.orderServ.getPaymnetInfo();
+    const info = this.wrapperViewModelRequest<InfoPayment>(infoReq);
+    return info;
+  }
+
+  private async wrapperViewModelRequest<E>(req: Promise<E>): Promise<E> {
+    let result: E = null;
+    try {
+      result = await req;
+    } catch (error) {
+      throw ErrorModel.getMessageError(error);
+    }
+    return result;
   }
 
   public getOrders(): Readable<OrderModelMV[]> {

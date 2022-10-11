@@ -2,7 +2,7 @@ import { writable } from "svelte/store";
 import type { Writable } from "svelte/store";
 import type ServiceForUI from "./ServiceForUI";
 import type Model from "../types/Model";
-import ErrorHelper from "../helper/ErrorHelper";
+import ErrorModel from "../../error/ErrorModel";
 
 export default abstract class UIWritable<E extends Model> {
   public readonly requestOne: Writable<Promise<E>> = writable(null);
@@ -18,7 +18,7 @@ export default abstract class UIWritable<E extends Model> {
     this.errorMessage.set(null);
     req
       .catch(err => {
-        const msg = ErrorHelper.getMessageError(err);
+        const msg = ErrorModel.getMessageError(err);
         this.errorMessage.set(msg);
       })
       .finally(() => {

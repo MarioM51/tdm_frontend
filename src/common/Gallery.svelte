@@ -37,6 +37,18 @@
       }, 10);
     }
   }
+
+  function onClickImage(imageIndex: number) {
+    if (allImages != null && allImages.length > 0) {
+      if (urlForAllImages != null) {
+        window.location.href = urlForAllImages;
+        console.log("onclick en imagen: forall");
+      } else {
+        window.location.href = allImages[imageIndex];
+        console.log("onclick en imagen toImage");
+      }
+    }
+  }
 </script>
 
 <!-- Put this part before </body> tag -->
@@ -72,21 +84,22 @@
     </div>
 
     {#if allImages == null || allImages.length == 0}
-      <img src="/favicon.ico" loading="lazy" alt="nature" />
+      <img src="/favicon.ico" loading="lazy" alt="product" />
     {:else}
-      {#each loadedImages as src, imageIndex}
+      {#each loadedImages as src, imageIndex (imageIndex)}
         <img
           {src}
           loading="lazy"
-          alt="nature"
+          alt="product"
           class:cursor-pointer={allImages != null && allImages.length > 0}
           on:click={() => {
-            if (allImages != null && allImages.length > 0) {
-              if (urlForAllImages != null) {
-                window.location.href = urlForAllImages;
-              } else {
-                window.location.href = allImages[imageIndex];
-              }
+            onClickImage(imageIndex);
+          }}
+          on:touchend={(evt) => {
+            if (evt.cancelable) {
+              evt.preventDefault();
+              evt.stopPropagation();
+              onClickImage(imageIndex);
             }
           }}
         />
@@ -124,8 +137,8 @@
   }
 
   .c-dots {
-    position: absolute;
-    top: 10px;
+    position: relative;
+    bottom: 25px;
     display: flex;
   }
   .c-dot {

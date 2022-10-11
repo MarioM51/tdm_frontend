@@ -1,5 +1,5 @@
 <script lang="ts">
-  import ErrorHelper from "./helper/ErrorHelper";
+  import ErrorModel from "../error/ErrorModel";
   import type { AsyncAction } from "./types/FuncTypes";
 
   export let label: string;
@@ -14,7 +14,7 @@
     req = onClick();
     req
       .catch((error) => {
-        errmsg = ErrorHelper.getMessageError(error);
+        errmsg = ErrorModel.getMessageError(error);
       })
       .finally(() => {
         req = null;

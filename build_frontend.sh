@@ -25,10 +25,10 @@ cd $SCRIPTPATH
 
 
 #Compile tailwind styles
-npx tailwindcss \
+npx tailwindcss --minify \
   --config ./tailwind.config.cjs \
   --input ./src/common/input.css \
-  --output ./build/public/static_$STATIC_FILES_VERSION/tailwin.css
+  --output ./build/public/static_003/tailwin.css
 
 #Build spa admin
 npx vite build \

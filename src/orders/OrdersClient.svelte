@@ -14,16 +14,15 @@
 
   const reqAdd = orderVM.getReqAdd();
   const reqAll = orderVM.getReqAll();
-  const reqPayment = orderVM.getReqAll();
 </script>
 
 <div>
-  <h1 class="text-2xl font-bold underline">Ordenes</h1>
+  <h1 class="text-2xl font-bold">Pedidos</h1>
   {#await $reqAll}
-    <center><LoadingSpiner />Buscando ordenes realizadas...</center>
+    <center><LoadingSpiner />Buscando ordenes...</center>
   {/await}
   {#await $reqAdd}
-    <center><LoadingSpiner />Agregando orden...</center>
+    <center><LoadingSpiner />Guardando pedido...</center>
   {/await}
   {#if $errormsg != null}
     <center>{$errormsg}</center>
@@ -38,7 +37,7 @@
       <div class="card overflow-x-auto bg-neutral mt-4">
         <div class="card-body">
           <h2 class="card-title text-white">
-            Orden ID: {order.id}
+            Pedido ID: {order.id}
           </h2>
           <table class="table w-full table-compact mb-2">
             <thead>
@@ -62,16 +61,16 @@
               {#if order.confirmed_at == null}
                 <ButtonAsyncAction
                   obs={order.confirmPromise}
-                  label="Confirm"
+                  label="Iniciar pedido"
                   onAct={() => orderVM.confirm(order.id)}
-                  clases="btn btn-success mr-3"
+                  clases="btn btn-success mr-3 leading-relaxed"
                 />
               {/if}
 
               {#if order.accepted_at == null}
                 <ButtonAsyncAction
                   obs={order.deletePromise}
-                  label="Cancel"
+                  label="Cancelar"
                   onAct={() => orderVM.delete(order.id)}
                   clases="btn btn-error"
                 />
@@ -86,21 +85,24 @@
 
           {#if order.accepted_at != null}
             <div class="text-primary-content">
-              <p class="text-center mb-8">Orden Aceptada</p>
-              {#await $reqPayment}
+              <p class="text-center mb-8">Pedido Aceptada</p>
+              {#await orderVM.getPaymnetInfo()}
                 <center><LoadingSpiner />Obteniendo informacion de pago</center>
+              {:then paymentInfo}
+                <div class="payment-info">
+                  <p class="font-bold text-lg ">Informacion de pago</p>
+                  <p>Clabe: <span>{paymentInfo.Clabe}</span></p>
+                  <p>
+                    Nombre del beneficiario: <span>{paymentInfo.Owner}</span>
+                  </p>
+                  <p>Banco/Entidad: <span>{paymentInfo.BankName}</span></p>
+                  <p>Importe: <span>${order.totalSum()}.00</span></p>
+                  <p>Referencia: <span>{order.id}</span></p>
+                  <p>Concepto: <span>{paymentInfo.Concept}</span></p>
+                </div>
+              {:catch err}
+                <p class="text-error">{err}</p>
               {/await}
-              <div class="payment-info">
-                <p class="font-bold text-lg ">Informacion de pago</p>
-                <p>Clabe: <span>{InfoPayment.CLABE}</span></p>
-                <p>
-                  Nombre del beneficiario: <span>{InfoPayment.OWNER}</span>
-                </p>
-                <p>Banco/Entidad: <span>{InfoPayment.BANK_NAME}</span></p>
-                <p>Importe: <span>${order.totalSum()}.00</span></p>
-                <p>Referencia: <span>{order.id}</span></p>
-                <p>Concepto: <span>{InfoPayment.CONCEPT}</span></p>
-              </div>
             </div>
           {/if}
         </div>

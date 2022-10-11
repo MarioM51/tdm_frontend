@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { onMount } from "svelte";
   import Gallery from "../../common/Gallery.svelte";
   import Like from "../../common/Like.svelte";
   import { Consts } from "../../Constants";
@@ -50,7 +51,7 @@
           <div class="flex justify-between content-end">
             <span class="text-lg font-bold pt-4">${p.price}.00</span>
             <button class="btn btn-primary" on:click={() => addToCar(p)}
-              >Add</button
+              >Agregar</button
             >
           </div>
           <div class="flex flex-col mt-2 text-right text-xs">
@@ -59,14 +60,14 @@
             </div>
             <div class="flex content-center justify-end">
               <div class="rating mb-1">
-                Calificacion ({p.commentsRating}):
                 {#each [1, 2, 3, 4, 5] as i}
                   <input
                     type="radio"
                     name="rating-new-comment"
                     value={i}
-                    class="mask mask-star-2 bg-orange-400"
-                    checked={i <= Math.round(p.commentsRating)}
+                    class="mask mask-star-2 {p.commentsRating >= i
+                      ? 'bg-orange-400'
+                      : 'bg-base-300'}"
                   />
                 {/each}
               </div>

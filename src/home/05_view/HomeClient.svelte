@@ -1,10 +1,11 @@
 <script>
   import ProductStorePage from "../../product/05_view/ProductStorePage.svelte";
   import BlogListPage from "../../blog/BlogListPage.svelte";
+  import About from "./About.svelte";
 </script>
 
 <main>
-  <h1 class="text-3xl font-bold mb-8">Tienda De Mario</h1>
+  <h1 class="text-3xl font-bold mb-8 mt-2">Home</h1>
 
   <ProductStorePage onHomeScreen={true} />
   <div class="flex justify-end">
@@ -12,6 +13,10 @@
       >Ver mas productos -></a
     >
   </div>
+
+  <div class="divider" />
+
+  <About />
 
   <div class="divider" />
 

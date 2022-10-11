@@ -5,16 +5,16 @@ import type { Writable } from "svelte/store";
 export default class ErrorModel {
 
   constructor(
-    public status:number = null,
-    public cause:string = null
-  ) {}
+    public status: number = null,
+    public cause: string = null
+  ) { }
 
-  public static handleRequestErrors(err:ErrorModel, errorMsg:Writable<String>, authMV: IAuthViewModel) {
+  public static handleRequestErrors(err: ErrorModel, errorMsg: Writable<String>, authMV: IAuthViewModel) {
     const genericMsgError = "Error. Try later";
-    if(err instanceof ErrorModel) {
-      if(err.status == 401) {
+    if (err instanceof ErrorModel) {
+      if (err.status == 401) {
         authMV.logout('session_expired');
-      } else if(err.status >= 400 && err.status <= 499) {
+      } else if (err.status >= 400 && err.status <= 499) {
         errorMsg.set(err.cause)
       } else {
         errorMsg.set(genericMsgError + ": " + err.cause)
@@ -24,4 +24,18 @@ export default class ErrorModel {
       errorMsg.set(genericMsgError)
     }
   }
+
+  public static getMessageError(error: any): string {
+    if (typeof error === 'string') {
+      return error.toString();
+    } else if (error instanceof Error) {
+      return error.message;
+    } else if (error instanceof ErrorModel) {
+      return error.cause;
+    } else {
+      console.error(error);
+      return "Error inesperado";
+    }
+  }
+
 }

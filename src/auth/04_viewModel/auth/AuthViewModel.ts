@@ -1,6 +1,6 @@
 import type { Writable, Readable } from 'svelte/store';
 import { writable, get } from 'svelte/store';
-import { push } from 'svelte-spa-router'
+import { push, pop } from 'svelte-spa-router'
 
 import type IAuthViewModel from './IAuthViewModel';
 import { AuthPanel } from './AuthPanel';
@@ -58,7 +58,6 @@ export default class AuthViewModel implements IAuthViewModel {
       this.onLogin()
     } else if (get(this.userToRegister) != null) {
       this.onRegister();
-
     }
   }
 
@@ -83,7 +82,9 @@ export default class AuthViewModel implements IAuthViewModel {
     loginRequest
       .then(usr => {
         this.session.set(usr)
-        window.location.replace("/");
+        let noLoginPat = window.location.href.replace("#/login", "");
+        noLoginPat = window.location.href.substring(0, window.location.href.indexOf("?"))
+        window.location.replace(noLoginPat);
       })
       .catch(err => {
         if (err instanceof ErrorModel) {

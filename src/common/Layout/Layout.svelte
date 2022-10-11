@@ -2,7 +2,6 @@
   import Router from "svelte-spa-router";
   import TopNavbar from "./TopNavbar.svelte";
   import Footer from "./Footer.svelte";
-  import { location } from "svelte-spa-router";
   import SideNavbar from "./SideNavbar.svelte";
   import routes from "./routes";
   import { Consts } from "../../Constants";
@@ -56,6 +55,14 @@
   window.addEventListener(Consts.CSR_MODE, (e: any) => {
     hideSSR = e.detail === true;
   });
+
+  document.addEventListener(
+    Consts.EVENT_GO_TO_TOP,
+    () => {
+      drawerContent.scrollTop = 0;
+    },
+    false
+  );
 </script>
 
 <div class="drawer">
@@ -69,10 +76,10 @@
     class="drawer-toggle"
   />
   <div class="drawer-content" bind:this={drawerContent}>
-    <div id="navbar" class="z-20" bind:this={navbar}>
+    <div id="navbar" class="z-40 absolute w-full" bind:this={navbar}>
       <TopNavbar {navUrls} />
     </div>
-    <div class="page-container p-1 sm:p-8 mb-4">
+    <div class="page-container p-1 sm:p-8 mb-4 mt-16">
       <Router {routes} />
       <div style={hideSSR ? "display: none;" : ""}>
         <div id="layout-content-page">Default content</div>
@@ -126,6 +133,10 @@
 
   .drawer {
     height: 100%;
+  }
+
+  #navbar {
+    max-width: var(--max-screen);
   }
 
   /*
