@@ -1,10 +1,11 @@
 <script lang="ts">
   import Carousel from "svelte-carousel";
-  import { Writable, writable } from "svelte/store";
+  import { writable } from "svelte/store";
   import WideRatio from "./WideRatio.svelte";
 
   export let allImages: string[] = [];
-  export let urlImages: string = null;
+  export let urlForAllImages: string = null;
+
   let indedLoaded = 0;
   const loadedImages: string[] = [allImages[indedLoaded]];
 
@@ -34,6 +35,18 @@
           }
         }, 10);
       }, 10);
+    }
+  }
+
+  function onClickImage(imageIndex: number) {
+    if (allImages != null && allImages.length > 0) {
+      if (urlForAllImages != null) {
+        window.location.href = urlForAllImages;
+        console.log("onclick en imagen: forall");
+      } else {
+        window.location.href = allImages[imageIndex];
+        console.log("onclick en imagen toImage");
+      }
     }
   }
 </script>
@@ -71,17 +84,22 @@
     </div>
 
     {#if allImages == null || allImages.length == 0}
-      <img src="/favicon.ico" loading="lazy" alt="nature" />
+      <img src="/favicon.ico" loading="lazy" alt="product" />
     {:else}
-      {#each loadedImages as src, imageIndex}
+      {#each loadedImages as src, imageIndex (imageIndex)}
         <img
           {src}
           loading="lazy"
-          alt="nature"
-          class:cursor-pointer={urlImages != null}
+          alt="product"
+          class:cursor-pointer={allImages != null && allImages.length > 0}
           on:click={() => {
-            if (urlImages != null) {
-              window.location.href = urlImages;
+            onClickImage(imageIndex);
+          }}
+          on:touchend={(evt) => {
+            if (evt.cancelable) {
+              evt.preventDefault();
+              evt.stopPropagation();
+              onClickImage(imageIndex);
             }
           }}
         />
@@ -119,8 +137,8 @@
   }
 
   .c-dots {
-    position: absolute;
-    top: 10px;
+    position: relative;
+    bottom: 25px;
     display: flex;
   }
   .c-dot {

@@ -1,6 +1,7 @@
 <script>
   import ProductStorePage from "../../product/05_view/ProductStorePage.svelte";
   import BlogListPage from "../../blog/BlogListPage.svelte";
+  import About from "./About.svelte";
 </script>
 
 <main>
@@ -12,6 +13,10 @@
       >Ver mas productos -></a
     >
   </div>
+
+  <div class="divider" />
+
+  <About />
 
   <div class="divider" />
 

@@ -7,7 +7,7 @@
 </script>
 
 {#if $session == null}
-  <a class="btn btn-ghost" href="#/login">Sing in</a>
+  <a class="btn btn-ghost px-0" href="#/login">Login</a>
 {:else}
   <div class="dropdown dropdown-end">
     <label tabindex="0" class="btn btn-ghost btn-circle avatar" for="user-menu">
@@ -39,7 +39,9 @@
         </li>
         -->
       <li><a href="#/user-info">User info</a></li>
-      <li><a href="#/login" on:click={() => authMV.logout()}>Log out</a></li>
+      <li>
+        <a href="#/login" on:click={() => authMV.logout(null)}>Log out</a>
+      </li>
     </ul>
   </div>
 {/if}

@@ -1,61 +1,63 @@
+import ErrorModel from "../error/ErrorModel";
+import { select_multiple_value } from "svelte/internal";
 import AuthStoreDAO from "../auth/02_data/AuthStoreDAO";
 import RequestHelper, { HttpMethod } from "../helpers/RequestHelper";
-import type BillLine from "../shopping_car/BillLine";
+import InfoPayment from "./InfoPayment";
 import OrderModel from "./OrderModel";
 
 export default class OrdersApiRepository {
   private static readonly _API = "/orders";
   private static readonly _authStore = new AuthStoreDAO();
 
-  public async addOrder(order:OrderModel):Promise<OrderModel> {
+  public async addOrder(order: OrderModel): Promise<OrderModel> {
     const r = new RequestHelper<OrderModel>();
     r.url = OrdersApiRepository._API;
     r.method = HttpMethod.POST;
 
     //I don't know why on order.products.idProduct and order.products.unitaryPrice came as string, and it`s need numbers
     for (let i = 0; i < order.products.length; i++) {
-      order.products[i].idProduct = parseInt(order.products[i].idProduct+"") ;
-      order.products[i].unitaryPrice = parseInt(order.products[i].unitaryPrice+"") ;
+      order.products[i].idProduct = parseInt(order.products[i].idProduct + "");
+      order.products[i].unitaryPrice = parseInt(order.products[i].unitaryPrice + "");
     }
 
     r.data = order;
     r.cast = this.castOrder;
 
     r.token = OrdersApiRepository._authStore.getToken();
-    
+
     const added = await r.doRequest();
     return added;
   }
 
-  public async getOrders(ids: number[]):Promise<OrderModel[]> {
+  public async getOrders(ids: number[]): Promise<OrderModel[]> {
     const r = new RequestHelper<OrderModel[]>();
     r.url = OrdersApiRepository._API + "/find";
     r.method = HttpMethod.POST;
     r.data = ids;
     r.cast = this.castOrders;
-    
+
     const added = await r.doRequest();
     return added;
   }
 
   public async deleteById(id: number): Promise<OrderModel> {
     const r = new RequestHelper<OrderModel>();
-    r.url = OrdersApiRepository._API + "/"+id;
+    r.url = OrdersApiRepository._API + "/" + id;
     r.method = HttpMethod.DELETE;
     r.cast = this.castOrder;
-    
+
     const deleted = await r.doRequest();
     return deleted;
   }
 
   public async confirm(id: number): Promise<OrderModel> {
     const r = new RequestHelper<OrderModel>();
-    r.url = OrdersApiRepository._API + "/"+id+"/confirm";
+    r.url = OrdersApiRepository._API + "/" + id + "/confirm";
     r.method = HttpMethod.PUT;
     r.token = OrdersApiRepository._authStore.getToken();
     r.cast = this.castOrder;
 
-    const myPromise = new Promise(function(resolve, _){ setTimeout(function(){ resolve("Success!"); }, 2000); });
+    const myPromise = new Promise(function (resolve, _) { setTimeout(function () { resolve("Success!"); }, 2000); });
     await myPromise;
     const confirmed = await r.doRequest();
     return confirmed;
@@ -67,7 +69,7 @@ export default class OrdersApiRepository {
     r.method = HttpMethod.GET;
     r.token = OrdersApiRepository._authStore.getToken();
     r.cast = this.castOrders;
-    
+
     const all = await r.doRequest();
     return all;
   }
@@ -78,7 +80,7 @@ export default class OrdersApiRepository {
     r.method = HttpMethod.PUT;
     r.token = OrdersApiRepository._authStore.getToken();
     r.cast = this.castOrder;
-    
+
     const all = await r.doRequest();
     return all;
   }
@@ -94,13 +96,25 @@ export default class OrdersApiRepository {
     return all;
   }
 
-  private async castOrder(resp:any):Promise<OrderModel> {
+  public async fetchPaymentInfo(): Promise<InfoPayment> {
+    const r = new RequestHelper<InfoPayment>();
+    r.url = OrdersApiRepository._API + "/paymentInfo";
+    r.method = HttpMethod.GET;
+    r.token = OrdersApiRepository._authStore.getToken();
+    r.cast = InfoPayment.fromAPIResponse;
+
+    const infoPayment = await r.doRequest();
+    return infoPayment;
+  }
+
+  //utils
+  private async castOrder(resp: any): Promise<OrderModel> {
     const rawOrder = await resp.json();
     const order = OrderModel.fromJson(rawOrder);
     return order
   }
 
-  private async castOrders(resp:any):Promise<OrderModel[]> {
+  private async castOrders(resp: any): Promise<OrderModel[]> {
     const rawOrders = await resp.json();
     const orders = OrderModel.fromArrayJson(rawOrders);
     return orders;

@@ -2,21 +2,21 @@ import RolModel from "./RolModel";
 
 export default class UserModel {
   constructor(
-    public id:number = null,
-    public email:string = "",
-    public password:string = null,
-    public confirmPass:string = null,
-    public rols:RolModel[]= null,
-    public fullName:string=null,
-    public phone:string=null,
-    public zip:string=null,
-    public state:string=null,
-    public city:string=null,
-    public street:string=null,
-    public streetNum:string=null,
-  ) {}
+    public id: number = null,
+    public email: string = "",
+    public password: string = null,
+    public confirmPass: string = null,
+    public rols: RolModel[] = null,
+    public fullName: string = null,
+    public phone: string = null,
+    public zip: string = null,
+    public state: string = null,
+    public city: string = null,
+    public street: string = null,
+    public streetNum: string = null,
+  ) { }
 
-  public validate():string {
+  public validate(): string {
     if (this.email == null || this.email == "") {
       return "Email required";
     }
@@ -30,27 +30,27 @@ export default class UserModel {
     return "";
   }
 
-  public validatePassword():string {
+  public validatePassword(): string {
     if (this.password == null || this.password == "") {
       return "Password required";
     }
     return ""
   }
 
-  public isMatchPasswords():string {
+  public isMatchPasswords(): string {
     if (this.confirmPass == null || this.confirmPass == "") {
       return "Confirm password required";
     }
     if (this.password != this.confirmPass) {
       return "Paswords don't match";
     }
-    
+
     return ""
   }
 
   public static fromJson(rawUser: any): UserModel {
 
-    const rols = rawUser.rols?.map((rawRol: any) => RolModel.fromJson(rawRol) )
+    const rols = rawUser.rols?.map((rawRol: any) => RolModel.fromJson(rawRol))
 
     const user = new UserModel();
     user.id = rawUser.ID
@@ -65,21 +65,21 @@ export default class UserModel {
     user.city = rawUser.city;
     user.street = rawUser.street;
     user.streetNum = rawUser.streetNum;
-    
+
     return user
   }
 
   public static fromArrayJson(rawUsers: any): UserModel[] {
-    const users = rawUsers.map((rawUser: any) => UserModel.fromJson(rawUser) )
+    const users = rawUsers.map((rawUser: any) => UserModel.fromJson(rawUser))
     return users
   }
 
-  public hasRols(rolsToSearch:string[]):boolean {
+  public hasRols(rolsToSearch: string[]): boolean {
     for (const i in this.rols) {
       const userRol = this.rols[i];
       for (const k in rolsToSearch) {
-        const rolToSearch= rolsToSearch[k];
-        if(userRol.name == rolToSearch) {
+        const rolToSearch = rolsToSearch[k];
+        if (userRol.name == rolToSearch) {
           return true
         }
       }
@@ -87,18 +87,18 @@ export default class UserModel {
     return false
   }
 
-  public ensureData():void {
+  public ensureData(): void {
     //There are diferences in binding data from clean javascript and svelte, that make
     //inconcistences, for example, is saving numbers in strings, or the length capture
     //one more caracter from the maxlegth in numbers
     this.phone = this.phone + "";
-    this.phone = this.phone.substring(0,15);
+    this.phone = this.phone.substring(0, 15);
 
     this.zip = this.zip + "";
-    this.zip = this.zip.substring(0,6);
+    this.zip = this.zip.substring(0, 6);
 
     this.streetNum = this.streetNum + "";
-    this.streetNum = this.streetNum.substring(0,5);
+    this.streetNum = this.streetNum.substring(0, 5);
   }
 
 }

@@ -65,7 +65,7 @@
         </div>
       </div>
       <!-- Content page -->
-      <div class="p-4">
+      <div class="p-4 mb-12">
         <Router {routes} />
       </div>
     </div>

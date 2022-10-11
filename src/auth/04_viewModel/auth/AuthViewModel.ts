@@ -1,6 +1,6 @@
 import type { Writable, Readable } from 'svelte/store';
-import { writable , get} from 'svelte/store';
-import { replace, push } from 'svelte-spa-router'
+import { writable, get } from 'svelte/store';
+import { push, pop } from 'svelte-spa-router'
 
 import type IAuthViewModel from './IAuthViewModel';
 import { AuthPanel } from './AuthPanel';
@@ -11,31 +11,30 @@ import type IAuthService from '../../03_logic/IAuthService';
 import ErrorModel from '../../../error/ErrorModel';
 import OrderService from '../../../orders/OrdersService';
 import OrdersViewModel from '../../../orders/OrdersClientViewModel';
-import { Consts } from '../../../Constants';
 
 
 export default class AuthViewModel implements IAuthViewModel {
-  
-  private static instance:AuthViewModel
+
+  private static instance: AuthViewModel
 
   //view utils
-  private readonly authService:IAuthService = new AuthService();
+  private readonly authService: IAuthService = new AuthService();
 
   //view info
-  private readonly session:Writable<UserModel> = writable(null);
-  private readonly userToLogin:Writable<UserModel> = writable(null);
-  private readonly userToRegister:Writable<UserModel> = writable(null);
-  private readonly errorMessage:Writable<string> = writable("");
-  private readonly successMessage:Writable<string> = writable("");
+  private readonly session: Writable<UserModel> = writable(null);
+  private readonly userToLogin: Writable<UserModel> = writable(null);
+  private readonly userToRegister: Writable<UserModel> = writable(null);
+  private readonly errorMessage: Writable<string> = writable("");
+  private readonly successMessage: Writable<string> = writable("");
 
-  private readonly requestUser:Writable<Promise<UserModel>> = writable(null);
+  private readonly requestUser: Writable<Promise<UserModel>> = writable(null);
 
-  private constructor(){
+  private constructor() {
     this.session.set(this.authService.getUserStored())
   }
 
-  public static getInstance():IAuthViewModel {
-    if(AuthViewModel.instance == null) {
+  public static getInstance(): IAuthViewModel {
+    if (AuthViewModel.instance == null) {
       AuthViewModel.instance = new AuthViewModel();
     }
     return AuthViewModel.instance;
@@ -43,7 +42,7 @@ export default class AuthViewModel implements IAuthViewModel {
 
   public setPanel(authPanel: AuthPanel): void {
     this.errorMessage.set("")
-    if(authPanel == AuthPanel.LOGIN) {
+    if (authPanel == AuthPanel.LOGIN) {
       this.userToLogin.set(new UserModel())
       this.userToRegister.set(null)
     } else {
@@ -52,30 +51,29 @@ export default class AuthViewModel implements IAuthViewModel {
     }
   }
 
-  public onSubmit():void {
+  public onSubmit(): void {
     this.successMessage.set("");
     this.errorMessage.set("");
-    if(get(this.userToLogin) != null) {
+    if (get(this.userToLogin) != null) {
       this.onLogin()
-    } else if(get(this.userToRegister) != null) {
+    } else if (get(this.userToRegister) != null) {
       this.onRegister();
-      
     }
   }
 
-  private onLogin():void {
+  private onLogin(): void {
     // validate user data
     let errorValidation = get(this.userToLogin).validate();
     this.errorMessage.set(errorValidation);
-    if(errorValidation != "") {
-      return ;
+    if (errorValidation != "") {
+      return;
     }
 
     // validate password
     errorValidation = get(this.userToLogin).validatePassword();
     this.errorMessage.set(errorValidation);
-    if(errorValidation != "") {
-      return ;
+    if (errorValidation != "") {
+      return;
     }
 
     //login request
@@ -84,26 +82,28 @@ export default class AuthViewModel implements IAuthViewModel {
     loginRequest
       .then(usr => {
         this.session.set(usr)
-        window.location.replace("/");
+        let noLoginPat = window.location.href.replace("#/login", "");
+        noLoginPat = window.location.href.substring(0, window.location.href.indexOf("?"))
+        window.location.replace(noLoginPat);
       })
       .catch(err => {
-        if(err instanceof ErrorModel) {
+        if (err instanceof ErrorModel) {
           this.errorMessage.set(err.cause)
         } else {
           this.errorMessage.set("Error: intente mas tarde o informe error")
         }
       })
-      .finally(()=>{
+      .finally(() => {
         this.requestUser.set(null);
       })
   }
 
-  private onRegister():void {
+  private onRegister(): void {
     const userToR = get(this.userToRegister)
-    
+
     //validate user data
     let errorValidation = userToR.validate();
-    if(errorValidation != "") {
+    if (errorValidation != "") {
       this.errorMessage.set(errorValidation);
       return
     }
@@ -111,17 +111,17 @@ export default class AuthViewModel implements IAuthViewModel {
     // validate password
     errorValidation = userToR.validatePassword();
     this.errorMessage.set(errorValidation);
-    if(errorValidation != "") {
-      return ;
+    if (errorValidation != "") {
+      return;
     }
-    
+
     //validate password confirm
     errorValidation = userToR.isMatchPasswords();
-    if(errorValidation != "") {
+    if (errorValidation != "") {
       this.errorMessage.set(errorValidation);
       return
     }
-    
+
     //request
     const registerReqest = this.authService.register(userToR)
     this.requestUser.set(registerReqest)
@@ -132,22 +132,22 @@ export default class AuthViewModel implements IAuthViewModel {
       }).catch(error => {
         this.errorMessage.set(error.cause);
       })
-    ;
+      ;
   }
 
-  public logout(msg:string=''): void {
+  public logout(msg: string = ''): void {
     this.authService.cleanSession();
     this.session.set(null);
     const ordersSrv = new OrderService()
     ordersSrv.deleteAllOrdersInBrowser();
-    if(msg != ''){
-      msg = '?msg='+msg;
+    if (msg != '') {
+      msg = '?msg=' + msg;
     }
-    push('/login'+ msg)
+    push('/login' + msg)
     OrdersViewModel.getInstance().resetState();
   }
 
-  public getSession():Readable<UserModel> {
+  public getSession(): Readable<UserModel> {
     return this.session;
   }
   public getUserToLogin(): Readable<UserModel> {
@@ -162,7 +162,7 @@ export default class AuthViewModel implements IAuthViewModel {
   public getSuccessMessage(): Readable<string> {
     return this.successMessage;
   }
-  public getRequestUser():Readable<Promise<UserModel>> {
+  public getRequestUser(): Readable<Promise<UserModel>> {
     return this.requestUser;
   }
 }

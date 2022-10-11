@@ -1,4 +1,4 @@
-import Router, { replace } from "svelte-spa-router";
+import { replace } from "svelte-spa-router";
 import wrap from "svelte-spa-router/wrap";
 
 
@@ -28,7 +28,7 @@ const routes = {
     conditions: [
       async (detail) => {
         const session = get(auth.getSession());
-        
+
         const isAuth = session != null;
         if (!isAuth) {
           console.log("Permise denied /users");
@@ -72,7 +72,7 @@ const routes = {
       },
     ],
   }),
-  
+
   "/blog-form/:id": wrap({
     // Use a dynamically-loaded component for this
     asyncComponent: () => import("./blog/BlogFormPage.svelte"),
@@ -100,6 +100,23 @@ const routes = {
         const isAuth = session != null && session.hasRols(["admin"]);
         if (!isAuth) {
           console.warn("Permision denied /orders");
+          replace("/");
+        }
+        return isAuth;
+      },
+    ],
+  }),
+
+  "/comments": wrap({
+    // Use a dynamically-loaded component for this
+    asyncComponent: () => import("./comments/CommentsAdmin.svelte"),
+    // Adding one pre-condition that's an async function
+    conditions: [
+      async (_) => {
+        const session = get(auth.getSession());
+        const isAuth = session != null && session.hasRols(["admin"]);
+        if (!isAuth) {
+          console.warn("Permision denied /comments");
           replace("/");
         }
         return isAuth;

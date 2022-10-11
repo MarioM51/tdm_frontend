@@ -5,7 +5,7 @@
   export let navUrls: Array<any>;
 </script>
 
-<div class="navbar bg-neutral text-neutral-content">
+<div class="navbar bg-neutral text-neutral-content z-40">
   <label tabindex="0" for="my-drawer" class="btn btn-ghost btn-circle">
     <svg
       xmlns="http://www.w3.org/2000/svg"
@@ -23,7 +23,9 @@
   </label>
 
   <div class="flex-1">
-    <a href="/" class="btn btn-ghost normal-case text-xl">Tienda de Mario</a>
+    <a href="/" class="btn btn-ghost px-0 normal-case title-size"
+      >Tienda de Mario</a
+    >
   </div>
   <div class="flex-none">
     <span class="hidden sm:inline">
@@ -35,3 +37,17 @@
     <ShoppingCar />
   </div>
 </div>
+
+<style>
+  .title-size {
+    font-size: 0.875rem; /* 14px */
+    line-height: 1.25rem; /* 20px */
+  }
+
+  @media (min-width: 300px) {
+    .title-size {
+      font-size: 1.125rem; /* 18px */
+      line-height: 1.75rem; /* 28px */
+    }
+  }
+</style>

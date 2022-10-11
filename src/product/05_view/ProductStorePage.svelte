@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { onMount } from "svelte";
   import Gallery from "../../common/Gallery.svelte";
   import Like from "../../common/Like.svelte";
   import { Consts } from "../../Constants";
@@ -18,7 +19,7 @@
 
 <section class="page-container">
   <h1
-    class="text-2xl font-bold"
+    class="text-2xl font-bold my-4"
     class:cursor-pointer={onHomeScreen}
     class:underline={onHomeScreen}
     on:click={() => {
@@ -30,7 +31,7 @@
     Products
   </h1>
   {#if products.length <= 0}
-    There is no products
+    <p>No hay productos principales para mostrar</p>
   {/if}
 
   <div class="products">
@@ -39,7 +40,7 @@
         class="product card card-compact bg-base-200 shadow-xl min-w-[300px]"
       >
         <figure>
-          <Gallery allImages={p.imageUrls} urlImages={p.getUrl()} />
+          <Gallery allImages={p.imageUrls} urlForAllImages={p.getUrl()} />
           <Like type="products" id={p.id} amount={p.likes} />
         </figure>
         <div class="card-body">
@@ -50,7 +51,7 @@
           <div class="flex justify-between content-end">
             <span class="text-lg font-bold pt-4">${p.price}.00</span>
             <button class="btn btn-primary" on:click={() => addToCar(p)}
-              >Add</button
+              >Agregar</button
             >
           </div>
           <div class="flex flex-col mt-2 text-right text-xs">
@@ -58,18 +59,18 @@
               Comentarios: <kbd class="kbd kbd-sm">({p.commentCount})</kbd>
             </div>
             <div class="flex content-center justify-end">
-              <div>Calificacion:</div>
-              <kbd class="kbd kbd-sm">
-                <div class="rating">
+              <div class="rating mb-1">
+                {#each [1, 2, 3, 4, 5] as i}
                   <input
                     type="radio"
                     name="rating-new-comment"
-                    class="mask mask-star-2 bg-orange-400"
-                    checked
+                    value={i}
+                    class="mask mask-star-2 {p.commentsRating >= i
+                      ? 'bg-orange-400'
+                      : 'bg-base-300'}"
                   />
-                </div>
-                {p.commentsRating}
-              </kbd>
+                {/each}
+              </div>
             </div>
           </div>
         </div>
@@ -79,7 +80,7 @@
 </section>
 
 <style>
-  @import "/static/tailwin.css";
+  @import "http://192.168.1.81/static_003/tailwin.css";
 
   .products {
     display: flex;

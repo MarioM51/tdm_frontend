@@ -31,17 +31,21 @@
             >Comentarios: <kbd class="kbd kbd-sm">({product.commentCount})</kbd
             ></span
           >
-          <span class="flex"
+          <span class="flex mt-4"
             >Calificacion: <kbd class="kbd kbd-sm">
-              <div class="rating">
-                <input
-                  type="radio"
-                  name="rating-new-comment"
-                  class="mask mask-star-2 bg-orange-400"
-                  checked
-                />
+              <div class="rating mb-1">
+                {#each [1, 2, 3, 4, 5] as i}
+                  <input
+                    type="radio"
+                    name="rating-new-comment"
+                    value={i}
+                    class="mask mask-star-2 {product.commentsRating >= i
+                      ? 'bg-orange-400'
+                      : 'bg-base-300'}"
+                  />
+                {/each}
               </div>
-              {product.commentsRating}</kbd
+              ({product.commentsRating})</kbd
             ></span
           >
         </div>
@@ -55,7 +59,7 @@
     </div>
     <div class="flex justify-end">
       <button class="btn btn-primary" on:click={() => addToCar(product)}
-        >Add</button
+        >Agregar</button
       >
     </div>
     <div>
@@ -74,5 +78,5 @@
 </section>
 
 <style>
-  @import "/static/tailwin.css";
+  @import "http://192.168.1.81/static_003/tailwin.css";
 </style>

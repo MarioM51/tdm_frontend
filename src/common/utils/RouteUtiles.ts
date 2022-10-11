@@ -1,7 +1,7 @@
 
 export default class RouteUtiles {
 
-  public static getParams(paramsString:string): Map<string, string> {
+  public static getParams(paramsString: string): Map<string, string> {
     const myArray = paramsString.split(",");
     const myMap: Map<string, string> = new Map();
     myArray.forEach((paramsString) => {

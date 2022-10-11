@@ -250,13 +250,13 @@
                   <MultipleImageInput
                     initials_path={ProductImage.IMG_URL}
                     initials={$productOnForm.hasImages()
-                      ? $productOnForm.images.map((pi) => pi.id_image + "")
+                      ? $productOnForm.images.map((pi) => pi.id + "")
                       : []}
                     {uploadImageReq}
                     {deleteImageReq}
                     allFiles={files}
-                    onDelete={(id) => {
-                      productVM.onDeleteImage(id);
+                    onDelete={(idImage) => {
+                      productVM.onDeleteImage(idImage);
                     }}
                   />
                 </div>

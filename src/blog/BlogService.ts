@@ -10,7 +10,7 @@ import AuthService from "../auth/03_logic/AuthService";
 
 export default interface IBlogService {
 
-  findAll():Promise<BlogModel[]>
+  findAll(): Promise<BlogModel[]>
 
   findById(id: number): Promise<BlogModel>;
 
@@ -24,22 +24,22 @@ export default interface IBlogService {
 
 export class BlogService implements IBlogService, ICommentService {
 
-  private static instance:BlogService = null;
+  private static instance: BlogService = null;
 
-  private readonly _blogRepo:IBlogRepository = BlogRepository.getInstance();
-  private readonly _authServ:IAuthService = new AuthService();
+  private readonly _blogRepo: IBlogRepository = BlogRepository.getInstance();
+  private readonly _authServ: IAuthService = new AuthService();
 
   private constructor() { }
 
-  public static getInstance():BlogService {
-    if(BlogService.instance == null) {
+  public static getInstance(): BlogService {
+    if (BlogService.instance == null) {
       BlogService.instance = new BlogService();
     }
     return BlogService.instance;
   }
 
 
-  public async findAll():Promise<BlogModel[]> {
+  public async findAll(): Promise<BlogModel[]> {
     const blogs = await this._blogRepo.findAll();
     blogs.sort((a, b) => (a.id > b.id) ? 1 : -1);
 
@@ -70,31 +70,54 @@ export class BlogService implements IBlogService, ICommentService {
     return deleted;
   }
 
-//Comments Implementation
+  //Comments Implementation
 
- public async addComment(newComment:CommentModel):Promise<CommentModel> {
+  public async addComment(newComment: CommentModel): Promise<CommentModel> {
     const msgError = newComment.validateToSend();
-    if(msgError != null) {
+    if (msgError != null) {
       throw new ErrorModel(400, msgError);
     }
 
-    const newBlogComment:BlogComment = BlogComment.fromComment(newComment)
+    const newBlogComment: BlogComment = BlogComment.fromComment(newComment)
     const blogCommentadded = await this._blogRepo.addComment(newBlogComment);
     const added = CommentModel.fromBlogComment(blogCommentadded);
 
     return added;
   }
 
-  public async removeComment(commentToDel:CommentModel):Promise<CommentModel> {
+  public async removeComment(commentToDel: CommentModel): Promise<CommentModel> {
     const userLogged = this._authServ.getUserStored();
-    if(userLogged == null || commentToDel.idUser != userLogged.id) {
+    if (userLogged == null && (commentToDel.idUser != userLogged.id || userLogged?.hasRols(["admin"]))) {
       throw new ErrorModel(403, "The comment only can be deleted by the owner or by the admin user");
     }
-    
-    const blogCommentToDel:BlogComment = BlogComment.fromComment(commentToDel)
+
+    const blogCommentToDel: BlogComment = BlogComment.fromComment(commentToDel);
     const blogCommentDeleted = await this._blogRepo.removeComment(blogCommentToDel);
     const deleted = CommentModel.fromBlogComment(blogCommentDeleted);
     return deleted;
+  }
+
+  public async addResponse(newResponse: CommentModel): Promise<CommentModel> {
+    const msgError = newResponse.validateToSend(true);
+    if (msgError != null) {
+      throw new ErrorModel(400, msgError);
+    }
+    if (newResponse.responseTo <= 0) {
+      throw new ErrorModel(500, "Error inesperado: intente mas terde, respuesta no ligada a comentario");
+    }
+
+    const newBlogComment: BlogComment = BlogComment.fromComment(newResponse)
+    const blogCommentadded = await this._blogRepo.addComment(newBlogComment);
+    const added = CommentModel.fromBlogComment(blogCommentadded);
+
+    return added;
+  }
+
+  public async findAllComments(): Promise<CommentModel[]> {
+    const allBlogComments: BlogComment[] = await this._blogRepo.findAllComments();
+    const allComments = allBlogComments.map(c => CommentModel.fromBlogComment(c));
+
+    return allComments;
   }
 
 }

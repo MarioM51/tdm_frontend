@@ -13,32 +13,32 @@ export default class AuthApiDAO {
     request.url = AuthApiDAO.API + "/login";
     request.method = HttpMethod.POST;
     request.data = user;
-    request.cast = async (resp:Response)=>{
+    request.cast = async (resp: Response) => {
       const resData = await resp.json()
       const userInfo = UserModel.fromJson(resData);
       userInfo.password = resp.headers.get('Token');
       return userInfo;
     }
-    
+
     const userInfo = request.doRequest()
 
     return userInfo
   }
 
-  public async register(userToAdd: UserModel) : Promise<UserModel>{
+  public async register(userToAdd: UserModel): Promise<UserModel> {
     const request = new RequestHelper<UserModel>();
     request.method = HttpMethod.POST;
     userToAdd.ensureData()
     request.data = userToAdd;
     request.url = AuthApiDAO.API;
-    request.cast = async (resp)=>{
+    request.cast = async (resp) => {
       const resData = await resp.json()
       const userAdded = UserModel.fromJson(resData);
       return userAdded;
     }
 
     const userAdded = request.doRequest()
-    
+
     return userAdded
   }
 
@@ -47,7 +47,7 @@ export default class AuthApiDAO {
     request.url = AuthApiDAO.API;
     request.method = HttpMethod.GET;
     request.token = this._authStore.getToken();
-    request.cast = async (resp)=>{
+    request.cast = async (resp) => {
       const resData = await resp.json()
       const users = UserModel.fromArrayJson(resData);
       return users
@@ -66,7 +66,7 @@ export default class AuthApiDAO {
     request.cast = this.castUser
 
     const userDeleted = request.doRequest()
-    
+
     return userDeleted
   }
 
@@ -96,10 +96,10 @@ export default class AuthApiDAO {
     return userDetails;
   }
 
-  private async castUser(resp:any):Promise<UserModel> {
+  private async castUser(resp: any): Promise<UserModel> {
     const resData = await resp.json()
-      const userDeleted = UserModel.fromJson(resData);
-      return userDeleted;
+    const userDeleted = UserModel.fromJson(resData);
+    return userDeleted;
   }
 
 }

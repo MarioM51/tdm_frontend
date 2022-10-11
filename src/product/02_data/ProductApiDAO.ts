@@ -3,7 +3,6 @@ import ProductModel from "../01_model/ProductModel";
 import AuthStoreDAO from "../../auth/02_data/AuthStoreDAO";
 import ProductImage from "../01_model/ProductImage";
 import CommentModel from "../../comments/CommentModel";
-import ErrorModel from "../../error/ErrorModel";
 
 export default class ProductApiDAO {
 
@@ -11,7 +10,7 @@ export default class ProductApiDAO {
 
   private readonly _userStore = new AuthStoreDAO()
 
-  public add(toAdd:ProductModel): Promise<ProductModel> {
+  public add(toAdd: ProductModel): Promise<ProductModel> {
     // use addFile to upload files
     toAdd.files = null;
 
@@ -21,19 +20,19 @@ export default class ProductApiDAO {
     r.token = this._userStore.getToken();
     r.data = toAdd;
     r.cast = this.castProduct;
-    
+
     const productAdded = r.doRequest();
 
     return productAdded;
   }
 
-  public findAll() : Promise<ProductModel[]> {
+  public findAll(): Promise<ProductModel[]> {
     const r = new RequestHelper<ProductModel[]>();
     r.url = ProductApiDAO._API;
     r.method = HttpMethod.GET;
     r.cast = async (resp) => {
       const rawProducts = await resp.json();
-      const castedProducts = rawProducts.map((rawP: any) => ProductModel.fromJson(rawP) );
+      const castedProducts = rawProducts.map((rawP: any) => ProductModel.fromJson(rawP));
       return castedProducts;
     }
 
@@ -52,7 +51,7 @@ export default class ProductApiDAO {
     const productDeleted = r.doRequest();
 
     return productDeleted;
-    
+
   }
 
   public edit(newInfo: ProductModel): Promise<ProductModel> {
@@ -62,19 +61,19 @@ export default class ProductApiDAO {
     r.token = this._userStore.getToken();
     r.data = newInfo;
     r.cast = this.castProduct;
-    
+
     const productAdded = r.doRequest();
 
     return productAdded;
   }
 
-  private async castProduct(resp:Response): Promise<ProductModel> {
+  private async castProduct(resp: Response): Promise<ProductModel> {
     const rawProducts = await resp.json();
     const product = ProductModel.fromJson(rawProducts);
     return product
   }
 
-  public addFile(idProduct:number, images:FileList):Promise<ProductImage> {
+  public addFile(idProduct: number, images: FileList): Promise<ProductImage> {
     const r = new RequestHelper<ProductImage>();
     r.url = ProductApiDAO._API + "/" + idProduct + "/images";
     r.method = HttpMethod.POST;
@@ -104,7 +103,7 @@ export default class ProductApiDAO {
 
     const imageDeleted = r.doRequest();
 
-    return imageDeleted; 
+    return imageDeleted;
   }
 
   public async addComment(newComment: CommentModel): Promise<CommentModel> {
@@ -114,11 +113,11 @@ export default class ProductApiDAO {
     r.token = this._userStore.getToken();
     r.data = newComment;
     r.cast = CommentModel.fromResponse;
-    
+
     const saved = await r.doRequest()
     return saved
   }
-  
+
   public async removeComment(toDel: CommentModel): Promise<CommentModel> {
     const r = new RequestHelper<CommentModel>();
     r.url = ProductApiDAO._API + "/" + toDel.idTarget + "/comment/" + toDel.id;
@@ -128,6 +127,30 @@ export default class ProductApiDAO {
 
     const deleted = await r.doRequest()
     return deleted
+  }
+
+  public async addCommentResponse(toadd: CommentModel): Promise<CommentModel> {
+    const r = new RequestHelper<CommentModel>();
+    r.url = ProductApiDAO._API + "/" + toadd.idTarget + "/comment/" + toadd.responseTo;
+    r.method = HttpMethod.POST;
+    r.token = this._userStore.getToken();
+    r.data = toadd;
+    r.cast = CommentModel.fromResponse;
+
+    const saved = await r.doRequest()
+    return saved
+  }
+
+  public async findAllComments(): Promise<CommentModel[]> {
+    const r = new RequestHelper<CommentModel[]>();
+    r.url = ProductApiDAO._API + "/comments";
+    r.method = HttpMethod.GET;
+    r.token = this._userStore.getToken();
+    r.cast = CommentModel.fromArrayResponse
+
+    const comments = r.doRequest();
+
+    return comments;
   }
 
 }

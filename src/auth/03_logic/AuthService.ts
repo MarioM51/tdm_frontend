@@ -30,7 +30,7 @@ export default class AuthService implements IAuthService {
     this.setSession(null, null)
   }
 
-  private setSession(user:UserModel, token:string):void {
+  private setSession(user: UserModel, token: string): void {
     this.userStore.save(user)
     this.userStore.saveToken(token)
   }
@@ -46,42 +46,42 @@ export default class AuthService implements IAuthService {
   }
 
   public async doDelete(toDel: UserModel): Promise<UserModel> {
-    const userDeleted:UserModel = await this.authApi.deleteUser(toDel);
+    const userDeleted: UserModel = await this.authApi.deleteUser(toDel);
     return userDeleted
   }
 
   public findAllRols(): Promise<RolModel[]> {
     let req = new Promise<RolModel[]>((resolve, reject) => {
-      setTimeout(()=>{
-        const allRols:RolModel[] = [
+      setTimeout(() => {
+        const allRols: RolModel[] = [
           new RolModel(79, "admin"),
           new RolModel(80, "blogs"),
           new RolModel(81, "products"),
         ]
 
         resolve(allRols);
-      },100);
+      }, 100);
 
-      setTimeout(()=>{ reject("Cataplum");}, 1200);
-   });
+      setTimeout(() => { reject("Cataplum"); }, 1200);
+    });
 
-   return req;
+    return req;
   }
 
-  public edit(userToEdit: UserModel) : Promise<UserModel>{
+  public edit(userToEdit: UserModel): Promise<UserModel> {
     userToEdit.validate();
 
     //here should not edit the password, only the user can change his own password
     userToEdit.password = "";
     userToEdit.confirmPass = "";
 
-     const requestEdit:Promise<UserModel> = this.authApi.edit(userToEdit);
+    const requestEdit: Promise<UserModel> = this.authApi.edit(userToEdit);
 
     return requestEdit
   }
 
   public async fetchUserDetails(idUser: number): Promise<UserModel> {
-    const userDetails:UserModel = await this.authApi.fetchUserDetails(idUser);
+    const userDetails: UserModel = await this.authApi.fetchUserDetails(idUser);
     return userDetails
   }
 

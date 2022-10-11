@@ -4,36 +4,36 @@ import type ProductModel from "../01_model/ProductModel"
 
 export default interface IProductViewModel {
 
-  onInit():void
+  onInit(): void
 
-  onClickAdd():void
-  onSubmitAdd(image:FileList[]):void
+  onClickAdd(): void
+  onSubmitAdd(image: FileList[]): void
 
-  onClickRemove(rowNum: number):void
+  onClickRemove(rowNum: number): void
   onConfirmRemove(): void
 
-  onClickEdit(rowNum:number):void
-  onConfirmEdit(image:FileList[]):void
+  onClickEdit(rowNum: number): void
+  onConfirmEdit(image: FileList[]): void
 
-  onDeleteImage(idImage:number):void
+  onDeleteImage(idImage: number): void
 
-  closeProductForm():void
+  closeProductForm(): void
 
   //getters/setters
-  getProducts():Readable<ProductModel[]>
-  getProductsRequest():Readable<Promise<ProductModel[]>>
-  
-  getProductOnForm():Readable<ProductModel>
-  getProductOnFormRequest():Readable<Promise<ProductModel>>
-  getUploadImageReq():Readable<Promise<ProductImage>>
+  getProducts(): Readable<ProductModel[]>
+  getProductsRequest(): Readable<Promise<ProductModel[]>>
 
-  getProductToDelete():Readable<ProductModel>
-  getProductToDeleteRequest():Readable<Promise<ProductModel>>
+  getProductOnForm(): Readable<ProductModel>
+  getProductOnFormRequest(): Readable<Promise<ProductModel>>
+  getUploadImageReq(): Readable<Promise<ProductImage[]>>
 
-  getErrorMsg():Readable<string> 
-  getErrorFormMsg():Readable<string> 
-  getErrorUploadImage():Readable<string>
+  getProductToDelete(): Readable<ProductModel>
+  getProductToDeleteRequest(): Readable<Promise<ProductModel>>
 
-  getDeleteImageReq():Readable<Promise<ProductImage>>
+  getErrorMsg(): Readable<string>
+  getErrorFormMsg(): Readable<string>
+  getErrorUploadImage(): Readable<string>
+
+  getDeleteImageReq(): Readable<Promise<ProductImage>>
 
 }

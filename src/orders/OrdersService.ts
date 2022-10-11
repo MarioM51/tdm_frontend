@@ -1,5 +1,6 @@
 import ErrorModel from "../error/ErrorModel";
 import type BillLine from "../shopping_car/BillLine";
+import type InfoPayment from "./InfoPayment";
 import OrderModel from "./OrderModel";
 import OrderModelMV from "./OrderModelMV";
 import OrdersApiRepository from "./OrdersApiRepository";
@@ -9,7 +10,7 @@ export default class OrderService {
   private readonly api = new OrdersApiRepository();
   private readonly store = new OrdersStore();
 
-  public async addOrder(bill:BillLine[]):Promise<OrderModel> {
+  public async addOrder(bill: BillLine[]): Promise<OrderModel> {
     const order = new OrderModel();
     order.id = 0;
     order.idUser = 0;
@@ -20,9 +21,9 @@ export default class OrderService {
     return orderSaved;
   }
 
-  public async fetchOrdersInBrowser():Promise<OrderModelMV[]> {
+  public async fetchOrdersInBrowser(): Promise<OrderModelMV[]> {
     const ordersInBrowser = this.store.getOrders();
-    if(ordersInBrowser.length <= 0) {
+    if (ordersInBrowser.length <= 0) {
       return []
     }
 
@@ -40,11 +41,11 @@ export default class OrderService {
 
   public async confirm(id: number): Promise<OrderModelMV> {
     try {
-      const confirmed:OrderModel = await this.api.confirm(id);
+      const confirmed: OrderModel = await this.api.confirm(id);
       const confirmedCasted = OrderModelMV.cast(confirmed)
       return confirmedCasted;
     } catch (error) {
-      if(error.status == 403) {
+      if (error.status == 403) {
         throw new ErrorModel(error.status, 'Necesitas agregar tu telefono y nombre en <a style="color: lightblue; text-decoration: underline;" href="#/user-info">informacion adicional</a>')
       }
       throw error;
@@ -57,23 +58,28 @@ export default class OrderService {
   }
 
   public async accept(id: number): Promise<OrderModelMV> {
-    const accepted:OrderModel = await this.api.accept(id);
+    const accepted: OrderModel = await this.api.accept(id);
     const acceptedCasted = OrderModelMV.cast(accepted)
     return acceptedCasted;
   }
 
-  public deleteOrderInBrowserById(id:number):void {
+  public deleteOrderInBrowserById(id: number): void {
     this.store.delete(id)
   }
 
-  public deleteAllOrdersInBrowser():void {
+  public deleteAllOrdersInBrowser(): void {
     this.store.deleteAll();
   }
 
-  public async findOrderOfuserLogged():Promise<OrderModelMV[]> {
+  public async findOrderOfuserLogged(): Promise<OrderModelMV[]> {
     const orders = await this.api.findByUserLogged();
     const ordersCasted = orders.map(o => OrderModelMV.cast(o));
     return ordersCasted;
+  }
+
+  public async getPaymnetInfo(): Promise<InfoPayment> {
+    const info = await this.api.fetchPaymentInfo();
+    return info;
   }
 
 }

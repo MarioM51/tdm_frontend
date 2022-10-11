@@ -7,36 +7,37 @@ interface Event {
 
 export default class UrlInfo {
   constructor(
-    public label:string,
-    public url:string,
-    public onClick:Event = ()=>{},
+    public label: string,
+    public url: string,
+    public onClick: Event = () => { },
   ) {
-    
+
   }
 
-  public static getAdminUrls(session:UserModel, authMV: IAuthViewModel):UrlInfo[] {
-    const urls:UrlInfo[] = [];
+  public static getAdminUrls(session: UserModel, authMV: IAuthViewModel): UrlInfo[] {
+    const urls: UrlInfo[] = [];
     if (session != null) {
       if (session.hasRols(["admin"])) {
         urls.push(
           new UrlInfo('Users', '#/users'),
           new UrlInfo('Orders', '#/orders'),
+          new UrlInfo('Comments', '#/comments'),
         )
       }
-  
+
       if (session.hasRols(["admin", "products"])) {
         urls.push(
           new UrlInfo('Products', '#/products'),
         )
       }
-  
+
       if (session.hasRols(["admin", "blogs"])) {
         urls.push(
           new UrlInfo('Blogs', '#/blogs'),
         )
       }
       urls.push(
-        new UrlInfo('Logout', '#/login', ()=>{authMV.logout('')}),
+        new UrlInfo('Logout', '#/login', () => { authMV.logout('') }),
       )
     } else {
       urls.push(

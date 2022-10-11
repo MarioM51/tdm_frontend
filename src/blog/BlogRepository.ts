@@ -16,21 +16,23 @@ export interface IBlogRepository {
 
   addComment(newComment: BlogComment): Promise<BlogComment>;
 
-  removeComment(toDel: BlogComment): Promise<BlogComment>
+  removeComment(toDel: BlogComment): Promise<BlogComment>;
+
+  findAllComments(): Promise<BlogComment[]>;
 
 }
 
 export class BlogRepository implements IBlogRepository {
 
   public static readonly _API = "/blogs";
-  
-  private static _instance:IBlogRepository = null;
+
+  private static _instance: IBlogRepository = null;
   private readonly _userStore = new AuthStoreDAO()
 
-  private constructor() {}
+  private constructor() { }
 
-  public static getInstance():IBlogRepository {
-    if( BlogRepository._instance == null) {
+  public static getInstance(): IBlogRepository {
+    if (BlogRepository._instance == null) {
       BlogRepository._instance = new BlogRepository();
     }
     return BlogRepository._instance;
@@ -45,7 +47,7 @@ export class BlogRepository implements IBlogRepository {
       const blogs = BlogModel.fromArrayJson(rawBlogs);
       return blogs
     }
-    
+
     const all = r.doRequest()
     return all
   }
@@ -55,7 +57,7 @@ export class BlogRepository implements IBlogRepository {
     r.url = BlogRepository._API + "/" + id;
     r.method = HttpMethod.GET;
     r.cast = this.castPost;
-    
+
     const finded = r.doRequest()
     return finded
   }
@@ -67,7 +69,7 @@ export class BlogRepository implements IBlogRepository {
     r.token = this._userStore.getToken();
     r.data = newBlog;
     r.cast = this.castPost;
-    
+
     const saved = r.doRequest()
     return saved
   }
@@ -79,7 +81,7 @@ export class BlogRepository implements IBlogRepository {
     r.token = this._userStore.getToken();
     r.data = newInfo;
     r.cast = this.castPost;
-    
+
     const edited = r.doRequest()
     return edited
   }
@@ -90,7 +92,7 @@ export class BlogRepository implements IBlogRepository {
     r.url = BlogRepository._API + "/" + toDel.id;
     r.method = HttpMethod.DELETE;
     r.cast = this.castPost;
-    
+
     const deleted = r.doRequest()
     return deleted
   }
@@ -102,11 +104,11 @@ export class BlogRepository implements IBlogRepository {
     r.token = this._userStore.getToken();
     r.data = newComment;
     r.cast = this.castBlogComment;
-    
+
     const saved = await r.doRequest()
     return saved
   }
-  
+
   public async removeComment(toDel: BlogComment): Promise<BlogComment> {
     const r = new RequestHelper<BlogComment>();
     r.url = BlogRepository._API + "/" + toDel.idBlog + "/comment/" + toDel.identifier;
@@ -117,18 +119,34 @@ export class BlogRepository implements IBlogRepository {
     const deleted = await r.doRequest()
     return deleted
   }
-  
 
-  private async castPost(resp: Response):Promise<BlogModel> {
+  public async findAllComments(): Promise<BlogComment[]> {
+    const r = new RequestHelper<BlogComment[]>();
+    r.url = BlogRepository._API + "/comments";
+    r.method = HttpMethod.GET;
+    r.cast = this.castBlogComments;
+
+    const foundBlogC = await r.doRequest()
+    return foundBlogC;
+  }
+
+
+  private async castPost(resp: Response): Promise<BlogModel> {
     const rawBlogs = await resp.json();
     const blog = BlogModel.fromJson(rawBlogs);
     return blog
   }
 
-  private async castBlogComment(resp:Response):Promise<BlogComment> {
-    const rawBlogs = await resp.json();
-    const blog = BlogComment.fromJson(rawBlogs);
+  private async castBlogComment(resp: Response): Promise<BlogComment> {
+    const rawBlog = await resp.json();
+    const blog = BlogComment.fromJson(rawBlog);
     return blog
+  }
+
+  private async castBlogComments(resp: Response): Promise<BlogComment[]> {
+    const rawBlogs = await resp.json();
+    const blogs = rawBlogs.map(rb => BlogComment.fromJson(rb));
+    return blogs
   }
 
 }

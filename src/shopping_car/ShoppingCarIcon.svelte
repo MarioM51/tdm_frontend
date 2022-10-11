@@ -7,6 +7,8 @@
 
   //const products = shoppingCar.getProducts();
   const bill = shoppingCar.getBill();
+  const isShaking = shoppingCar.getIsShaking();
+
   const isOpen = writable(false);
   let closeSC = false;
 </script>
@@ -27,7 +29,7 @@
   }}
 >
   <div
-    class="btn btn-ghost btn-circle"
+    class="btn btn-ghost btn-circle {$isShaking ? 'shake' : ''}"
     on:click={() => {
       isOpen.set(!$isOpen);
     }}
@@ -55,10 +57,7 @@
   </div>
 
   <div
-    class="!fixed sm:!absolute w-full sm:w-[420px] z-10 pt-1 card card-compact dropdown-content shadow bg-base-200 text-base-content shadow-xl pt-8"
-    on:click={() => {
-      console.log("gano click");
-    }}
+    class="!fixed sm:!absolute w-full sm:w-[420px] z-40 pt-1 card card-compact dropdown-content shadow bg-base-200 text-base-content shadow-xl pt-8"
   >
     <div class="card-body">
       <div class="text-center">
@@ -66,8 +65,8 @@
           <div class="overflow-x-auto max-h-[256px]">
             <table class="table table-zebra w-full table-compact">
               <thead>
-                <th class="bg-neutral text-neutral-content">Name</th>
-                <th class="bg-neutral text-neutral-content">Add Up</th>
+                <th class="bg-neutral text-neutral-content">Nombre</th>
+                <th class="bg-neutral text-neutral-content">Agrega</th>
                 <th class="bg-neutral" />
               </thead>
               <tbody>
@@ -134,12 +133,12 @@
                   isOpen.set(false);
                   window.document.activeElement.blur();
                   shoppingCar.addToOrders();
-                }}>Confirm</button
+                }}>Guardar</button
               >
             </div>
           </div>
         {:else}
-          <p>Nothing over here</p>
+          <p>Nada por aqui</p>
         {/if}
         <span
           class="btn btn-sm btn-circle btn-ghost absolute right-3 top-3 bg-base-300"
@@ -153,5 +152,48 @@
 </div>
 
 <style>
-  @import "/static/tailwin.css";
+  @import "http://192.168.1.81/static_003/tailwin.css";
+
+  @keyframes shake {
+    0% {
+      transform: translate(2px, 1px) rotate(0deg);
+    }
+    10% {
+      transform: translate(-1px, -2px) rotate(-1deg);
+    }
+    20% {
+      transform: translate(-3px, 0px) rotate(1deg);
+    }
+    30% {
+      transform: translate(0px, 2px) rotate(0deg);
+    }
+    40% {
+      transform: translate(1px, -1px) rotate(1deg);
+    }
+    50% {
+      transform: translate(-1px, 2px) rotate(-1deg);
+    }
+    60% {
+      transform: translate(-3px, 1px) rotate(0deg);
+    }
+    70% {
+      transform: translate(2px, 1px) rotate(-1deg);
+    }
+    80% {
+      transform: translate(-1px, -1px) rotate(1deg);
+    }
+    90% {
+      transform: translate(2px, 2px) rotate(0deg);
+    }
+    100% {
+      transform: translate(1px, -2px) rotate(-1deg);
+    }
+  }
+  .shake {
+    animation-name: shake;
+    animation-duration: 0.5s;
+    transform-origin: 50% 50%;
+    animation-iteration-count: infinite;
+    display: inline-block;
+  }
 </style>

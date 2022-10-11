@@ -1,7 +1,16 @@
+import RequestHelper from "../helpers/RequestHelper";
 
 export default class InfoPayment {
-  public static readonly CLABE:string = "012-180-0158-3596-8265";
-  public static readonly OWNER:string = "Mario Marquez V.";
-  public static readonly BANK_NAME:string = "BBVA";
-  public static readonly CONCEPT:string = "TDM";
+  public Clabe: string = null;
+  public Owner: string = null;
+  public BankName: string = null;
+  public Concept: string = null;
+
+  public static async fromAPIResponse(resp: Response): Promise<InfoPayment> {
+    const rawInfo = await resp.json();
+    const info = new InfoPayment();
+    Object.assign(info, rawInfo);
+    return info;
+  }
+
 }

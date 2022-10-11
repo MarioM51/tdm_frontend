@@ -2,10 +2,10 @@ import ErrorModel from "../error/ErrorModel";
 import { Consts } from "../Constants";
 
 export enum HttpMethod {
-  POST="POST",
-  GET="GET",
-  PUT="PUT",
-  DELETE="DELETE",
+  POST = "POST",
+  GET = "GET",
+  PUT = "PUT",
+  DELETE = "DELETE",
 }
 
 interface ICast<E> {
@@ -17,19 +17,19 @@ const sleep = (milliseconds) => {
 }
 
 export default class RequestHelper<E> {
-  public method:HttpMethod;
-  public url:string;
-  public token:string = null;
-  public headers:Map<string, string> = null;
-  public data:any = null;
-  public cast:ICast<E>;
+  public method: HttpMethod;
+  public url: string;
+  public token: string = null;
+  public headers: Map<string, string> = null;
+  public data: any = null;
+  public cast: ICast<E>;
   private static readonly API_PREFIX = "/api"
-  private static readonly  DELAY = 500;
+  private static readonly DELAY = 500;
 
   public static readonly LOGIN_REQUIRED = new ErrorModel(401, "Login required");
   public static readonly USR_UNAUTH = new ErrorModel(403, "User Unauthorized");
 
-  public async doRequest():Promise<E> {
+  public async doRequest(): Promise<E> {
     this.url = Consts.HOST + RequestHelper.API_PREFIX + this.url;
 
     const myHeaders = new Headers();
@@ -37,55 +37,62 @@ export default class RequestHelper<E> {
       myHeaders.append('Token', this.token);
     }
 
-    if(this.data instanceof FileList) {
+    if (this.data instanceof FileList) {
       const payload = new FormData();
       payload.append('file', this.data[0]);
-      
+
       this.data = payload;
     } else {
+      myHeaders.append("Content-Type", "application/json; charset=utf-8");
       this.data = (this.data != null) ? JSON.stringify(this.data) : null;
     }
 
-    const options:RequestInit = {
+    const options: RequestInit = {
       method: this.method,
       headers: myHeaders,
       body: this.data
     };
 
-    let resp:Response = null
+    let resp: Response = null
     try {
       await sleep(RequestHelper.DELAY)
       resp = await fetch(this.url, options)
-    } catch(err) {
+    } catch (err) {
       console.warn(err);
       throw new ErrorModel(500, "Connection error")
     }
 
-    if(!resp.ok) {
-      if(resp.status == 401) {
+    if (!resp.ok) {
+      if (resp.status == 401) {
         throw new ErrorModel(401, "Login required")
       }
-      
-      if(resp.status == 403) {
+
+      if (resp.status == 403) {
         throw new ErrorModel(403, "User Unauthorized")
       }
 
-      const errorData = await resp.json()
+      const errorTextData = await resp.text();
+      let errorData: any;
+      try {
+        errorData = JSON.parse(errorTextData);
+      } catch (err) {
+        throw new ErrorModel(500, "It's not a JSON");
+      }
 
       const causeOk = errorData.cause == null && !(errorData.cause instanceof String);
       const statusOk = errorData.status == null && !(errorData.status instanceof Number);
 
-      if( causeOk || statusOk) {
+      if (causeOk || statusOk) {
         throw new ErrorModel(500, "Error in error response")
       }
 
       throw new ErrorModel(errorData.status, errorData.cause)
     }
 
-    let dataFormatted:E;
+    let dataFormatted: E;
     try {
       dataFormatted = await this.cast(resp)
-    } catch(err) {
+    } catch (err) {
       throw new ErrorModel(500, "Error casting body response")
     }
 

@@ -15,15 +15,15 @@ export default abstract class OrdersAbstractViewModel {
 
   protected readonly all: Writable<OrderModelMV[]> = writable([]);
   protected readonly allReq: Writable<Promise<any>> = writable(null);
-  
-  public async delete(idToDel: number):Promise<void> {
-    const userMsg = "Are you sure you want to delete the order whit id " + idToDel + "?";
+
+  public async delete(idToDel: number): Promise<void> {
+    const userMsg = "¿Estas seguro que quieres eliminar la orden con id " + idToDel + "?";
     const confirm = await this._appVM.showModalDelete(userMsg)
-    if(confirm) {
+    if (confirm) {
       const reqDelOrder = this.orderServ.deleteById(idToDel);
       const actionType = ActionType.DELETE;
       this.setPromiseToOrderInAllOrders(idToDel, actionType, reqDelOrder)
-      
+
       reqDelOrder
         .then((orderDeleted) => {
           this.all.update(orders => {
@@ -31,36 +31,36 @@ export default abstract class OrdersAbstractViewModel {
             return ordersFiltered;
           })
         })
-        .finally(()=>{
+        .finally(() => {
           this.setPromiseToOrderInAllOrders(idToDel, actionType, null);
         })
-      ;
-      
+        ;
+
     } else {
       console.log("Confirmacion rechazada");
     }
   }
 
 
-  protected setPromiseToOrderInAllOrders(idOrder:number, type:ActionType, promise:Promise<OrderModelMV>) {
+  protected setPromiseToOrderInAllOrders(idOrder: number, type: ActionType, promise: Promise<OrderModelMV>) {
     this.all.update(orders => {
       const order = orders.find(o => o.id == idOrder);
       switch (type) {
         case ActionType.ACCEPT:
           order.acceptPromise.set(promise)
-        break;
+          break;
 
         case ActionType.DELETE:
           order.deletePromise.set(promise)
-        break;
+          break;
 
         case ActionType.CONFIRM:
           order.confirmPromise.set(promise)
-        break;
-      
+          break;
+
         default:
           console.error("Type not defined");
-        break;
+          break;
       }
 
       return orders;

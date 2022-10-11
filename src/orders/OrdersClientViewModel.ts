@@ -6,14 +6,15 @@ import OrderModelMV, { ActionType } from "./OrderModelMV";
 import OrdersAbstractViewModel from "./OrdersAbstractViewModel";
 import { push } from "svelte-spa-router";
 import ShoppingCarVM from "../shopping_car/ShoppingCarVM";
+import type InfoPayment from "./InfoPayment";
 
 export default class OrdersViewModel extends OrdersAbstractViewModel {
-  private static instance:OrdersViewModel = null;
+  private static instance: OrdersViewModel = null;
 
-  private readonly shoppingCarVM:ShoppingCarVM = null;
+  private readonly shoppingCarVM: ShoppingCarVM = null;
 
   //ui elements
-  private readonly errorMessage: Writable<string> = null; 
+  private readonly errorMessage: Writable<string> = null;
   private readonly reqAdd: Writable<Promise<any>> = null;
   private _requestOfTwoRequests: boolean = false;
 
@@ -24,27 +25,27 @@ export default class OrdersViewModel extends OrdersAbstractViewModel {
     this.reqAdd = writable(null);
   }
 
-  public static getInstance():OrdersViewModel {
+  public static getInstance(): OrdersViewModel {
     if (this.instance == null) {
       this.instance = new OrdersViewModel();
     }
     return this.instance;
   }
 
-  public resetState():void {
+  public resetState(): void {
     this.errorMessage.set(null);
     this.reqAdd.set(null);
     this.allReq.set(null);
     this.all.set([]);
   }
 
-  public onInit():void {
+  public onInit(): void {
     this.resetState();
     this.findOrdersInBrowser();
     this.findOrderOfuserLogged();
   }
 
-  public addOrder(bill:BillLine[]):void {
+  public addOrder(bill: BillLine[]): void {
     this.errorMessage.set(null);
     //this.onInit();
     const reqAddOrder = this.orderServ.addOrder(bill);
@@ -63,23 +64,24 @@ export default class OrdersViewModel extends OrdersAbstractViewModel {
             })
             this.reqAdd.set(null);
           })
-        ;//wait all request to add
+          ;//wait all request to add
       })
       .catch((e) => {
         ErrorModel.handleRequestErrors(e, this.errorMessage, this._authMV)
       })
       ;
     ;
-    
+
   }
 
-  private findOrdersInBrowser():void {
+  private findOrdersInBrowser(): void {
     const ordersReq = this.orderServ.fetchOrdersInBrowser()
     this.allReq.set(ordersReq);
+    this.errorMessage.set(null);
     ordersReq
       .then(ordersFinded => {
         this.all.update(orders => {
-          
+
           get(this.all).forEach(oAll => {
             ordersFinded = ordersFinded.filter(oServ => oAll.id != oServ.id)
           })
@@ -93,7 +95,7 @@ export default class OrdersViewModel extends OrdersAbstractViewModel {
       })
       .finally(() => {
         setTimeout(() => {
-          if(!this._requestOfTwoRequests) {
+          if (!this._requestOfTwoRequests) {
             this.allReq.set(null);
             this._requestOfTwoRequests = false;
           }
@@ -101,16 +103,17 @@ export default class OrdersViewModel extends OrdersAbstractViewModel {
       })
   }
 
-  private findOrderOfuserLogged():void {
+  private findOrderOfuserLogged(): void {
     const session = this._authMV.getSession();
     const userLogged = get(session);
+    this.errorMessage.set(null);
     if (userLogged != null) {
       this._requestOfTwoRequests = true;
       const ordersReq = this.orderServ.findOrderOfuserLogged();
       this.allReq.set(ordersReq);
       ordersReq
         .then(ordersServer => {
-          
+
           ordersServer.forEach(o => {
             this.orderServ.deleteOrderInBrowserById(o.id);
           });
@@ -128,11 +131,11 @@ export default class OrdersViewModel extends OrdersAbstractViewModel {
         .catch((err) => {
           ErrorModel.handleRequestErrors(err, this.errorMessage, this._authMV);
         })
-        .finally(()=>{
+        .finally(() => {
           this.allReq.set(null);
           this._requestOfTwoRequests = false;
         })
-      ;
+        ;
     }
 
   }
@@ -142,7 +145,7 @@ export default class OrdersViewModel extends OrdersAbstractViewModel {
     const reqConfirmOrder = this.orderServ.confirm(id);
     const actionType = ActionType.CONFIRM;
     this.setPromiseToOrderInAllOrders(id, actionType, reqConfirmOrder);
-    
+
     reqConfirmOrder
       .then((orderConfirmed) => {
         this.all.update(orders => {
@@ -155,35 +158,51 @@ export default class OrdersViewModel extends OrdersAbstractViewModel {
           return orders;
         });
       })
-      .catch((err)=>{
-        if(err.status == 403 && err.cause.includes("info") ) {
+      .catch((err) => {
+        if (err.status == 403 && err.cause.includes("info")) {
           throw err;
         }
-        if(err.status == 401) {
+        if (err.status == 401) {
           push('/login?msg=session_required')
-          return 
+          return
         }
         ErrorModel.handleRequestErrors(err, this.errorMessage, this._authMV)
       })
-      .finally(()=>{
+      .finally(() => {
         this.setPromiseToOrderInAllOrders(id, actionType, null);
       })
-    ; 
+      ;
   }
 
-  public getOrders():Readable<OrderModelMV[]> {
+  public async getPaymnetInfo(): Promise<InfoPayment> {
+    const infoReq = this.orderServ.getPaymnetInfo();
+    const info = this.wrapperViewModelRequest<InfoPayment>(infoReq);
+    return info;
+  }
+
+  private async wrapperViewModelRequest<E>(req: Promise<E>): Promise<E> {
+    let result: E = null;
+    try {
+      result = await req;
+    } catch (error) {
+      throw ErrorModel.getMessageError(error);
+    }
+    return result;
+  }
+
+  public getOrders(): Readable<OrderModelMV[]> {
     return this.all;
   }
 
-  public getReqAdd():Readable<Promise<any>> {
+  public getReqAdd(): Readable<Promise<any>> {
     return this.reqAdd;
   }
 
-  public getReqAll():Readable<Promise<any>> {
+  public getReqAll(): Readable<Promise<any>> {
     return this.allReq;
   }
 
-  public getErrorMessage():Readable<string> {
+  public getErrorMessage(): Readable<string> {
     return this.errorMessage;
   }
 

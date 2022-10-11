@@ -11,7 +11,7 @@ import AuthService from "../../auth/03_logic/AuthService";
 export default class ProductService implements IProductService, ICommentService {
 
   private readonly _productsApi = new ProductApiDAO();
-  private readonly _authServ:IAuthService = new AuthService();
+  private readonly _authServ: IAuthService = new AuthService();
 
   public async findAll(): Promise<ProductModel[]> {
     const all = await this._productsApi.findAll();
@@ -19,7 +19,7 @@ export default class ProductService implements IProductService, ICommentService 
     return all;
   }
 
-  public add(toAdd:ProductModel): Promise<ProductModel> {
+  public add(toAdd: ProductModel): Promise<ProductModel> {
     toAdd.files = null;
     return this._productsApi.add(toAdd);
   }
@@ -32,39 +32,50 @@ export default class ProductService implements IProductService, ICommentService 
     return this._productsApi.remove(p);
   }
 
-  public async addFile(idProduct:number, images:FileList[]): Promise<ProductImage> {
-    const resp:ProductImage[] = []
+  public async addFile(idProduct: number, images: FileList[]): Promise<ProductImage[]> {
+    const resp: ProductImage[] = []
     for (let i = 0; i < images.length; i++) {
       let temp = await this._productsApi.addFile(idProduct, images[i]);
       resp.push(temp)
     }
-    return resp[0];
+    return resp;
   }
 
   public removeImage(img: ProductImage): Promise<ProductImage> {
-    return this._productsApi.removeIImageById(img.id_image);
+    return this._productsApi.removeIImageById(img.id);
   }
 
   public async addComment(newComment: CommentModel): Promise<CommentModel> {
     const msgError = newComment.validateToSend();
-    if(msgError != null) {
+    if (msgError != null) {
       throw new ErrorModel(400, msgError);
     }
 
     const commentAdded = await this._productsApi.addComment(newComment);
     return commentAdded;
-    
+
   }
-  
-  
-  public async removeComment(commentToDel:CommentModel):Promise<CommentModel> {
+
+
+  public async removeComment(commentToDel: CommentModel): Promise<CommentModel> {
     const userLogged = this._authServ.getUserStored();
-    if(userLogged == null || commentToDel.idUser != userLogged.id) {
+    if (userLogged == null || commentToDel.idUser != userLogged.id) {
       throw new ErrorModel(403, "The comment only can be deleted by the owner or by the admin user");
     }
-    
-    const commentDeleted:CommentModel = await this._productsApi.removeComment(commentToDel);
+
+    const commentDeleted: CommentModel = await this._productsApi.removeComment(commentToDel);
     return commentDeleted;
+  }
+
+  public async findAllComments(): Promise<CommentModel[]> {
+    const allComments: CommentModel[] = await this._productsApi.findAllComments();
+
+    return allComments;
+  }
+
+  public async addResponse(toadd: CommentModel): Promise<CommentModel> {
+    const commentAdded: CommentModel = await this._productsApi.addCommentResponse(toadd);
+    return commentAdded;
   }
 
 }
